@@ -20,7 +20,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
-//testbeta
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
     LinearLayout login_filler, login_gnf_button;
@@ -71,11 +70,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
             }
         };
+        test();
 
 
         link_register.setOnClickListener(this);
         button_login.setOnClickListener(this);
 
+    }
+
+    private void test() {
     }
 
     public void signOut(){
