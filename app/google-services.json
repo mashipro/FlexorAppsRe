@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "16916467111",
+    "firebase_url": "https://flexorappsre.firebaseio.com",
+    "project_id": "flexorappsre",
+    "storage_bucket": "flexorappsre.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16916467111:android:eeb92bfef18dde8e",
+        "android_client_info": {
+          "package_name": "com.flexor.storage.flexorstoragesolution"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16916467111-73vc7rcbm3ko2gs7nsg2jpph6lhpbtvk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flexor.storage.flexorstoragesolution",
+            "certificate_hash": "22f6f8798ee83592fdfa5fac12c3f6bd839dbcef"
+          }
+        },
+        {
+          "client_id": "16916467111-ensi7vivin3nn40r3i30afp32plhdd7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flexor.storage.flexorstoragesolution",
+            "certificate_hash": "85b361e51371aa336a138871190ae03663efb3f7"
+          }
+        },
+        {
+          "client_id": "16916467111-26q4ebveqdakr5d86j2mtudnlb6i9hti.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrdICy2zaY90Wccvr3VWyTei86lP2c2FQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16916467111-26q4ebveqdakr5d86j2mtudnlb6i9hti.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
