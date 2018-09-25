@@ -79,7 +79,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void test() {
-        progress_bar_main.setVisibility(View.VISIBLE);
+        progress_bar_main.setVisibility(View.GONE);
     }
 
     public void signOut(){
