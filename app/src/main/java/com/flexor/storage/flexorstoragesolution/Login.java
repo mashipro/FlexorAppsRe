@@ -239,7 +239,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                                 Log.d("TAG", "createUserWithEmail:success");
                                 mAuth.signOut();
                                 sendEmailVerification();
-                                startActivity(new Intent(getBaseContext(), Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                 flag = 0;
                                 check();
                                 FirebaseUser user = mAuth.getCurrentUser();

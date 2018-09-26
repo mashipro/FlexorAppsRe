@@ -67,6 +67,7 @@
                 android:layout_marginLeft="8dp"
                 android:backgroundTint="@color/colorNativeWhite"
                 android:hint="@string/mailhint"
+                android:inputType="textEmailAddress"
                 android:textColor="@color/colorNativeWhite"
                 android:textColorHint="@color/colorNativeWhite" />
 
