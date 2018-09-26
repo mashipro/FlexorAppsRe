@@ -93,6 +93,7 @@
                 android:layout_marginLeft="8dp"
                 android:backgroundTint="@color/colorNativeWhite"
                 android:hint="@string/passwordhint"
+                android:inputType="textPassword"
                 android:textColor="@color/colorNativeWhite"
                 android:textColorHint="@color/colorNativeWhite" />
 
