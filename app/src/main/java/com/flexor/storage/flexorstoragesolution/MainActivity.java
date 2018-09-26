@@ -37,6 +37,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawer_layout_main);
+
+        NavigationView navigationView = findViewById(R.id.nav_view_main);
+        navigationView.setNavigationItemSelectedListener(this);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -54,9 +58,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
+        if (savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_Maps);
+        }
+
 
     }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.nav_Maps:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapsFragment()).commit();
+                break;
+            case R.id.nav_myStorageList:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).commit();
+                break;
+            case R.id.nav_main_message:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
+                break;
+            case R.id.nav_main_settings:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
+                break;
+        }
+//        int id = item.getItemId();
 
+//        if (id == R.id.nav_logout) {
+//            mAuth.signOut();
+//            Log.d("TAG", "Logout!!");
+//        }
+
+        return true;
+    }
 
     @Override
     public void onBackPressed() {
@@ -75,15 +108,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
 
-        if (id == R.id.nav_logout) {
-            mAuth.signOut();
-            Log.d("TAG", "Logout!!");
-        }
-
-        return true;
-    }
 }

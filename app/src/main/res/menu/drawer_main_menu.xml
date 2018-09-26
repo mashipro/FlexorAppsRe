@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_Maps"
+            android:icon="@mipmap/ic_mail_white"
+            android:title="@string/nav_main_map"/>
         <item android:id="@+id/nav_myStorageList"
             android:icon="@mipmap/ic_mail_white"
             android:title="@string/nav_main_myStorageList"/>
@@ -12,9 +15,9 @@
         <item android:id="@+id/nav_main_settings"
             android:icon="@mipmap/ic_mail_white"
             android:title="@string/nav_main_settings"/>
-        <item android:id="@+id/nav_logout"
-            android:icon="@mipmap/ic_mail_white"
-            android:title="@string/nav_logout"/>
+
+    </group>
+    <group android:checkableBehavior="single">
 
     </group>
 
