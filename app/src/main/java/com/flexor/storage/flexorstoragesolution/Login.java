@@ -31,6 +31,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private static final String TAG = "Login";
 
     @Override
     protected void onStart() {
@@ -237,8 +238,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("TAG", "createUserWithEmail:success");
-                                mAuth.signOut();
                                 sendEmailVerification();
+                                mAuth.signOut();
                                 flag = 0;
                                 check();
                                 FirebaseUser user = mAuth.getCurrentUser();

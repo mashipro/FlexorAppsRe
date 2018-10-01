@@ -70,15 +70,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (item.getItemId()){
             case R.id.nav_Maps:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapsFragment()).commit();
+                afterclick();
                 break;
             case R.id.nav_myStorageList:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).commit();
+                afterclick();
                 break;
             case R.id.nav_main_message:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
+                afterclick();
                 break;
             case R.id.nav_main_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
+                afterclick();
                 break;
         }
 //        int id = item.getItemId();
@@ -89,6 +93,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 
         return true;
+    }
+    private void afterclick(){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
     }
 
     @Override
