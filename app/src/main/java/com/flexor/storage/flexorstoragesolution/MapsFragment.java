@@ -20,19 +20,25 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
+    private MapView mapView;
+    private GoogleMap googleMap;
+
     private GoogleMap mMap;
 
     private static final String TAG = "MapsFragment";
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
 
     private Boolean mLocationPermissionGranted = false;
@@ -48,29 +54,45 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mapView = view.findViewById(R.id.map);
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
+        mapView.getMapAsync(this);
+        Log.d(TAG, "initMap: map is INITIALIZING");
+
         getLocationPermission();
+//        Toast.makeText(getContext(), "Maps Fragment", Toast.LENGTH_SHORT).show();
     }
 
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permission");
         String[] permission = {FINE_LOCATION,COARSE_LOCATION};
-        if (ContextCompat.checkSelfPermission(this.getContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if (ContextCompat.checkSelfPermission(this.getContext(),COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                mLocationPermissionGranted = true;
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),permission,LOCATION_PERMISSION_REQUEST_CODE);
-            }
+        if (ActivityCompat.checkSelfPermission(getContext(),android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG, "getLocationPermission: location permission Denied");
+            ActivityCompat.requestPermissions(getActivity(),new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            Log.d(TAG, "getLocationPermission: location permission Granted");
+
         }
+//        if (ContextCompat.checkSelfPermission(getActivity(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+//            if (ContextCompat.checkSelfPermission(getActivity(),COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+//                Log.d(TAG, "getLocationPermission: location permission granted");
+//                mLocationPermissionGranted = true;
+//            } else {
+//                Log.d(TAG, "getLocationPermission: location permission denied");
+//                requestPermissions(permission,LOCATION_PERMISSION_REQUEST_CODE);
+//            }
+//        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         Log.d(TAG, "onMapReady: map is READY");
-        // Add a marker in Sydney, Australia, and move the camera.
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
     }
     @Override
@@ -90,17 +112,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     }
                     mLocationPermissionGranted=true;
                     Log.d(TAG, "onRequestPermissionsResult: permission granted");
-                    initMap();
+//                    initMap();
                 }
 
             }
         }
     }
 
-    private void initMap() {
-        Log.d(TAG, "initMap: map is INITIALIZING");
-        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
+//    private void initMap() {
+//
+////        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+////        mapFragment.getMapAsync(this);
+//
+//    }
 }
