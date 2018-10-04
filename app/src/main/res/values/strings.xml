@@ -30,7 +30,12 @@
 
         <string name="facebook_app_id">244352846252397</string>
         <string name="fb_login_protocol_scheme">fb244352846252397</string>
-
+      <string name="search">Search</string>
+      <string name="nav_vendor_register">Register Storage</string>
+      <string name="nav_vendor_signin">Sign in as Vendor</string>
 
 
   </resources>
+
+
+
