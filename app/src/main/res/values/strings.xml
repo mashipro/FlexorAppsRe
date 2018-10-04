@@ -28,4 +28,9 @@
       <string name="login">Login</string>
       <string name="submit">Submit</string>
 
+        <string name="facebook_app_id">244352846252397</string>
+        <string name="fb_login_protocol_scheme">fb244352846252397</string>
+
+
+
   </resources>
