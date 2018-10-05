@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/map"
@@ -22,17 +22,19 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@mipmap/ic_search_storage_white_bgblue" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginHorizontal="8dp"
+            android:src="@mipmap/ic_my_location_white_bgblue" />
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/ic_my_location_white_bgblue"
-            android:layout_marginHorizontal="8dp"/>
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
             android:src="@mipmap/ic_my_storage_white_bgblue" />
     </LinearLayout>
 

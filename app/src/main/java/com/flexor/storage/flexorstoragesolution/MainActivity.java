@@ -40,10 +40,8 @@ import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISS
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-    private DrawerLayout drawerLayout;
-
     private static final String TAG = "MainActivity";
-
+    private DrawerLayout drawerLayout;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -61,10 +59,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+            }
+        };
+
+        drawerLayout = findViewById(R.id.drawer_layout_main);
 
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-        drawerLayout = findViewById(R.id.drawer_layout_main);
 
         NavigationView navigationView = findViewById(R.id.nav_view_main);
         navigationView.setNavigationItemSelectedListener(this);
@@ -73,21 +82,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        mAuth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null) {
-
-                } else {
-                    startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                }
-            }
-        };
 //        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        getMapsFragment();
+//        getMapsFragment();
+        if (checkMapServices()){
+            if (mLocationPermissionGranted){
+                getMapsFragment();
+            }else {
+                getLocationPermission();
+            }
+        }
 
         if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
@@ -146,9 +150,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
             buildAlertMessageNoGps();
+            Log.d(TAG, "isMapsEnabled: GPS Disabled. Getting permission to Enable GPS");
             return false;
+        } else {
+            Log.d(TAG, "isMapsEnabled: GPS Enabled");
+            return true;
         }
-        return true;
+        
     }
 
     private void getLocationPermission() {
@@ -244,12 +252,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).commit();
                 afterclick();
                 break;
+            case R.id.nav_main_notification:
+
+                afterclick();
+                break;
             case R.id.nav_main_message:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
                 afterclick();
                 break;
+            case R.id.nav_vendor_register:
+
+                afterclick();
+                break;
+            case R.id.nav_vendor_signin:
+                startActivity(new Intent(getApplicationContext(),VendorActivity.class));
+                afterclick();
+                break;
+            case R.id.nav_main_customerService:
+
+                afterclick();
+                break;
             case R.id.nav_main_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
+                afterclick();
+                break;
+            case R.id.nav_logout:
+                logout();
                 afterclick();
                 break;
         }
@@ -262,6 +290,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         return true;
     }
+
+    private void logout() {
+    }
+
     private void afterclick(){
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START);

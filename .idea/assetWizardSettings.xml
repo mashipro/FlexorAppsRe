@@ -35,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/maps/ic_person_pin_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/file/ic_file_upload_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -47,7 +47,7 @@
                                     <map>
                                       <entry key="backgroundColor" value="3f51b5" />
                                       <entry key="iconShape" value="NONE" />
-                                      <entry key="outputName" value="ic_vendor_signin_white" />
+                                      <entry key="outputName" value="ic_upgrade_white" />
                                     </map>
                                   </option>
                                 </PersistentState>
