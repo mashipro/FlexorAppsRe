@@ -11,13 +11,13 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_activities">MainActivities</string>
 
     ////NAV
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_main_myStorageList">My Storage List</string>
     <string name="nav_main_profile">User Profile</string>
     <string name="nav_main_settings">Settings</string>
@@ -34,10 +34,11 @@
 
     <string name="login">Login</string>
     <string name="submit">Submit</string>
+    <string name="search">Search</string>
 
     <string name="facebook_app_id">244352846252397</string>
     <string name="fb_login_protocol_scheme">fb244352846252397</string>
-    <string name="search">Search</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
