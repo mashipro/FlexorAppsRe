@@ -33,5 +33,5 @@
         android:layout_gravity="start"
         android:id="@+id/nav_view_vendor"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/drawer_main_menu"/>
+        app:menu="@menu/drawer_vendor_menu"/>
 </android.support.v4.widget.DrawerLayout>
