@@ -69,7 +69,7 @@
                 android:hint="@string/mailhint"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/colorNativeWhite"
-                android:textColorHint="@color/colorNativeWhite" />
+                android:textColorHint="@drawable/selector" />
 
         </LinearLayout>
 
@@ -96,7 +96,7 @@
                 android:hint="@string/passwordhint"
                 android:inputType="textPassword"
                 android:textColor="@color/colorNativeWhite"
-                android:textColorHint="@color/colorNativeWhite" />
+                android:textColorHint="@drawable/selector" />
 
         </LinearLayout>
 
