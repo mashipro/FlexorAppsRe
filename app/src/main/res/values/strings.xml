@@ -44,6 +44,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="eula_agree_check">I agree to this License Agreement</string>
     <string name="accept">Accept</string>
+    <string name="name">Name</string>
+    <string name="Address">Address</string>
+    <string name="identityCardNumber">No KTP</string>
+    <string name="NPWP">No NPWP*</string>
+    <string name="company">Perusahaan*</string>
+    <string name="textRules">*optional</string>
+    <string name="storageName">Storage Name</string>
+    <string name="locationAddress">Location Address</string>
 
 
 </resources>
