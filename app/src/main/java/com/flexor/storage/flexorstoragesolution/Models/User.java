@@ -16,28 +16,43 @@ public class User implements Parcelable {
     private String userAvatar;
     private String userCity;
     private String userPhone;
-    private @ServerTimestamp Date timestamp;
+    private Double userBalance;
+    private Double userAuthCode;
+    private @ServerTimestamp Date userRegistrationTimestamp;
+
 
     public User() {
     }
 
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Date timestamp) {
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Double userBalance, Double userAuthCode, Date userRegistrationTimestamp) {
         this.userEmail = userEmail;
         this.userID = userID;
         this.userName = userName;
         this.userAvatar = userAvatar;
         this.userCity = userCity;
         this.userPhone = userPhone;
-        this.timestamp = timestamp;
+        this.userBalance = userBalance;
+        this.userAuthCode = userAuthCode;
+        this.userRegistrationTimestamp = userRegistrationTimestamp;
     }
 
-    public User(Parcel in) {
+    protected User(Parcel in) {
         userEmail = in.readString();
         userID = in.readString();
         userName = in.readString();
         userAvatar = in.readString();
         userCity = in.readString();
         userPhone = in.readString();
+        if (in.readByte() == 0) {
+            userBalance = null;
+        } else {
+            userBalance = in.readDouble();
+        }
+        if (in.readByte() == 0) {
+            userAuthCode = null;
+        } else {
+            userAuthCode = in.readDouble();
+        }
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -51,19 +66,6 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userEmail='" + userEmail + '\'' +
-                ", userID='" + userID + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userAvatar='" + userAvatar + '\'' +
-                ", userCity='" + userCity + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
 
     public String getUserEmail() {
         return userEmail;
@@ -113,12 +115,28 @@ public class User implements Parcelable {
         this.userPhone = userPhone;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public Double getUserBalance() {
+        return userBalance;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setUserBalance(Double userBalance) {
+        this.userBalance = userBalance;
+    }
+
+    public Double getUserAuthCode() {
+        return userAuthCode;
+    }
+
+    public void setUserAuthCode(Double userAuthCode) {
+        this.userAuthCode = userAuthCode;
+    }
+
+    public Date getUserRegistrationTimestamp() {
+        return userRegistrationTimestamp;
+    }
+
+    public void setUserRegistrationTimestamp(Date userRegistrationTimestamp) {
+        this.userRegistrationTimestamp = userRegistrationTimestamp;
     }
 
     @Override
@@ -134,5 +152,32 @@ public class User implements Parcelable {
         parcel.writeString(userAvatar);
         parcel.writeString(userCity);
         parcel.writeString(userPhone);
+        if (userBalance == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(userBalance);
+        }
+        if (userAuthCode == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(userAuthCode);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userEmail='" + userEmail + '\'' +
+                ", userID='" + userID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userAvatar='" + userAvatar + '\'' +
+                ", userCity='" + userCity + '\'' +
+                ", userPhone='" + userPhone + '\'' +
+                ", userBalance=" + userBalance +
+                ", userAuthCode=" + userAuthCode +
+                ", userRegistrationTimestamp=" + userRegistrationTimestamp +
+                '}';
     }
 }

@@ -52,6 +52,9 @@
     <string name="textRules">*optional</string>
     <string name="storageName">Storage Name</string>
     <string name="locationAddress">Location Address</string>
+    <string name="pleaseAccept">Please Accept the End-user License Agreement before proceed!</string>
+    <string name="error_form_input">Error! Please check your input.</string>
+    <string name="error_form_photo">ID Card photo must be uploaded!</string>
 
 
 </resources>

@@ -35,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/file/ic_file_upload_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_credit_card_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -46,6 +46,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundColor" value="989898" />
+                                      <entry key="iconShape" value="CIRCLE" />
                                       <entry key="outputName" value="ic_upload_image" />
                                     </map>
                                   </option>
