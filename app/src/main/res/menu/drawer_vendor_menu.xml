@@ -5,33 +5,25 @@
     <group
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_Maps"
-            android:icon="@mipmap/ic_maps_white"
-            android:title="@string/nav_main_map" />
-        <item
-            android:id="@+id/nav_myStorageList"
+            android:id="@+id/nav_activeStorage"
             android:icon="@mipmap/ic_storage_list_white"
-            android:title="@string/nav_main_myStorageList" />
+            android:title="@string/nav_vendor_activeStorage" />
         <item
-            android:id="@+id/nav_main_notification"
-            android:icon="@mipmap/ic_notification_inactive_white"
-            android:title="@string/nav_main_notification" />
+            android:id="@+id/nav_vendor_upgrade"
+            android:icon="@mipmap/ic_upgrade_white"
+            android:title="@string/nav_vendor_upgradeStorage" />
         <item
             android:id="@+id/nav_main_message"
             android:icon="@mipmap/ic_mail_white"
-            android:title="@string/nav_main_message" />
+            android:title="@string/nav_main_notification" />
 
 
     </group>
     <group android:id="@+id/nav_vendor">
         <item
-            android:id="@+id/nav_vendor_register"
-            android:icon="@mipmap/ic_vendor_register_white"
-            android:title="@string/nav_vendor_register" />
-        <item
-            android:id="@+id/nav_vendor_signin"
+            android:id="@+id/nav_vendor_signout"
             android:icon="@mipmap/ic_vendor_signin_white"
-            android:title="@string/nav_vendor_signin" />
+            android:title="@string/nav_vendor_signout" />
     </group>
     <group android:checkableBehavior="single">
         <item
