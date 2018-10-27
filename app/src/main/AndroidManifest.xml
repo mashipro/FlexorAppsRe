@@ -54,6 +54,7 @@
         </activity>
         <activity android:name=".VendorActivity" />
         <activity android:name=".VendorRegistrationActivity"></activity>
+        <activity android:name=".biodata"></activity>
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.EditText;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.firestore.ServerTimestamp;
@@ -16,28 +17,36 @@ public class User implements Parcelable {
     private String userAvatar;
     private String userCity;
     private String userPhone;
-    private @ServerTimestamp Date timestamp;
+    private String userAddress;
+    private String userGender;
+
+    private @ServerTimestamp
+    Date timestamp;
 
     public User() {
     }
 
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Date timestamp) {
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, String userAddress, String userGender, Date timestamp) {
         this.userEmail = userEmail;
         this.userID = userID;
         this.userName = userName;
         this.userAvatar = userAvatar;
         this.userCity = userCity;
         this.userPhone = userPhone;
+        this.userAddress = userAddress;
+        this.userGender = userGender;
         this.timestamp = timestamp;
     }
 
-    public User(Parcel in) {
+    protected User(Parcel in) {
         userEmail = in.readString();
         userID = in.readString();
         userName = in.readString();
         userAvatar = in.readString();
         userCity = in.readString();
         userPhone = in.readString();
+        userAddress = in.readString();
+        userGender = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -61,6 +70,8 @@ public class User implements Parcelable {
                 ", userAvatar='" + userAvatar + '\'' +
                 ", userCity='" + userCity + '\'' +
                 ", userPhone='" + userPhone + '\'' +
+                ", userAddress='" + userAddress + '\'' +
+                ", userGender='" + userGender + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }
@@ -113,6 +124,22 @@ public class User implements Parcelable {
         this.userPhone = userPhone;
     }
 
+    public String getUserAddress() {
+        return userAddress;
+    }
+
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
+    public String getUserGender() {
+        return userGender;
+    }
+
+    public void setUserGender(String userGender) {
+        this.userGender = userGender;
+    }
+
     public Date getTimestamp() {
         return timestamp;
     }
@@ -134,5 +161,7 @@ public class User implements Parcelable {
         parcel.writeString(userAvatar);
         parcel.writeString(userCity);
         parcel.writeString(userPhone);
+        parcel.writeString(userAddress);
+        parcel.writeString(userGender);
     }
 }

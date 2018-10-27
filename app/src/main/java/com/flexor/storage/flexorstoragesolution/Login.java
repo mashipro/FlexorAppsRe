@@ -337,7 +337,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            checkIfEmailIsVerified();
+//                            checkIfEmailIsVerified();
                             Log.d("TAG", "SignIn with email: Success");
                         } else {
                             Log.d("TAG", "SignIn with email: failed");

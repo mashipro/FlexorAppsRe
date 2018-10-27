@@ -53,6 +53,10 @@
     <string name="storageName">Storage Name</string>
     <string name="locationAddress">Location Address</string>
 
+    <!--Biodata-->
+    <string name="gender">Gender</string>
+    <string name="city">City</string>
+
 
 </resources>
 

@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_main_customerService:
-
+                startActivity(new Intent(getApplicationContext(), biodata.class));
                 afterclick();
                 break;
             case R.id.nav_main_settings:
