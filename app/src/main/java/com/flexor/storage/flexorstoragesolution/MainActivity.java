@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,7 +33,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
@@ -45,6 +54,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseFirestore mFirestore;
+    private FirebaseDatabase mDatabase;
+    private FirebaseStorage mStorage;
+    private StorageReference storageReference;
+    private DocumentReference docReference;
 //    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private boolean mLocationPermissionGranted = false;
@@ -64,8 +78,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() == null) {
+                FirebaseUser authUser = firebaseAuth.getCurrentUser();
+                if (authUser == null) {
                     startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }else {
+                    getUserDetails(authUser);
                 }
             }
         };
@@ -97,6 +114,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
+    }
+
+    private void getUserDetails(FirebaseUser user) {
+        String userUID = user.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
+        DocumentReference userRef = db.collection("Users").document(userUID);
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: User data retrieved");
+                    User currentUser = task.getResult().toObject(User.class);
+                    ((UserClient)(getApplicationContext())).setUser(currentUser);
+                }
+            }
+        });
     }
 
 //    private void getLastKnownLocation() {
@@ -261,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_vendor_register:
-
+                startActivity(new Intent(getApplicationContext(),VendorRegistrationActivity.class));
                 afterclick();
                 break;
             case R.id.nav_vendor_signin:
