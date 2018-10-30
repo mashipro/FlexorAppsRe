@@ -55,6 +55,7 @@
     <string name="pleaseAccept">Please Accept the End-user License Agreement before proceed!</string>
     <string name="error_form_input">Error! Please check your input.</string>
     <string name="error_form_photo">ID Card photo must be uploaded!</string>
+    <string name="error_already_registered">You already registered. Wait for confirmation.</string>
 
 
 </resources>

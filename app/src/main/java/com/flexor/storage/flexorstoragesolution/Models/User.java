@@ -18,13 +18,15 @@ public class User implements Parcelable {
     private String userPhone;
     private Double userBalance;
     private Double userAuthCode;
+    private String userGender;
+    private String userAddress;
     private @ServerTimestamp Date userRegistrationTimestamp;
 
 
     public User() {
     }
 
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Double userBalance, Double userAuthCode, Date userRegistrationTimestamp) {
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Double userBalance, Double userAuthCode, String userGender, String userAddress, Date userRegistrationTimestamp) {
         this.userEmail = userEmail;
         this.userID = userID;
         this.userName = userName;
@@ -33,6 +35,8 @@ public class User implements Parcelable {
         this.userPhone = userPhone;
         this.userBalance = userBalance;
         this.userAuthCode = userAuthCode;
+        this.userGender = userGender;
+        this.userAddress = userAddress;
         this.userRegistrationTimestamp = userRegistrationTimestamp;
     }
 
@@ -53,6 +57,8 @@ public class User implements Parcelable {
         } else {
             userAuthCode = in.readDouble();
         }
+        userGender = in.readString();
+        userAddress = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -131,12 +137,45 @@ public class User implements Parcelable {
         this.userAuthCode = userAuthCode;
     }
 
+    public String getUserGender() {
+        return userGender;
+    }
+
+    public void setUserGender(String userGender) {
+        this.userGender = userGender;
+    }
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
     public Date getUserRegistrationTimestamp() {
         return userRegistrationTimestamp;
     }
 
     public void setUserRegistrationTimestamp(Date userRegistrationTimestamp) {
         this.userRegistrationTimestamp = userRegistrationTimestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userEmail='" + userEmail + '\'' +
+                ", userID='" + userID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userAvatar='" + userAvatar + '\'' +
+                ", userCity='" + userCity + '\'' +
+                ", userPhone='" + userPhone + '\'' +
+                ", userBalance=" + userBalance +
+                ", userAuthCode=" + userAuthCode +
+                ", userGender='" + userGender + '\'' +
+                ", userAddress='" + userAddress + '\'' +
+                ", userRegistrationTimestamp=" + userRegistrationTimestamp +
+                '}';
     }
 
     @Override
@@ -164,20 +203,7 @@ public class User implements Parcelable {
             parcel.writeByte((byte) 1);
             parcel.writeDouble(userAuthCode);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userEmail='" + userEmail + '\'' +
-                ", userID='" + userID + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userAvatar='" + userAvatar + '\'' +
-                ", userCity='" + userCity + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", userBalance=" + userBalance +
-                ", userAuthCode=" + userAuthCode +
-                ", userRegistrationTimestamp=" + userRegistrationTimestamp +
-                '}';
+        parcel.writeString(userGender);
+        parcel.writeString(userAddress);
     }
 }
