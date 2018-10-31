@@ -46,7 +46,7 @@
     <string name="accept">Accept</string>
     <string name="name">Name</string>
     <string name="Address">Address</string>
-    <string name="identityCardNumber">No KTP</string>
+    <string name="identityCardNumber">ID Card Number</string>
     <string name="NPWP">No NPWP*</string>
     <string name="company">Perusahaan*</string>
     <string name="textRules">*optional</string>
@@ -59,6 +59,8 @@
     <!--Biodata-->
     <string name="gender">Gender</string>
     <string name="city">City</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone Number</string>
 
 
 </resources>

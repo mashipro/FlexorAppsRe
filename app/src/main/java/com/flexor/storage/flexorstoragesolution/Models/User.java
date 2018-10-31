@@ -29,8 +29,7 @@ public class User implements Parcelable {
     public User() {
     }
 
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, String userAddress, String userGender, Date timestamp) {
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Double userBalance, Double userAuthCode, Date userRegistrationTimestamp) {
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, String userAddress, String userGender, Double userBalance, Double userAuthCode, Date userRegistrationTimestamp) {
         this.userEmail = userEmail;
         this.userID = userID;
         this.userName = userName;
@@ -39,7 +38,6 @@ public class User implements Parcelable {
         this.userPhone = userPhone;
         this.userAddress = userAddress;
         this.userGender = userGender;
-        this.timestamp = timestamp;
         this.userBalance = userBalance;
         this.userAuthCode = userAuthCode;
         this.userRegistrationTimestamp = userRegistrationTimestamp;
@@ -77,21 +75,6 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userEmail='" + userEmail + '\'' +
-                ", userID='" + userID + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userAvatar='" + userAvatar + '\'' +
-                ", userCity='" + userCity + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", userAddress='" + userAddress + '\'' +
-                ", userGender='" + userGender + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
 
     public String getUserEmail() {
         return userEmail;
@@ -157,8 +140,6 @@ public class User implements Parcelable {
         this.userGender = userGender;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
     public Double getUserBalance() {
         return userBalance;
     }
@@ -221,6 +202,8 @@ public class User implements Parcelable {
                 ", userAvatar='" + userAvatar + '\'' +
                 ", userCity='" + userCity + '\'' +
                 ", userPhone='" + userPhone + '\'' +
+                ", userAddress='" + userAddress + '\'' +
+                ", userGender='" + userGender + '\'' +
                 ", userBalance=" + userBalance +
                 ", userAuthCode=" + userAuthCode +
                 ", userRegistrationTimestamp=" + userRegistrationTimestamp +
