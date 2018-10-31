@@ -84,6 +84,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                 if (authUser==null){
                     startActivity(new Intent(VendorRegistrationActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }else {
+                    Log.d(TAG, "onAuthStateChanged: getting User Details");
                     getUserDetails(authUser);
                 }
             }
@@ -112,7 +113,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         vendorRegistrationUPID = findViewById(R.id.vendor_registration_uploadID);
 
         eulaAcceptCheck = findViewById(R.id.eula_accept_check);
-        progressBar = findViewById(R.id.progress_bar);
+        progressBar = findViewById(R.id.progressBar);
 
         //Default View//
         eula.setVisibility(View.VISIBLE);
@@ -128,6 +129,30 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         vendorRegistrationUPID.setOnClickListener(this);
 
     }
+
+//    private void registrationCheck(final User currentUser) {
+//        Log.d(TAG, "registrationCheck: checking.....");
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setTimestampsInSnapshotsEnabled(true)
+//                .setPersistenceEnabled(true)
+//                .build();
+//        db.setFirestoreSettings(settings);
+//        DocumentReference vendorReference = db.collection("Vendor").document(currentUser.getUserID());
+//        vendorReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                UserVendor userVendor = task.getResult().toObject(UserVendor.class);
+//                ((UserVendorClient)(getApplicationContext())).setUserVendor(userVendor);
+//                if (!currentUser.getUserID().equals(userVendor.getUser().getUserID()) ){
+//                    Log.d(TAG, "onComplete: User already registered!!!!!");
+//                    Toast.makeText(VendorRegistrationActivity.this, R.string.error_already_registered , Toast.LENGTH_SHORT).show();
+//                    startActivity(new Intent(VendorRegistrationActivity.this, MainActivity.class));
+//                }
+//            }
+//        });
+
+//    }
 
     @Override
     public void onClick(View view) {
@@ -146,7 +171,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
             case R.id.button_submit:
                 if (formSubmit.isPressed()){
                     checkFormCompletion();
-                    progressBar.setVisibility(View.VISIBLE);
+
                     Log.d(TAG, "onClick: Form Submit Clicked");
                 }
                 break;
@@ -202,6 +227,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                 Log.d(TAG, "checkFormCompletion: data complete! try to store all data to singleton!");
                 User user = ((UserClient)(getApplicationContext())).getUser();
                 if (user != null){
+                    progressBar.setVisibility(View.VISIBLE);
 
                     FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
                     FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -209,7 +235,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             .setTimestampsInSnapshotsEnabled(true)
                             .build();
                     mFirestore.setFirestoreSettings(settings);
-                    DocumentReference newVendorReference = mFirestore.collection("Vendor").document();
+                    DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
                     final UserVendor userVendor = new UserVendor();
                     userVendor.setUser(user);
                     userVendor.setVendorName(vendorName);
@@ -273,7 +299,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     Log.d(TAG, "userVendorData: storageName: "+userVendor.getVendorStorageName());
                     Log.d(TAG, "userVendorData: storageLocation: "+userVendor.getVendorStorageLocation());
                     Log.d(TAG, "userVendorData: vendorIDImage: "+userVendor.getVendorIDImgPath());
-                    Log.d(TAG, "userVendorData: vendorID: "+userVendor.getVendorName());
+                    Log.d(TAG, "userVendorData: vendorID: "+userVendor.getVendorID());
                     startActivity(new Intent(VendorRegistrationActivity.this,MainActivity.class));
                     finish();
                 }else{
@@ -327,6 +353,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     Log.d(TAG, "onComplete: User data retrieved");
                     User currentUser = task.getResult().toObject(User.class);
                     ((UserClient)(getApplicationContext())).setUser(currentUser);
+//                    registrationCheck(currentUser);
                 }
             }
         });
