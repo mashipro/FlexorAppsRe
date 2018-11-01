@@ -6,39 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ActiveStorageFragment">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingAB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:src="@mipmap/ic_settings_white"
-        android:backgroundTint="@color/colorNativeBlue"/>
-
-    <ImageView
-        android:id="@+id/headerImage"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorNativeBlue"/>
-
-    <TextView
-        android:id="@+id/boxName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nama Box Test"
-        android:textSize="24sp"
-        android:fontFamily="@font/opensans_extrabold"
-        app:layout_constraintBottom_toBottomOf="@+id/headerImage"
-        app:layout_constraintEnd_toEndOf="@+id/headerImage"
-        app:layout_constraintStart_toStartOf="@+id/headerImage"
-        app:layout_constraintTop_toTopOf="@+id/headerImage" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewBoxDetails"
         android:layout_width="match_parent"
@@ -54,7 +21,57 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fab_addButtonColorNormal="@color/colorNativeBlue"
+        app:fab_addButtonColorPressed="@color/colorNativeOrange"
+        app:fab_addButtonPlusIconColor="@color/colorNativeWhite"
+        app:fab_labelStyle="@style/style_fab"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_addBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorNativeLightBlue"
+            app:fab_colorPressed="@color/colorNativeOrange"
+            app:fab_size="mini"
+            app:fab_icon="@drawable/ic_box_add_white"
+            app:fab_title="@string/box_add"/>
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_vendorSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorNativeLightBlue"
+            app:fab_colorPressed="@color/colorNativeOrange"
+            app:fab_size="mini"
+            app:fab_icon="@mipmap/ic_settings_white"
+            app:fab_title="@string/vendor_settings"/>
 
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+    <ImageView
+        android:id="@+id/headerImage"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorNativeBlue"/>
+
+    <TextView
+        android:id="@+id/vendorNameTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nama Box Test"
+        android:textSize="24sp"
+        android:fontFamily="@font/opensans_extrabold"
+        app:layout_constraintBottom_toBottomOf="@+id/headerImage"
+        app:layout_constraintEnd_toEndOf="@+id/headerImage"
+        app:layout_constraintStart_toStartOf="@+id/headerImage"
+        app:layout_constraintTop_toTopOf="@+id/headerImage" />
 
 
 </android.support.constraint.ConstraintLayout>

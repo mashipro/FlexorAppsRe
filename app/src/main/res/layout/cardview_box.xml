@@ -26,12 +26,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/box_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Slot 1"
                     android:textColor="#000000"
                     android:textSize="15sp"/>
                 <TextView
+                    android:id="@+id/box_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Available"
@@ -44,6 +46,7 @@
                 android:orientation="horizontal"
                 android:gravity="end">
                 <ImageView
+                    android:id="@+id/box_extra"
                     android:layout_width="30dp"
                     android:layout_height="match_parent"
                     android:src="@mipmap/ic_dots"/>

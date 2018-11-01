@@ -10,7 +10,7 @@ import java.util.Date;
 
 @IgnoreExtraProperties
 public class UserVendor implements Parcelable {
-    private User user;
+    private User vendorOwner;
     private String vendorName;
     private String vendorAddress;
     private String vendorID;
@@ -22,12 +22,14 @@ public class UserVendor implements Parcelable {
     private String vendorIDImgPath;
     private Boolean vendorAccepted;
     private @ServerTimestamp Date vendorRegistrationTimestamp;
+    private String vendorStatsCode;
+    private String vendorBoxPrice;
 
     public UserVendor() {
     }
 
-    public UserVendor(User user, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp) {
-        this.user = user;
+    public UserVendor(User vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, String vendorStatsCode, String vendorBoxPrice) {
+        this.vendorOwner = vendorOwner;
         this.vendorName = vendorName;
         this.vendorAddress = vendorAddress;
         this.vendorID = vendorID;
@@ -39,10 +41,12 @@ public class UserVendor implements Parcelable {
         this.vendorIDImgPath = vendorIDImgPath;
         this.vendorAccepted = vendorAccepted;
         this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
+        this.vendorStatsCode = vendorStatsCode;
+        this.vendorBoxPrice = vendorBoxPrice;
     }
 
     protected UserVendor(Parcel in) {
-        user = in.readParcelable(User.class.getClassLoader());
+        vendorOwner = in.readParcelable(User.class.getClassLoader());
         vendorName = in.readString();
         vendorAddress = in.readString();
         vendorID = in.readString();
@@ -54,6 +58,8 @@ public class UserVendor implements Parcelable {
         vendorIDImgPath = in.readString();
         byte tmpVendorAccepted = in.readByte();
         vendorAccepted = tmpVendorAccepted == 0 ? null : tmpVendorAccepted == 1;
+        vendorStatsCode = in.readString();
+        vendorBoxPrice = in.readString();
     }
 
     public static final Creator<UserVendor> CREATOR = new Creator<UserVendor>() {
@@ -68,12 +74,12 @@ public class UserVendor implements Parcelable {
         }
     };
 
-    public User getUser() {
-        return user;
+    public User getVendorOwner() {
+        return vendorOwner;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setVendorOwner(User vendorOwner) {
+        this.vendorOwner = vendorOwner;
     }
 
     public String getVendorName() {
@@ -164,30 +170,26 @@ public class UserVendor implements Parcelable {
         this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getVendorStatsCode() {
+        return vendorStatsCode;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(user, i);
-        parcel.writeString(vendorName);
-        parcel.writeString(vendorAddress);
-        parcel.writeString(vendorID);
-        parcel.writeString(vendorIDNumber);
-        parcel.writeString(vendorNPWP);
-        parcel.writeString(vendorCompany);
-        parcel.writeString(vendorStorageName);
-        parcel.writeString(vendorStorageLocation);
-        parcel.writeString(vendorIDImgPath);
-        parcel.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
+    public void setVendorStatsCode(String vendorStatsCode) {
+        this.vendorStatsCode = vendorStatsCode;
+    }
+
+    public String getVendorBoxPrice() {
+        return vendorBoxPrice;
+    }
+
+    public void setVendorBoxPrice(String vendorBoxPrice) {
+        this.vendorBoxPrice = vendorBoxPrice;
     }
 
     @Override
     public String toString() {
         return "UserVendor{" +
-                "user=" + user +
+                "vendorOwner=" + vendorOwner +
                 ", vendorName='" + vendorName + '\'' +
                 ", vendorAddress='" + vendorAddress + '\'' +
                 ", vendorID='" + vendorID + '\'' +
@@ -199,6 +201,30 @@ public class UserVendor implements Parcelable {
                 ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
                 ", vendorAccepted=" + vendorAccepted +
                 ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
+                ", vendorStatsCode='" + vendorStatsCode + '\'' +
+                ", vendorBoxPrice='" + vendorBoxPrice + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(vendorOwner, i);
+        parcel.writeString(vendorName);
+        parcel.writeString(vendorAddress);
+        parcel.writeString(vendorID);
+        parcel.writeString(vendorIDNumber);
+        parcel.writeString(vendorNPWP);
+        parcel.writeString(vendorCompany);
+        parcel.writeString(vendorStorageName);
+        parcel.writeString(vendorStorageLocation);
+        parcel.writeString(vendorIDImgPath);
+        parcel.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
+        parcel.writeString(vendorStatsCode);
+        parcel.writeString(vendorBoxPrice);
     }
 }

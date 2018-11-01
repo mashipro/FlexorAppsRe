@@ -56,6 +56,11 @@
     <string name="error_form_input">Error! Please check your input.</string>
     <string name="error_form_photo">ID Card photo must be uploaded!</string>
     <string name="error_already_registered">You already registered. Wait for confirmation.</string>
+    <string name="box_remove">Remove Box</string>
+    <string name="box_access">Access Box</string>
+    <string name="box_details">Box Details</string>
+    <string name="box_add">Add Box</string>
+    <string name="vendor_settings">Vendor Settings</string>
 
 
 </resources>
