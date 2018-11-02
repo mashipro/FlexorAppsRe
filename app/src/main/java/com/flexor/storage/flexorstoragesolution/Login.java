@@ -182,6 +182,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
+                            storeUserInfo();
 //                            FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
                         } else {
@@ -206,6 +207,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
+                            storeUserInfo();
 //                            FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
                         } else {
@@ -486,7 +488,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
                         Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUid());
-                        mAuth.signOut();
+//                        mAuth.signOut();
                     }else{
                         Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
                         mAuth.signOut();
