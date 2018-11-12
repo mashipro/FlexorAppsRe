@@ -22,13 +22,13 @@ public class UserVendor implements Parcelable {
     private String vendorIDImgPath;
     private Boolean vendorAccepted;
     private @ServerTimestamp Date vendorRegistrationTimestamp;
-    private String vendorStatsCode;
+    private Double vendorStatsCode;
     private String vendorBoxPrice;
 
     public UserVendor() {
     }
 
-    public UserVendor(User vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, String vendorStatsCode, String vendorBoxPrice) {
+    public UserVendor(User vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice) {
         this.vendorOwner = vendorOwner;
         this.vendorName = vendorName;
         this.vendorAddress = vendorAddress;
@@ -58,7 +58,11 @@ public class UserVendor implements Parcelable {
         vendorIDImgPath = in.readString();
         byte tmpVendorAccepted = in.readByte();
         vendorAccepted = tmpVendorAccepted == 0 ? null : tmpVendorAccepted == 1;
-        vendorStatsCode = in.readString();
+        if (in.readByte() == 0) {
+            vendorStatsCode = null;
+        } else {
+            vendorStatsCode = in.readDouble();
+        }
         vendorBoxPrice = in.readString();
     }
 
@@ -73,6 +77,26 @@ public class UserVendor implements Parcelable {
             return new UserVendor[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "UserVendor{" +
+                "vendorOwner=" + vendorOwner +
+                ", vendorName='" + vendorName + '\'' +
+                ", vendorAddress='" + vendorAddress + '\'' +
+                ", vendorID='" + vendorID + '\'' +
+                ", vendorIDNumber='" + vendorIDNumber + '\'' +
+                ", vendorNPWP='" + vendorNPWP + '\'' +
+                ", vendorCompany='" + vendorCompany + '\'' +
+                ", vendorStorageName='" + vendorStorageName + '\'' +
+                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
+                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
+                ", vendorAccepted=" + vendorAccepted +
+                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
+                ", vendorStatsCode=" + vendorStatsCode +
+                ", vendorBoxPrice='" + vendorBoxPrice + '\'' +
+                '}';
+    }
 
     public User getVendorOwner() {
         return vendorOwner;
@@ -170,11 +194,11 @@ public class UserVendor implements Parcelable {
         this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
     }
 
-    public String getVendorStatsCode() {
+    public Double getVendorStatsCode() {
         return vendorStatsCode;
     }
 
-    public void setVendorStatsCode(String vendorStatsCode) {
+    public void setVendorStatsCode(Double vendorStatsCode) {
         this.vendorStatsCode = vendorStatsCode;
     }
 
@@ -184,26 +208,6 @@ public class UserVendor implements Parcelable {
 
     public void setVendorBoxPrice(String vendorBoxPrice) {
         this.vendorBoxPrice = vendorBoxPrice;
-    }
-
-    @Override
-    public String toString() {
-        return "UserVendor{" +
-                "vendorOwner=" + vendorOwner +
-                ", vendorName='" + vendorName + '\'' +
-                ", vendorAddress='" + vendorAddress + '\'' +
-                ", vendorID='" + vendorID + '\'' +
-                ", vendorIDNumber='" + vendorIDNumber + '\'' +
-                ", vendorNPWP='" + vendorNPWP + '\'' +
-                ", vendorCompany='" + vendorCompany + '\'' +
-                ", vendorStorageName='" + vendorStorageName + '\'' +
-                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
-                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
-                ", vendorAccepted=" + vendorAccepted +
-                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
-                ", vendorStatsCode='" + vendorStatsCode + '\'' +
-                ", vendorBoxPrice='" + vendorBoxPrice + '\'' +
-                '}';
     }
 
     @Override
@@ -224,7 +228,12 @@ public class UserVendor implements Parcelable {
         parcel.writeString(vendorStorageLocation);
         parcel.writeString(vendorIDImgPath);
         parcel.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
-        parcel.writeString(vendorStatsCode);
+        if (vendorStatsCode == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(vendorStatsCode);
+        }
         parcel.writeString(vendorBoxPrice);
     }
 }

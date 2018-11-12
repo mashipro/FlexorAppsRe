@@ -246,6 +246,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     userVendor.setVendorStorageName(vendorStorageName);
                     userVendor.setVendorStorageLocation(vendorStorageLocation);
                     userVendor.setVendorAccepted(Boolean.FALSE);
+                    userVendor.setVendorStatsCode((double) 211);
                     userVendor.setVendorID(newVendorReference.getId());
                     StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
                     uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);

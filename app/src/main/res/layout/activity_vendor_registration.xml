@@ -107,7 +107,9 @@
                 <EditText
                     android:id="@+id/vendor_registration_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:maxLength="20"/>
             </LinearLayout>
 
             <LinearLayout
@@ -124,7 +126,8 @@
                 <EditText
                     android:id="@+id/vendor_registration_address"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:maxLength="100" />
             </LinearLayout>
 
             <LinearLayout
@@ -141,7 +144,9 @@
                 <EditText
                     android:id="@+id/vendor_registration_id"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="17"/>
             </LinearLayout>
 
             <LinearLayout
@@ -158,7 +163,8 @@
                 <EditText
                     android:id="@+id/vendor_registration_NPWP"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:maxLength="30"/>
             </LinearLayout>
 
             <LinearLayout
@@ -175,7 +181,8 @@
                 <EditText
                     android:id="@+id/vendor_registration_company"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:maxLength="30"/>
             </LinearLayout>
 
             <TextView
@@ -198,7 +205,8 @@
                 <EditText
                     android:id="@+id/vendor_registration_storageName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:maxLength="15"/>
             </LinearLayout>
 
             <LinearLayout
@@ -215,7 +223,8 @@
                 <EditText
                     android:id="@+id/vendor_registration_location"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:maxLength="100"/>
             </LinearLayout>
 
             <LinearLayout

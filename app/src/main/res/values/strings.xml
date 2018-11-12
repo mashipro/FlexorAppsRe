@@ -61,6 +61,14 @@
     <string name="box_details">Box Details</string>
     <string name="box_add">Add Box</string>
     <string name="vendor_settings">Vendor Settings</string>
+    <string name="box_stat_available">Available</string>
+    <string name="box_stat_empty">Empty</string>
+    <string name="box_stat_full">Full</string>
+    <string name="error_box_limit">Unable to add box due to limit! please upgrade your vendor status.</string>
+    <string name="alert_new_box_title">Add New Box</string>
+    <string name="alert_new_box_message">Please add name for your new box.</string>
+    <string name="ok">Ok</string>
+    <string name="error_no_box">You have no box yet. Please create your first box.</string>
 
 
 </resources>
