@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.flexor.storage.flexorstoragesolution"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 27
         multiDexEnabled true
         versionCode 1
@@ -47,6 +47,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.google.android.gms:play-services-auth:16.0.0'
+    implementation 'com.firebaseui:firebase-ui-storage:4.1.0'
 
 }
 

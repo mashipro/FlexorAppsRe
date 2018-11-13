@@ -7,11 +7,11 @@
     android:gravity="bottom"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
-    <ImageView
-        android:id="@+id/userProfilePhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher_round"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/showUserProfilePicture"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:src="@color/browser_actions_bg_grey"/>
     <TextView
         android:id="@+id/userName"
         android:layout_width="wrap_content"

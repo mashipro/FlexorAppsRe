@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -25,12 +26,19 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Registry;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.flexor.storage.flexorstoragesolution.Models.User;
+import com.flexor.storage.flexorstoragesolution.Utility.MyAppGlideModule;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +50,11 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.io.InputStream;
+import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
@@ -59,9 +72,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
     private DocumentReference docReference;
+    NavigationView navigationView;
 //    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private boolean mLocationPermissionGranted = false;
+
+    CircleImageView circleImageView, showUserProfilePicture;
+
+
 
     @Override
     protected void onStart() {
@@ -74,6 +92,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+        circleImageView = findViewById(R.id.showUserProfilePicture);
+        mStorage = FirebaseStorage.getInstance();
+        storageReference = mStorage.getReference();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -114,6 +135,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
+
+        ////image
+//        User user = ((UserClient) (getApplicationContext())).getUser();
+//        final CircleImageView showUserProfilePicture  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
+//        String userID = user.getUserID();
+//
+//        storageReference.child((Objects.requireNonNull(mAuth.getUid()))).child("Images/UserImages").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//            @Override
+//            public void onSuccess(Uri uri) {
+//                Glide.with(MainActivity.this).load(uri).into(showUserProfilePicture);
+//            }
+//        });
+        showUserProfilePicture  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
+
     }
 
     private void getUserDetails(FirebaseUser user) {
@@ -133,6 +168,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "onComplete: User data retrieved");
                     User currentUser = task.getResult().toObject(User.class);
                     ((UserClient)(getApplicationContext())).setUser(currentUser);
+                    User sembarang = new User();
+                    sembarang = ((UserClient)(getApplicationContext())).getUser();
+                    Log.d(TAG, "onComplete: userUID: "+sembarang.getUserID());
+
+                    String userID = sembarang.getUserID();
+
+                    StorageReference storRef = storageReference.child(sembarang.getUserAvatar());
+                    Log.d(TAG, "onComplete: avatar uri"+sembarang.getUserAvatar());
+
+                    //show photo
+                    Glide.with(MainActivity.this)
+                            .load(storRef)
+                            .into(showUserProfilePicture);
+
+
+//                    storageReference.child(sembarang.getUserAvatar()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                        @Override
+//                        public void onSuccess(Uri uri) {
+//
+//                            Glide.with(MainActivity.this).load(uri).into(showUserProfilePicture);
+//
+//                        }
+//                    });
+
+
+
+
                 }
             }
         });

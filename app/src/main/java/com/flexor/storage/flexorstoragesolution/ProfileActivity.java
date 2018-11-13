@@ -10,11 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -26,6 +29,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -48,7 +53,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private String imageStorageUri;
 
-    private CircleImageView userAvatar;
+    private CircleImageView pUserAvatar;
     private TextView pUserName, pUser_name, pUserAddress, pUserGender, pUserIDCNumber,pUserEmail, pUserCity, pUserPhoneNumber,pUserTimeStamp, pUserUID, pUserAuthCode, pUserBalance, pUser_balance;
     Button updateProfile;
 
@@ -64,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         pUserAddress.setText(user.getUserAddress());
         pUserGender.setText(user.getUserGender());
         pUserCity.setText(user.getUserCity());
+        //user avatar//
 
     }
 
@@ -100,7 +106,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         updateProfile = (Button) findViewById(R.id.updateProfile);
 
         //View Init//ImageView//
-        userAvatar = (CircleImageView) findViewById(R.id.user_avatar);
+        pUserAvatar = (CircleImageView) findViewById(R.id.user_avatar);
 
         updateProfile.setOnClickListener(this);
 
