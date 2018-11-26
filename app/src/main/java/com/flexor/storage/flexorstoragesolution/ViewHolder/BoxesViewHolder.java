@@ -76,7 +76,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 boxName.setText(box.getBoxName());
                 getBoxStat(box);
 
-
+                //Todo show Image for box card list
             }
         });
         boxExtra = mView.findViewById(R.id.box_extra);
@@ -137,10 +137,15 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
                     return true;
                 case R.id.nav_box_Access:
+
                     Log.d(TAG, "onMenuItemClick: boxAccess pressed");
+
+                    //Todo boxAccess pressed
                     return true;
                 case R.id.nav_box_remove:
                     Log.d(TAG, "onMenuItemClick: boxRemove pressed");
+
+                    //Todo boxRemove pressed
                     return true;
             }
             return false;
