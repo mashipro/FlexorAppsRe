@@ -8,12 +8,12 @@ import com.google.firebase.firestore.ServerTimestamp;
 import java.util.Date;
 
 public class Box implements Parcelable {
-    private User userVendorOwner;
+    private String userVendorOwner;
     private @ServerTimestamp Date boxCreatedDate;
     private @ServerTimestamp Date boxLastChange;
     private Double boxStatCode;
     private String boxName;
-    private User boxTenant;
+    private String boxTenant;
     private @ServerTimestamp Date boxRentTimestamp;
     private Double boxRentDuration;
     private String boxAccessCode;
@@ -22,7 +22,7 @@ public class Box implements Parcelable {
     public Box() {
     }
 
-    public Box(User userVendorOwner, Date boxCreatedDate, Date boxLastChange, Double boxStatCode, String boxName, User boxTenant, Date boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID) {
+    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Double boxStatCode, String boxName, String boxTenant, Date boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID) {
         this.userVendorOwner = userVendorOwner;
         this.boxCreatedDate = boxCreatedDate;
         this.boxLastChange = boxLastChange;
@@ -35,15 +35,16 @@ public class Box implements Parcelable {
         this.boxID = boxID;
     }
 
+
     protected Box(Parcel in) {
-        userVendorOwner = in.readParcelable(User.class.getClassLoader());
+        userVendorOwner = in.readString();
         if (in.readByte() == 0) {
             boxStatCode = null;
         } else {
             boxStatCode = in.readDouble();
         }
         boxName = in.readString();
-        boxTenant = in.readParcelable(User.class.getClassLoader());
+        boxTenant = in.readString();
         if (in.readByte() == 0) {
             boxRentDuration = null;
         } else {
@@ -65,11 +66,27 @@ public class Box implements Parcelable {
         }
     };
 
-    public User getUserVendorOwner() {
+    @Override
+    public String toString() {
+        return "Box{" +
+                "userVendorOwner='" + userVendorOwner + '\'' +
+                ", boxCreatedDate=" + boxCreatedDate +
+                ", boxLastChange=" + boxLastChange +
+                ", boxStatCode=" + boxStatCode +
+                ", boxName='" + boxName + '\'' +
+                ", boxTenant='" + boxTenant + '\'' +
+                ", boxRentTimestamp=" + boxRentTimestamp +
+                ", boxRentDuration=" + boxRentDuration +
+                ", boxAccessCode='" + boxAccessCode + '\'' +
+                ", boxID='" + boxID + '\'' +
+                '}';
+    }
+
+    public String getUserVendorOwner() {
         return userVendorOwner;
     }
 
-    public void setUserVendorOwner(User userVendorOwner) {
+    public void setUserVendorOwner(String userVendorOwner) {
         this.userVendorOwner = userVendorOwner;
     }
 
@@ -105,11 +122,11 @@ public class Box implements Parcelable {
         this.boxName = boxName;
     }
 
-    public User getBoxTenant() {
+    public String getBoxTenant() {
         return boxTenant;
     }
 
-    public void setBoxTenant(User boxTenant) {
+    public void setBoxTenant(String boxTenant) {
         this.boxTenant = boxTenant;
     }
 
@@ -146,44 +163,28 @@ public class Box implements Parcelable {
     }
 
     @Override
-    public String toString() {
-        return "Box{" +
-                "userVendorOwner=" + userVendorOwner +
-                ", boxCreatedDate=" + boxCreatedDate +
-                ", boxLastChange=" + boxLastChange +
-                ", boxStatCode=" + boxStatCode +
-                ", boxName='" + boxName + '\'' +
-                ", boxTenant=" + boxTenant +
-                ", boxRentTimestamp=" + boxRentTimestamp +
-                ", boxRentDuration=" + boxRentDuration +
-                ", boxAccessCode='" + boxAccessCode + '\'' +
-                ", boxID='" + boxID + '\'' +
-                '}';
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(userVendorOwner, i);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userVendorOwner);
         if (boxStatCode == null) {
-            parcel.writeByte((byte) 0);
+            dest.writeByte((byte) 0);
         } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(boxStatCode);
+            dest.writeByte((byte) 1);
+            dest.writeDouble(boxStatCode);
         }
-        parcel.writeString(boxName);
-        parcel.writeParcelable(boxTenant, i);
+        dest.writeString(boxName);
+        dest.writeString(boxTenant);
         if (boxRentDuration == null) {
-            parcel.writeByte((byte) 0);
+            dest.writeByte((byte) 0);
         } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(boxRentDuration);
+            dest.writeByte((byte) 1);
+            dest.writeDouble(boxRentDuration);
         }
-        parcel.writeString(boxAccessCode);
-        parcel.writeString(boxID);
+        dest.writeString(boxAccessCode);
+        dest.writeString(boxID);
     }
 }

@@ -42,6 +42,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -64,7 +65,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private FirebaseUser user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private CallbackManager mCallbackManager;
-    private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseRef;
     private FirebaseStorage mStorage;
     GoogleSignInClient mGoogleSignInClient;
 
@@ -493,6 +495,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 }
             });
+
         }
     }
 

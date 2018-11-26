@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
+import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
@@ -40,6 +41,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -55,7 +58,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
     private StorageReference storageReference;
     private FirebaseUser authUser;
     private FirebaseFirestoreSettings mFirestoreSettings;
-    private FirestoreRecyclerAdapter<Box,BoxesViewHolder> mFirestoreRecyclerAdapter;
+    private FirestoreRecyclerAdapter<SingleBox,BoxesViewHolder> mFirestoreRecyclerAdapter;
     private Query mQuery;
 
     ///view///
@@ -65,7 +68,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
     private RecyclerView recyclerViewBoxDetails;
 
     ///custom declare///
-    private DocumentReference userVendorRef, userVendorBoxRef;
+    private DocumentReference userVendorRef, userVendorBoxRef, boxCollectionRef;
     private CollectionReference userVendorBoxesRef;
     private BoxesViewHolder boxesViewHolder;
     private ArrayList<Box> mBoxArray = new ArrayList<>();
@@ -104,7 +107,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         //Document Reference//
         userVendorRef = mFirestore.collection("Vendor").document(user.getUserID());
 //        userVendorBoxRef = userVendorRef.collection("Boxes").document();
-        userVendorBoxesRef = mFirestore.collection("Vendor").document(user.getUserID()).collection("Boxes");
+        userVendorBoxesRef = mFirestore.collection("Vendor").document(user.getUserID()).collection("MyBox");
 
         ////getting userVendor////
         Log.d(TAG, "onCreateView: checking userVendor Info .....");
@@ -158,13 +161,13 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
             }
         });
         //Work on RecyclerView//
-        mQuery = userVendorBoxesRef.orderBy("boxCreatedDate",Query.Direction.ASCENDING);
-        FirestoreRecyclerOptions<Box> recyclerOptions = new FirestoreRecyclerOptions.Builder<Box>()
-                .setQuery(mQuery,Box.class)
+        mQuery = userVendorBoxesRef.orderBy("boxID",Query.Direction.ASCENDING);
+        FirestoreRecyclerOptions<SingleBox> recyclerOptions = new FirestoreRecyclerOptions.Builder<SingleBox>()
+                .setQuery(mQuery,SingleBox.class)
                 .build();
-        mFirestoreRecyclerAdapter = new FirestoreRecyclerAdapter<Box, BoxesViewHolder>(recyclerOptions) {
+        mFirestoreRecyclerAdapter = new FirestoreRecyclerAdapter<SingleBox, BoxesViewHolder>(recyclerOptions) {
             @Override
-            protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull Box model) {
+            protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull SingleBox model) {
                 holder.bindBox(model);
             }
 
@@ -285,15 +288,16 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
     }
 
     private void addVendorBox(Editable text) {
-        userVendorBoxRef = userVendorRef.collection("Boxes").document();
+        ////saving to box collection////
+        boxCollectionRef = mFirestore.collection("Boxes").document();
         final Box newBox = new Box();
         int newStatCode = 301;
         Double newnewStatCode = (double) newStatCode;
-        newBox.setUserVendorOwner(user);
+        newBox.setUserVendorOwner(user.getUserID());
         newBox.setBoxName(text.toString());
-        newBox.setBoxID(userVendorBoxRef.getId());
+        newBox.setBoxID(boxCollectionRef.getId());
         newBox.setBoxStatCode(newnewStatCode);
-        userVendorBoxRef.set(newBox).addOnCompleteListener(new OnCompleteListener<Void>() {
+        boxCollectionRef.set(newBox).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
@@ -301,7 +305,18 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                 }
             }
         });
+        saveBox(boxCollectionRef.getId());
+
+
+
         textNoBox.setVisibility(View.GONE);
+    }
+
+    private void saveBox(String id) {
+        userVendorBoxRef = userVendorRef.collection("MyBox").document(id);
+        Map<String, Object> userID = new HashMap<>();
+        userID.put("boxID", id);
+        userVendorBoxRef.set(userID);
     }
 
     @Override

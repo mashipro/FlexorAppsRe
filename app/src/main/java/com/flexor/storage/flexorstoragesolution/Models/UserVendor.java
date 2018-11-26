@@ -10,7 +10,7 @@ import java.util.Date;
 
 @IgnoreExtraProperties
 public class UserVendor implements Parcelable {
-    private User vendorOwner;
+    private String vendorOwner;
     private String vendorName;
     private String vendorAddress;
     private String vendorID;
@@ -28,7 +28,7 @@ public class UserVendor implements Parcelable {
     public UserVendor() {
     }
 
-    public UserVendor(User vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice) {
+    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice) {
         this.vendorOwner = vendorOwner;
         this.vendorName = vendorName;
         this.vendorAddress = vendorAddress;
@@ -46,7 +46,7 @@ public class UserVendor implements Parcelable {
     }
 
     protected UserVendor(Parcel in) {
-        vendorOwner = in.readParcelable(User.class.getClassLoader());
+        vendorOwner = in.readString();
         vendorName = in.readString();
         vendorAddress = in.readString();
         vendorID = in.readString();
@@ -81,7 +81,7 @@ public class UserVendor implements Parcelable {
     @Override
     public String toString() {
         return "UserVendor{" +
-                "vendorOwner=" + vendorOwner +
+                "vendorOwner='" + vendorOwner + '\'' +
                 ", vendorName='" + vendorName + '\'' +
                 ", vendorAddress='" + vendorAddress + '\'' +
                 ", vendorID='" + vendorID + '\'' +
@@ -98,11 +98,12 @@ public class UserVendor implements Parcelable {
                 '}';
     }
 
-    public User getVendorOwner() {
+
+    public String getVendorOwner() {
         return vendorOwner;
     }
 
-    public void setVendorOwner(User vendorOwner) {
+    public void setVendorOwner(String vendorOwner) {
         this.vendorOwner = vendorOwner;
     }
 
@@ -216,24 +217,24 @@ public class UserVendor implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(vendorOwner, i);
-        parcel.writeString(vendorName);
-        parcel.writeString(vendorAddress);
-        parcel.writeString(vendorID);
-        parcel.writeString(vendorIDNumber);
-        parcel.writeString(vendorNPWP);
-        parcel.writeString(vendorCompany);
-        parcel.writeString(vendorStorageName);
-        parcel.writeString(vendorStorageLocation);
-        parcel.writeString(vendorIDImgPath);
-        parcel.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(vendorOwner);
+        dest.writeString(vendorName);
+        dest.writeString(vendorAddress);
+        dest.writeString(vendorID);
+        dest.writeString(vendorIDNumber);
+        dest.writeString(vendorNPWP);
+        dest.writeString(vendorCompany);
+        dest.writeString(vendorStorageName);
+        dest.writeString(vendorStorageLocation);
+        dest.writeString(vendorIDImgPath);
+        dest.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
         if (vendorStatsCode == null) {
-            parcel.writeByte((byte) 0);
+            dest.writeByte((byte) 0);
         } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(vendorStatsCode);
+            dest.writeByte((byte) 1);
+            dest.writeDouble(vendorStatsCode);
         }
-        parcel.writeString(vendorBoxPrice);
+        dest.writeString(vendorBoxPrice);
     }
 }

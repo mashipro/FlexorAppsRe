@@ -2,6 +2,8 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.app.Application;
 
+import com.flexor.storage.flexorstoragesolution.Models.Box;
+import com.flexor.storage.flexorstoragesolution.Models.GlobalSettings;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 
@@ -19,4 +21,17 @@ public class UserClient extends Application {
         this.userVendor = userVendor;
     }
 
- }
+    private GlobalSettings globalSettings = null;
+    public GlobalSettings getGlobalSettings() {return globalSettings;}
+    public void setGlobalSettings(GlobalSettings globalSettings) {
+        this.globalSettings = globalSettings;
+    }
+
+    private Box box = null;
+    public Box getBox() {
+        return box;
+    }
+    public void setBox(Box box) {
+        this.box = box;
+    }
+}

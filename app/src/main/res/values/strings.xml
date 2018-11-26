@@ -72,7 +72,7 @@
     <string name="tenants">Tenant</string>
     <string name="duration">Duration</string>
     <string name="rent_due">Rent Due Date</string>
-    <string name="price">Price</string>
+    <string name="price">Price Rate</string>
     <string name="separator">:  </string>
     <string name="button_access">Access Box</string>
     <string name="button_enable">Enable</string>

@@ -237,7 +237,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     mFirestore.setFirestoreSettings(settings);
                     DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
                     final UserVendor userVendor = new UserVendor();
-                    userVendor.setVendorOwner(user);
+                    userVendor.setVendorOwner(user.getUserID());
                     userVendor.setVendorName(vendorName);
                     userVendor.setVendorAddress(vendorAddress);
                     userVendor.setVendorIDNumber(vendorIDnumber);

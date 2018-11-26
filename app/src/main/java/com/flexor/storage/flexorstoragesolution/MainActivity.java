@@ -331,6 +331,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void logout() {
+        mAuth.signOut();
+        startActivity(new Intent(getApplicationContext(),Login.class));
     }
 
     private void afterclick(){

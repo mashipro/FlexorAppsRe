@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution.ViewHolder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuInflater;
@@ -13,9 +14,20 @@ import android.widget.TextView;
 
 import com.flexor.storage.flexorstoragesolution.BoxDetailsActivity;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
+import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.R;
+import com.flexor.storage.flexorstoragesolution.UserClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private static final String TAG = "BoxesViewHolder";
@@ -23,9 +35,18 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     Context mContext;
     String boxStat;
 
-    ImageView boxIndividualImage, boxExtra;
-    TextView boxName, boxStatus;
+    private FirebaseFirestore mFirestore;
+    private DocumentReference mDocumentRef;
+    private FirebaseStorage mStorage;
+    private StorageReference mStorageRef;
+
+    private ImageView boxIndividualImage, boxExtra;
+    private TextView boxName, boxStatus;
     private String boxID;
+    private Box boxDetailsSend;
+    private Box box;
+
+
 
     public BoxesViewHolder(View itemView) {
         super(itemView);
@@ -35,20 +56,44 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
 
-    public void bindBox (Box box){
-        Log.d(TAG, "7bindBox: "+box.toString());
-        Log.d(TAG, "bindBox: binding data for box: " +box.getBoxID());
-        boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
+    public void bindBox (SingleBox singleBox){
+        Log.d(TAG, "bindBox: id: "+ singleBox);
+        mStorage = FirebaseStorage.getInstance();
+        mStorageRef = mStorage.getReference();
+
+        mFirestore = FirebaseFirestore.getInstance();
+        mDocumentRef= mFirestore.collection("Boxes").document(singleBox.getBoxID());
+        mDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                box = new Box();
+                box = task.getResult().toObject(Box.class);
+
+                boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
+                boxName = mView.findViewById(R.id.box_name);
+                boxStatus = mView.findViewById(R.id.box_status);
+
+                boxName.setText(box.getBoxName());
+                getBoxStat(box);
+
+
+            }
+        });
         boxExtra = mView.findViewById(R.id.box_extra);
-        boxName = mView.findViewById(R.id.box_name);
-        boxStatus = mView.findViewById(R.id.box_status);
-        boxID = box.getBoxID();
-
-        boxIndividualImage.setImageURI(null);
         boxExtra.setOnClickListener(this);
-        boxName.setText(box.getBoxID());
 
-        getBoxStat(box);
+//        Log.d(TAG, "bindBox: "+ box.getBoxID());
+//        Log.d(TAG, "7bindBox: "+box.toString());
+//        Log.d(TAG, "bindBox: binding data for box: " +box.getBoxID());
+
+//        boxID = box.getBoxID();
+//
+//        boxIndividualImage.setImageURI(null);
+//        boxExtra.setOnClickListener(this);
+//        boxName.setText(box.getBoxID());
+//        boxDetailsSend = box;
+
+//        getBoxStat(box);
 //        boxStatus.setText(box.getBoxStatCode().toString());
 
     }
@@ -82,12 +127,13 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()){
                 case R.id.nav_box_Details:
-                    Log.d(TAG, "boxDetails Pressed with id: "+boxID);
-                    Intent movePage = new Intent(mContext,BoxDetailsActivity.class);
-                    movePage.putExtra("boxIDforExtra",boxID);
-                    movePage.putExtra("boxTypeforExtra","vendor");
-                    mContext.startActivity(movePage);
+//                    Log.d(TAG, "boxDetails Pressed with id: "+boxID);
                     boxClickedSaveData();
+                    Intent movePage = new Intent(mContext,BoxDetailsActivity.class);
+//                    movePage.putExtra("boxIDforExtra",boxID);
+//                    movePage.putExtra("boxTypeforExtra","vendor");
+                    mContext.startActivity(movePage);
+
 
                     return true;
                 case R.id.nav_box_Access:
@@ -102,6 +148,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     private void boxClickedSaveData() {
+        ((UserClient)(getApplicationContext())).setBox(box);
 
     }
 }
