@@ -43,7 +43,7 @@ dependencies {
     implementation "android.arch.core:runtime:1.1.1"
     implementation "android.arch.core:common:1.1.1"
 
-    
+
     implementation "com.google.android.gms:play-services-location:16.0.0"
     implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'

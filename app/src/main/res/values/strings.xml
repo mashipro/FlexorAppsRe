@@ -69,6 +69,15 @@
     <string name="alert_new_box_message">Please add name for your new box.</string>
     <string name="ok">Ok</string>
     <string name="error_no_box">You have no box yet. Please create your first box.</string>
+    <string name="tenants">Tenant</string>
+    <string name="duration">Duration</string>
+    <string name="rent_due">Rent Due Date</string>
+    <string name="price">Price</string>
+    <string name="separator">:  </string>
+    <string name="button_access">Access Box</string>
+    <string name="button_enable">Enable</string>
+    <string name="button_disable">Disable</string>
+    <string name="button_contact_tenant">Contact Tenant</string>
 
 
 </resources>

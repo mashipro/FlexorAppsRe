@@ -71,7 +71,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
     private ArrayList<Box> mBoxArray = new ArrayList<>();
     private User user;
     private UserVendor userVendor;
-    private int boxLimit = 0;
+    private int boxLimit = 2;
 
 
     @Override
@@ -122,12 +122,12 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                     ////Work on Header////
                     vendorNameTest.setText(userVendor.getVendorStorageName());
 
-                    ////Work on Parameter////
-                    if (userVendor.getVendorStatsCode().intValue() == 211){
-                        boxLimit = 9;
-                    } else if (userVendor.getVendorStatsCode().intValue() == 212){
-                        boxLimit = 12;
-                    }
+//                    ////Work on Parameter//// c
+//                    if (userVendor.getVendorStatsCode().intValue() == 211){
+//                        boxLimit = 9;
+//                    } else if (userVendor.getVendorStatsCode().intValue() == 212){
+//                        boxLimit = 12;
+//                    }
                 }
             });
         }else {
@@ -173,6 +173,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
             public BoxesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_box, parent, false);
                 return new BoxesViewHolder(view);
+
             }
         };
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
@@ -182,6 +183,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         recyclerViewBoxDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerViewBoxDetails.setLayoutManager(mLayoutManager);
         recyclerViewBoxDetails.setAdapter(mFirestoreRecyclerAdapter);
+        recyclerViewBoxDetails.getChildCount();
 
         ////Working on Alert dialog////
 

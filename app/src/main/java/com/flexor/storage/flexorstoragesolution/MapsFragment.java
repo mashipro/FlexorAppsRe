@@ -154,6 +154,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
                         Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
                         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),DEFAULT_ZOOM);
+                        Log.d(TAG, "LocationDetails: Lat: "+ location.getLatitude() + ", long: "+location.getLongitude());
 
                     }
                 }

@@ -1,6 +1,7 @@
 package com.flexor.storage.flexorstoragesolution.ViewHolder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuInflater;
@@ -10,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.flexor.storage.flexorstoragesolution.BoxDetailsActivity;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.R;
+
+import java.util.List;
 
 public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private static final String TAG = "BoxesViewHolder";
@@ -21,6 +25,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     ImageView boxIndividualImage, boxExtra;
     TextView boxName, boxStatus;
+    private String boxID;
 
     public BoxesViewHolder(View itemView) {
         super(itemView);
@@ -28,6 +33,8 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         mContext=itemView.getContext();
         itemView.setOnClickListener(this);
     }
+
+
     public void bindBox (Box box){
         Log.d(TAG, "7bindBox: "+box.toString());
         Log.d(TAG, "bindBox: binding data for box: " +box.getBoxID());
@@ -35,6 +42,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         boxExtra = mView.findViewById(R.id.box_extra);
         boxName = mView.findViewById(R.id.box_name);
         boxStatus = mView.findViewById(R.id.box_status);
+        boxID = box.getBoxID();
 
         boxIndividualImage.setImageURI(null);
         boxExtra.setOnClickListener(this);
@@ -74,7 +82,13 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()){
                 case R.id.nav_box_Details:
-                    Log.d(TAG, "onMenuItemClick: boxDetails pressed");
+                    Log.d(TAG, "boxDetails Pressed with id: "+boxID);
+                    Intent movePage = new Intent(mContext,BoxDetailsActivity.class);
+                    movePage.putExtra("boxIDforExtra",boxID);
+                    movePage.putExtra("boxTypeforExtra","vendor");
+                    mContext.startActivity(movePage);
+                    boxClickedSaveData();
+
                     return true;
                 case R.id.nav_box_Access:
                     Log.d(TAG, "onMenuItemClick: boxAccess pressed");
@@ -85,5 +99,9 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
             }
             return false;
         }
+    }
+
+    private void boxClickedSaveData() {
+
     }
 }

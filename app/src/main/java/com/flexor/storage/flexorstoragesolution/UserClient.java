@@ -18,4 +18,5 @@ public class UserClient extends Application {
     public void setUserVendor (UserVendor userVendor){
         this.userVendor = userVendor;
     }
+
  }
