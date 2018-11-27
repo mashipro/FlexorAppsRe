@@ -25,6 +25,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -41,6 +42,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -58,7 +65,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private FirebaseUser user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private CallbackManager mCallbackManager;
-
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseRef;
+    private FirebaseStorage mStorage;
     GoogleSignInClient mGoogleSignInClient;
 
     private static final String TAG = "Login";
@@ -77,6 +86,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 //        FacebookSdk.sdkInitialize(getApplicationContext());
 //        AppEventsLogger.activateApp(this);
 
+        /// INIT PHASE ///
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         mCallbackManager = CallbackManager.Factory.create();
@@ -110,7 +120,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
             }
         };
-        test();
 
         // Facebook Check Login Status
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -214,19 +223,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 });
     }
-
-    private void test() {
-        progress_bar_main.setVisibility(View.GONE);
-    }
-
-    public void signOut(){
-        startActivity(new Intent(this, Login.class).setFlags(0).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-    }
-
-    private boolean emailverified() {
-        checkIfEmailIsVerified();
-        return true;
-    }
+//
+//    public void signOut(){
+//        startActivity(new Intent(this, Login.class).setFlags(0).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//    }
+//
+//    private boolean emailverified() {
+//        checkIfEmailIsVerified();
+//        return true;
+//    }
 
     @Override
     public void onClick(View view) {
@@ -396,7 +401,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("TAG", "createUserWithEmail:success");
                                 sendEmailVerification();
-                                mAuth.signOut();
+
+
                                 flag = 0;
                                 check();
                                 FirebaseUser user = mAuth.getCurrentUser();
@@ -421,6 +427,27 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     }
 
+//    private void storeUserInfo() {
+//        FirebaseUser newUsers = FirebaseAuth.getInstance().getCurrentUser();
+//        String userID = newUsers.getUid();
+//        String userEmail = newUsers.getEmail();
+//        DocumentReference newUserDocuments = mFirebaseFirestore.collection("Users").document();
+//        User users = new User();
+//        users.setUserID(userID);
+//        users.setUserEmail(userEmail);
+//
+//        newUserDocuments.set(users).addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                if (task.isSuccessful()){
+//                    Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + newUsers.getUid());
+//                }else{
+//                    Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
+//                }
+//            }
+//        });
+//    }
+
     private void sendEmailVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -429,10 +456,46 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+//                                storeUserInfo();
                                 Log.d("TAG", "Email sent.");
+                                storeUserInfo();
                             }
                         }
                     });
+        }
+
+    }
+
+    private void storeUserInfo() {
+
+        final FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null){
+            FirebaseFirestore mFirebaseFirestore = FirebaseFirestore.getInstance();
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(true)
+                    .setTimestampsInSnapshotsEnabled(true)
+                    .build();
+            mFirebaseFirestore.setFirestoreSettings(settings);
+            DocumentReference newUserDocuments = mFirebaseFirestore.collection("Users").document(user.getUid());
+            String userID = user.getUid();
+            String userEmail = user.getEmail();
+            User users = new User();
+            users.setUserID(userID);
+            users.setUserEmail(userEmail);
+            Log.d(TAG, "storeUserInfo: users UID: " + user.getUid() );
+            newUserDocuments.set(users).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUid());
+                        mAuth.signOut();
+                    }else{
+                        Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
+                        mAuth.signOut();
+                    }
+                }
+            });
+
         }
     }
 

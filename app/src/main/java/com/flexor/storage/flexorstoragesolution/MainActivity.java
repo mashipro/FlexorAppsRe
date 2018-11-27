@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,7 +33,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
@@ -40,13 +49,16 @@ import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISS
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-    private DrawerLayout drawerLayout;
-
     private static final String TAG = "MainActivity";
-
+    private DrawerLayout drawerLayout;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseFirestore mFirestore;
+    private FirebaseDatabase mDatabase;
+    private FirebaseStorage mStorage;
+    private StorageReference storageReference;
+    private DocumentReference docReference;
 //    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private boolean mLocationPermissionGranted = false;
@@ -61,10 +73,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser authUser = firebaseAuth.getCurrentUser();
+                if (authUser == null) {
+                    startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }else {
+                    getUserDetails(authUser);
+                }
+            }
+        };
+
+        drawerLayout = findViewById(R.id.drawer_layout_main);
 
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-        drawerLayout = findViewById(R.id.drawer_layout_main);
 
         NavigationView navigationView = findViewById(R.id.nav_view_main);
         navigationView.setNavigationItemSelectedListener(this);
@@ -73,26 +99,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        mAuth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null) {
-
-                } else {
-                    startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                }
-            }
-        };
 //        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        getMapsFragment();
+//        getMapsFragment();
+        if (checkMapServices()){
+            if (mLocationPermissionGranted){
+                getMapsFragment();
+            }else {
+                getLocationPermission();
+            }
+        }
 
         if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
+    }
+
+    private void getUserDetails(FirebaseUser user) {
+        String userUID = user.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
+        DocumentReference userRef = db.collection("Users").document(userUID);
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: User data retrieved");
+                    User currentUser = task.getResult().toObject(User.class);
+                    ((UserClient)(getApplicationContext())).setUser(currentUser);
+                }
+            }
+        });
     }
 
 //    private void getLastKnownLocation() {
@@ -146,9 +189,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
             buildAlertMessageNoGps();
+            Log.d(TAG, "isMapsEnabled: GPS Disabled. Getting permission to Enable GPS");
             return false;
+        } else {
+            Log.d(TAG, "isMapsEnabled: GPS Enabled");
+            return true;
         }
-        return true;
+        
     }
 
     private void getLocationPermission() {
@@ -244,12 +291,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).commit();
                 afterclick();
                 break;
+            case R.id.nav_main_notification:
+
+                afterclick();
+                break;
             case R.id.nav_main_message:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
                 afterclick();
                 break;
+            case R.id.nav_vendor_register:
+                startActivity(new Intent(getApplicationContext(),VendorRegistrationActivity.class));
+                afterclick();
+                break;
+            case R.id.nav_vendor_signin:
+                startActivity(new Intent(getApplicationContext(),VendorActivity.class));
+                afterclick();
+                break;
+            case R.id.nav_main_customerService:
+
+                afterclick();
+                break;
             case R.id.nav_main_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
+                afterclick();
+                break;
+            case R.id.nav_logout:
+                logout();
                 afterclick();
                 break;
         }
@@ -262,6 +329,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         return true;
     }
+
+    private void logout() {
+        mAuth.signOut();
+        startActivity(new Intent(getApplicationContext(),Login.class));
+    }
+
     private void afterclick(){
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START);

@@ -60,7 +60,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
         mMapView = view.findViewById(R.id.map);
         initGoogleMap(savedInstanceState);
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
 
         return view;
     }
@@ -83,6 +83,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
 //        mapView = view.findViewById(R.id.map);
 //        mapView.onCreate(savedInstanceState);
@@ -142,38 +144,47 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful()) {
-                    Location location = task.getResult();
-                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    Log.d(TAG, "onComplete: latitude: " + geoPoint.getLatitude());
-                    Log.d(TAG, "onComplete: longitude: " + geoPoint.getLongitude());
-                }
-            }
-        });
-        try {
-            if (mLocationPermissionGranted){
-                Task location = mFusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()){
-                            Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
-                            Log.d(TAG, "onComplete: device current location: lat= "+ currentLocation.getLatitude() +" lng= "+currentLocation.getLongitude());
-                        }else{
-                            Log.d(TAG, "onComplete: current location is null");
-                            Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
-                        }
+        if (mFusedLocationProviderClient != null){
+            mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    if (task.isSuccessful()) {
+                        Location location = task.getResult();
+                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
+                        Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
+                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),DEFAULT_ZOOM);
+                        Log.d(TAG, "LocationDetails: Lat: "+ location.getLatitude() + ", long: "+location.getLongitude());
+
                     }
-                });
-            }
-        }catch (SecurityException e){
-            Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
+                }
+            });
+        } else {
+            Log.d(TAG, "getDeviceLocation: Failed to retrieve location");
         }
+
+
+//        try {
+//            if (mLocationPermissionGranted){
+//                Task location = mFusedLocationProviderClient.getLastLocation();
+//                location.addOnCompleteListener(new OnCompleteListener() {
+//                    @Override
+//                    public void onComplete(@NonNull Task task) {
+//                        if (task.isSuccessful()){
+//                            Log.d(TAG, "onComplete: found location!");
+//                            Location currentLocation = (Location) task.getResult();
+//                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
+//                            Log.d(TAG, "onComplete: device current location: lat= "+ currentLocation.getLatitude() +" lng= "+currentLocation.getLongitude());
+//                        }else{
+//                            Log.d(TAG, "onComplete: current location is null");
+//                            Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//            }
+//        }catch (SecurityException e){
+//            Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
+//        }
     }
         private void moveCamera(LatLng latLng, float zoom) {
         Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);

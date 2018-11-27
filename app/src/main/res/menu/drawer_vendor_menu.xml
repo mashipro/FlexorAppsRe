@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_activeStorage"
+            android:icon="@mipmap/ic_storage_list_white"
+            android:title="@string/nav_vendor_activeStorage" />
+        <item
+            android:id="@+id/nav_vendor_upgrade"
+            android:icon="@mipmap/ic_upgrade_white"
+            android:title="@string/nav_vendor_upgradeStorage" />
+        <item
+            android:id="@+id/nav_main_message"
+            android:icon="@mipmap/ic_mail_white"
+            android:title="@string/nav_main_notification" />
+
+
+    </group>
+    <group android:id="@+id/nav_vendor">
+        <item
+            android:id="@+id/nav_vendor_signout"
+            android:icon="@mipmap/ic_vendor_signin_white"
+            android:title="@string/nav_vendor_signout" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_main_customerService"
+            android:icon="@mipmap/ic_call_white"
+            android:title="@string/nav_customerService" />
+        <item
+            android:id="@+id/nav_main_settings"
+            android:icon="@mipmap/ic_settings_white"
+            android:title="@string/nav_main_settings" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="@string/nav_logout" />
+    </group>
+
+</menu>

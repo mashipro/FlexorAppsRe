@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_box_Details"
+        android:title="@string/box_details" />
+    <item
+        android:id="@+id/nav_box_Access"
+        android:title="@string/box_access" />
+    <item
+        android:id="@+id/nav_box_remove"
+        android:title="@string/box_remove" />
+</menu>
