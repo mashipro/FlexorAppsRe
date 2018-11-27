@@ -78,6 +78,7 @@
     <string name="button_enable">Enable</string>
     <string name="button_disable">Disable</string>
     <string name="button_contact_tenant">Contact Tenant</string>
+    <string name="box_stat_null">NULL</string>
 
 
 </resources>

@@ -9,14 +9,14 @@
     <ImageView
         android:id="@+id/box_Head_BG"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:background="@color/colorNativeOrange"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/box_name"
+        android:id="@+id/storage_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -32,23 +32,37 @@
         app:layout_constraintStart_toStartOf="@+id/box_Head_BG" />
 
     <TextView
+        android:id="@+id/box_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/opensans_bold"
+        android:text="@string/storageName"
+        android:textAllCaps="true"
+        android:textColor="@color/colorNativeWhite"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/box_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
         android:id="@+id/box_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/opensans_bold"
-        android:text="@string/box_stat_available"
+        android:text="@string/box_stat_null"
         android:textAllCaps="true"
         android:textColor="@color/colorNativeWhite"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/box_name"
+        app:layout_constraintBottom_toTopOf="@+id/storage_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/box_Head_BG"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="@+id/box_Head_BG" />
 
     <ImageView
         android:id="@+id/box_details"
@@ -231,8 +245,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/box_details">

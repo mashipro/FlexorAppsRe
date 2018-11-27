@@ -25,8 +25,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.List;
-
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -70,7 +68,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 box = task.getResult().toObject(Box.class);
 
                 boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
-                boxName = mView.findViewById(R.id.box_name);
+                boxName = mView.findViewById(R.id.storage_name);
                 boxStatus = mView.findViewById(R.id.box_status);
 
                 boxName.setText(box.getBoxName());
