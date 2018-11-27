@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
@@ -24,25 +25,9 @@ public class UserVendor implements Parcelable {
     private @ServerTimestamp Date vendorRegistrationTimestamp;
     private Double vendorStatsCode;
     private String vendorBoxPrice;
+    private GeoPoint vendorGeoLocation;
 
     public UserVendor() {
-    }
-
-    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice) {
-        this.vendorOwner = vendorOwner;
-        this.vendorName = vendorName;
-        this.vendorAddress = vendorAddress;
-        this.vendorID = vendorID;
-        this.vendorIDNumber = vendorIDNumber;
-        this.vendorNPWP = vendorNPWP;
-        this.vendorCompany = vendorCompany;
-        this.vendorStorageName = vendorStorageName;
-        this.vendorStorageLocation = vendorStorageLocation;
-        this.vendorIDImgPath = vendorIDImgPath;
-        this.vendorAccepted = vendorAccepted;
-        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
-        this.vendorStatsCode = vendorStatsCode;
-        this.vendorBoxPrice = vendorBoxPrice;
     }
 
     protected UserVendor(Parcel in) {
@@ -64,6 +49,33 @@ public class UserVendor implements Parcelable {
             vendorStatsCode = in.readDouble();
         }
         vendorBoxPrice = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(vendorOwner);
+        dest.writeString(vendorName);
+        dest.writeString(vendorAddress);
+        dest.writeString(vendorID);
+        dest.writeString(vendorIDNumber);
+        dest.writeString(vendorNPWP);
+        dest.writeString(vendorCompany);
+        dest.writeString(vendorStorageName);
+        dest.writeString(vendorStorageLocation);
+        dest.writeString(vendorIDImgPath);
+        dest.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
+        if (vendorStatsCode == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(vendorStatsCode);
+        }
+        dest.writeString(vendorBoxPrice);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<UserVendor> CREATOR = new Creator<UserVendor>() {
@@ -95,9 +107,27 @@ public class UserVendor implements Parcelable {
                 ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
                 ", vendorStatsCode=" + vendorStatsCode +
                 ", vendorBoxPrice='" + vendorBoxPrice + '\'' +
+                ", vendorGeoLocation=" + vendorGeoLocation +
                 '}';
     }
 
+    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice, GeoPoint vendorGeoLocation) {
+        this.vendorOwner = vendorOwner;
+        this.vendorName = vendorName;
+        this.vendorAddress = vendorAddress;
+        this.vendorID = vendorID;
+        this.vendorIDNumber = vendorIDNumber;
+        this.vendorNPWP = vendorNPWP;
+        this.vendorCompany = vendorCompany;
+        this.vendorStorageName = vendorStorageName;
+        this.vendorStorageLocation = vendorStorageLocation;
+        this.vendorIDImgPath = vendorIDImgPath;
+        this.vendorAccepted = vendorAccepted;
+        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
+        this.vendorStatsCode = vendorStatsCode;
+        this.vendorBoxPrice = vendorBoxPrice;
+        this.vendorGeoLocation = vendorGeoLocation;
+    }
 
     public String getVendorOwner() {
         return vendorOwner;
@@ -211,30 +241,11 @@ public class UserVendor implements Parcelable {
         this.vendorBoxPrice = vendorBoxPrice;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public GeoPoint getVendorGeoLocation() {
+        return vendorGeoLocation;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(vendorOwner);
-        dest.writeString(vendorName);
-        dest.writeString(vendorAddress);
-        dest.writeString(vendorID);
-        dest.writeString(vendorIDNumber);
-        dest.writeString(vendorNPWP);
-        dest.writeString(vendorCompany);
-        dest.writeString(vendorStorageName);
-        dest.writeString(vendorStorageLocation);
-        dest.writeString(vendorIDImgPath);
-        dest.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
-        if (vendorStatsCode == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(vendorStatsCode);
-        }
-        dest.writeString(vendorBoxPrice);
+    public void setVendorGeoLocation(GeoPoint vendorGeoLocation) {
+        this.vendorGeoLocation = vendorGeoLocation;
     }
 }

@@ -90,6 +90,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         mCallbackManager = CallbackManager.Factory.create();
+        mDatabase = FirebaseDatabase.getInstance();
+        mDatabaseRef = mDatabase.getReference();
 
         login_filler = findViewById(R.id.login_filler);
         login_gnf_button = findViewById(R.id.login_gnf_button);
@@ -495,6 +497,17 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 }
             });
+
+            ////trying save into firebase database////
+            //Todo firebase db save try
+            mDatabaseRef.child("Users").child(user.getUid()).setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "onComplete: data uploaded to db");
+                }
+            });
+            
+
 
         }
     }
