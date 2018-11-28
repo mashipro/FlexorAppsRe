@@ -21,7 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,9 +37,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
@@ -57,6 +64,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     private Boolean mLocationPermissionGranted = false;
     private static final float DEFAULT_ZOOM = 15;
 
+    private ClusterManagerRenderer clusterManagerRenderer;
+    private ClusterManager clusterManager;
+    private UserVendor userVendor;
+    private FirebaseFirestore mFirestore;
+    private CollectionReference collectionReference;
+    private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
+
 
     @Nullable
     @Override
@@ -64,7 +78,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
         mMapView = view.findViewById(R.id.map);
         initGoogleMap(savedInstanceState);
-
 
         return view;
     }
@@ -82,6 +95,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
         getLocationPermission();
+        addMapMarkers();
     }
 
     @Override
@@ -89,6 +103,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         super.onViewCreated(view, savedInstanceState);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        mFirestore = FirebaseFirestore.getInstance();
+        collectionReference = mFirestore.collection("Vendor");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: getting vendor info completed");
+                    List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
+                    vendorArrayList.addAll(userVendorList);
+                    Log.d(TAG, "onComplete: vendor list: " +vendorArrayList);
+                }
+            }
+        });
 
 //        mapView = view.findViewById(R.id.map);
 //        mapView.onCreate(savedInstanceState);
@@ -259,6 +287,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
 //    }
 
+    private void addMapMarkers(){
+        if (mMap != null){
+            if (clusterManager == null){
+                clusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(),mMap);
+            }
+            if (clusterManagerRenderer == null){
+                clusterManagerRenderer = new ClusterManagerRenderer(
+                        getActivity(),
+                        mMap,
+                        clusterManager
+                );
+            }
+            for (UserVendor mUserVendor: vendorArrayList){
+                Log.d(TAG, "addMapMarkers: location: " + mUserVendor.getVendorGeoLocation().toString());
+            }
+        }
+    }
 
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permission");

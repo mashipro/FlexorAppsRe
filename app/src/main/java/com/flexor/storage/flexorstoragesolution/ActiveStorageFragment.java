@@ -279,12 +279,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                 }
             }
         });
-
-        //not yet implemented
-
-        //if not limit
-//        addVendorBox(text);
-
     }
 
     private void addVendorBox(Editable text) {
@@ -306,8 +300,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
             }
         });
         saveBox(boxCollectionRef.getId());
-
-
 
         textNoBox.setVisibility(View.GONE);
     }

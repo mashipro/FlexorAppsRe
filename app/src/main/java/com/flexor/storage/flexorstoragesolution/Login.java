@@ -453,17 +453,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void sendEmailVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            user.sendEmailVerification()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-//                                storeUserInfo();
-                                Log.d("TAG", "Email sent.");
-                                storeUserInfo();
-                            }
-                        }
-                    });
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "Email sent.");
+                        storeUserInfo();
+                    }
+                }
+            });
         }
 
     }
@@ -497,18 +495,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 }
             });
-
-            ////trying save into firebase database////
-            //Todo firebase db save try
-            mDatabaseRef.child("Users").child(user.getUid()).setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Log.d(TAG, "onComplete: data uploaded to db");
-                }
-            });
-            
-
-
         }
     }
 
