@@ -146,18 +146,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-        collectionReference=db.collection("Vendor");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    Log.d(TAG, "onComplete: task success");
-                    List<UserVendor> userVendorslist = task.getResult().toObjects(UserVendor.class);
-                    vendorArrayList.addAll(userVendorslist);
-                    Log.d(TAG, "onComplete: "+vendorArrayList);
-                }
-            }
-        });
+//        collectionReference=db.collection("Vendor");
+//        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()){
+//                    Log.d(TAG, "onComplete: task success");
+//                    List<UserVendor> userVendorslist = task.getResult().toObjects(UserVendor.class);
+//                    vendorArrayList.addAll(userVendorslist);
+//                    Log.d(TAG, "onComplete: "+vendorArrayList);
+//                }
+//            }
+//        });
     }
 
 //    private void getLastKnownLocation() {

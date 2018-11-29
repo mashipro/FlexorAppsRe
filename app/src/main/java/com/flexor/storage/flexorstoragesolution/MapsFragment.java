@@ -1,39 +1,31 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DialogTitle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomMapInfo;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -65,7 +57,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     private static final float DEFAULT_ZOOM = 15;
 
     private ClusterManagerRenderer clusterManagerRenderer;
-    private ClusterManager clusterManager;
+    private ClusterManager<ClusterMarker> clusterManager;
     private UserVendor userVendor;
     private FirebaseFirestore mFirestore;
     private CollectionReference collectionReference;
@@ -95,7 +87,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
         getLocationPermission();
-        addMapMarkers();
+
     }
 
     @Override
@@ -114,6 +106,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                     List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
                     vendorArrayList.addAll(userVendorList);
                     Log.d(TAG, "onComplete: vendor list: " +vendorArrayList);
+                    addMapMarkers();
                 }
             }
         });
@@ -167,6 +160,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
             }
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+
         }
 
     }
@@ -186,7 +181,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
                         Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
                         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),DEFAULT_ZOOM);
-                        Log.d(TAG, "LocationDetails: Lat: "+ location.getLatitude() + ", long: "+location.getLongitude());
+                        Log.d(TAG, "UserLocationDetails: Lat: "+ location.getLatitude() + ", long: "+location.getLongitude());
 
                     }
                 }
@@ -288,21 +283,68 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 //    }
 
     private void addMapMarkers(){
-        if (mMap != null){
-            if (clusterManager == null){
-                clusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(),mMap);
-            }
-            if (clusterManagerRenderer == null){
-                clusterManagerRenderer = new ClusterManagerRenderer(
-                        getActivity(),
-                        mMap,
-                        clusterManager
-                );
-            }
-            for (UserVendor mUserVendor: vendorArrayList){
-                Log.d(TAG, "addMapMarkers: location: " + mUserVendor.getVendorGeoLocation().toString());
+        for (UserVendor mUserVendor: vendorArrayList){
+            try{
+                Log.d(TAG, "onMapReady: pin"+ mUserVendor.getVendorGeoLocation().toString());
+                final MarkerOptions newMarker = new MarkerOptions()
+                        .position(new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(),mUserVendor.getVendorGeoLocation().getLongitude()))
+                        .title(mUserVendor.getVendorStorageName())
+                        .snippet(mUserVendor.getVendorAddress())
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_maps_pin_green));
+                mMap.addMarker(newMarker);
+                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+                mMap.setInfoWindowAdapter(customMapInfo);
+//                UserVendor userVendorForTags = new UserVendor();
+//                userVendorForTags.setVendorIDImgPath(mUserVendor.getVendorIDImgPath());
+//                userVendorForTags.setVendorStorageName(mUserVendor.getVendorStorageName());
+                Marker m = mMap.addMarker(newMarker);
+                m.setTag(mUserVendor);
+//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//                    @Override
+//                    public boolean onMarkerClick(Marker marker) {
+//                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+//                        marker.showInfoWindow();
+//                        return true;
+//                    }
+//                });
+
+            } catch (NullPointerException e){
+                Log.d(TAG, "onMapReady: ERROR "+e.getMessage());
             }
         }
+//        if (mMap != null){
+//            if (clusterManager == null){
+//                clusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(),mMap);
+//            }
+//            if (clusterManagerRenderer == null){
+//                clusterManagerRenderer = new ClusterManagerRenderer(
+//                        getActivity(),
+//                        mMap,
+//                        clusterManager
+//                );
+//            }
+//            for (UserVendor mUserVendor: vendorArrayList){
+//                //Todo fix avatar not displayed
+//                Log.d(TAG, "addMapMarkers: location: " + mUserVendor.getVendorGeoLocation().toString());
+//                try{
+//                    String title = mUserVendor.getVendorStorageName();
+//                    String snippet = mUserVendor.getVendorStorageLocation();
+//                    int avatar = R.drawable.ic_map_pin_available;
+//                    ClusterMarker newClusterMarker = new ClusterMarker(
+//                            new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(), mUserVendor.getVendorGeoLocation().getLongitude()),
+//                            title,
+//                            snippet,
+//                            avatar,
+//                            mUserVendor
+//                    );
+//                    clusterManager.addItem(newClusterMarker);
+//
+//                }catch (NullPointerException e){
+//                    Log.e(TAG, "addMapMarkers: NullPointer", e.getCause() );
+//                }
+//            }
+//            clusterManager.cluster();
+//        }
     }
 
     private void getLocationPermission() {
