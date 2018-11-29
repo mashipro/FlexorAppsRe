@@ -62,6 +62,7 @@
     <string name="city">City</string>
     <string name="email">Email</string>
     <string name="phone">Phone Number</string>
+    <string name="userID">UID</string>
 
 
 </resources>
