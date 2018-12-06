@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
@@ -47,6 +49,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     //Components
 //    private MapView mapView;
     private MapView mMapView;
+    private ImageView screenMarkOne;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     //Var
@@ -71,6 +74,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
         mMapView = view.findViewById(R.id.map);
+        screenMarkOne = view.findViewById(R.id.screen_mark_one);
+
         initGoogleMap(savedInstanceState);
 
         return view;
@@ -217,6 +222,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     }
         private void moveCamera(LatLng latLng, int zoom, int offsetX, int offsetY) {
         Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);
+        Log.d(TAG, "moveCamera: with offset of: X" + offsetX+ " Y"+ offsetY);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
         android.graphics.Point mapPoint = mMap.getProjection().toScreenLocation(latLng);
         mapPoint.set(mapPoint.x+offsetX,mapPoint.y+offsetY);
@@ -314,8 +320,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                     public boolean onMarkerClick(Marker marker) {
                         Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
                         marker.showInfoWindow();
-                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,200,-200);
+                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
                         return true;
+                    }
+                });
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        //Todo: creating popup window for vendor details and button
                     }
                 });
 
@@ -405,6 +417,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
     @Override
     public void onClick(View view) {
+        //Todo: Onclick button setup
 
     }
 }
