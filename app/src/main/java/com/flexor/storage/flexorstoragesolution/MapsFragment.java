@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.data.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +56,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
     //    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionGranted = false;
-    private static final float DEFAULT_ZOOM = 15;
+    private static final int DEFAULT_ZOOM = 15;
 
     private ClusterManagerRenderer clusterManagerRenderer;
     private ClusterManager<ClusterMarker> clusterManager;
@@ -180,7 +182,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                         Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
                         Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
-                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),DEFAULT_ZOOM);
+                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),DEFAULT_ZOOM, 0,0);
                         Log.d(TAG, "UserLocationDetails: Lat: "+ location.getLatitude() + ", long: "+location.getLongitude());
 
                     }
@@ -213,9 +215,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 //            Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
 //        }
     }
-        private void moveCamera(LatLng latLng, float zoom) {
+        private void moveCamera(LatLng latLng, int zoom, int offsetX, int offsetY) {
         Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+        android.graphics.Point mapPoint = mMap.getProjection().toScreenLocation(latLng);
+        mapPoint.set(mapPoint.x+offsetX,mapPoint.y+offsetY);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom));
+//            Double defLat = latLng.latitude;
+//            Double defLon = latLng.longitude;
+//            LatLng newLatlng = new LatLng(defLat+offsetX,defLon+offsetY);
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLatlng,zoom));
+
     }
 
     @Override
@@ -299,14 +309,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 //                userVendorForTags.setVendorStorageName(mUserVendor.getVendorStorageName());
                 Marker m = mMap.addMarker(newMarker);
                 m.setTag(mUserVendor);
-//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//                    @Override
-//                    public boolean onMarkerClick(Marker marker) {
-//                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
-//                        marker.showInfoWindow();
-//                        return true;
-//                    }
-//                });
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+                        marker.showInfoWindow();
+                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,200,-200);
+                        return true;
+                    }
+                });
 
             } catch (NullPointerException e){
                 Log.d(TAG, "onMapReady: ERROR "+e.getMessage());
