@@ -42,6 +42,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -64,7 +65,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private FirebaseUser user;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private CallbackManager mCallbackManager;
-    private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseRef;
     private FirebaseStorage mStorage;
     GoogleSignInClient mGoogleSignInClient;
 
@@ -88,6 +90,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         mCallbackManager = CallbackManager.Factory.create();
+        mDatabase = FirebaseDatabase.getInstance();
+        mDatabaseRef = mDatabase.getReference();
 
         login_filler = findViewById(R.id.login_filler);
         login_gnf_button = findViewById(R.id.login_gnf_button);
@@ -451,17 +455,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void sendEmailVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            user.sendEmailVerification()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-//                                storeUserInfo();
-                                Log.d("TAG", "Email sent.");
-                                storeUserInfo();
-                            }
-                        }
-                    });
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "Email sent.");
+                        storeUserInfo();
+                    }
+                }
+            });
         }
 
     }

@@ -237,7 +237,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     mFirestore.setFirestoreSettings(settings);
                     DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
                     final UserVendor userVendor = new UserVendor();
-                    userVendor.setUser(user);
+                    userVendor.setVendorOwner(user.getUserID());
                     userVendor.setVendorName(vendorName);
                     userVendor.setVendorAddress(vendorAddress);
                     userVendor.setVendorIDNumber(vendorIDnumber);
@@ -246,6 +246,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     userVendor.setVendorStorageName(vendorStorageName);
                     userVendor.setVendorStorageLocation(vendorStorageLocation);
                     userVendor.setVendorAccepted(Boolean.FALSE);
+                    userVendor.setVendorStatsCode((double) 211);
                     userVendor.setVendorID(newVendorReference.getId());
                     StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
                     uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);

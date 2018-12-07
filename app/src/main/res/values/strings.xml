@@ -40,7 +40,7 @@
     <string name="fb_login_protocol_scheme">fb244352846252397</string>
 
 
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="eula_agree_check">I agree to this License Agreement</string>
     <string name="accept">Accept</string>
@@ -56,6 +56,29 @@
     <string name="error_form_input">Error! Please check your input.</string>
     <string name="error_form_photo">ID Card photo must be uploaded!</string>
     <string name="error_already_registered">You already registered. Wait for confirmation.</string>
+    <string name="box_remove">Remove Box</string>
+    <string name="box_access">Access Box</string>
+    <string name="box_details">Box Details</string>
+    <string name="box_add">Add Box</string>
+    <string name="vendor_settings">Vendor Settings</string>
+    <string name="box_stat_available">Available</string>
+    <string name="box_stat_empty">Empty</string>
+    <string name="box_stat_full">Full</string>
+    <string name="error_box_limit">Unable to add box due to limit! please upgrade your vendor status.</string>
+    <string name="alert_new_box_title">Add New Box</string>
+    <string name="alert_new_box_message">Please add name for your new box.</string>
+    <string name="ok">Ok</string>
+    <string name="error_no_box">You have no box yet. Please create your first box.</string>
+    <string name="tenants">Tenant</string>
+    <string name="duration">Duration</string>
+    <string name="rent_due">Rent Due Date</string>
+    <string name="price">Price Rate</string>
+    <string name="separator">:  </string>
+    <string name="button_access">Access Box</string>
+    <string name="button_enable">Enable</string>
+    <string name="button_disable">Disable</string>
+    <string name="button_contact_tenant">Contact Tenant</string>
+    <string name="box_stat_null">NULL</string>
 
     <!--Biodata-->
     <string name="gender">Gender</string>

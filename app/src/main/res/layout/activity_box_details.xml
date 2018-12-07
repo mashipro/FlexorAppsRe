@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BoxDetailsActivity">
+
+    <ImageView
+        android:id="@+id/box_Head_BG"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/colorNativeOrange"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/storage_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/opensans_bold"
+        android:text="@string/storageName"
+        android:textAllCaps="true"
+        android:textColor="@color/colorNativeWhite"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/vendor_registration_location"
+        app:layout_constraintEnd_toEndOf="@+id/box_Head_BG"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/box_Head_BG" />
+
+    <TextView
+        android:id="@+id/box_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/opensans_bold"
+        android:text="@string/storageName"
+        android:textAllCaps="true"
+        android:textColor="@color/colorNativeWhite"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/box_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/box_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/opensans_bold"
+        android:text="@string/box_stat_null"
+        android:textAllCaps="true"
+        android:textColor="@color/colorNativeWhite"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/storage_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/box_Head_BG" />
+
+    <ImageView
+        android:id="@+id/box_details"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:src="@color/colorNativeBlue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/box_Head_BG" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/box_avatar"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:src="@color/colorNativeWhite"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/box_details"
+        app:layout_constraintVertical_bias="0.26" />
+
+    <TextView
+        android:id="@+id/loc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/opensans_bold"
+        android:gravity="right"
+        android:text="@string/locationAddress"
+        android:textAllCaps="true"
+        android:textColor="@color/colorNativeWhite"
+        android:textSize="15sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/box_Head_BG"
+        app:layout_constraintHorizontal_bias="0.061"
+        app:layout_constraintStart_toStartOf="@+id/box_Head_BG"
+        app:layout_constraintTop_toBottomOf="@+id/vendor_registration_location" />
+
+    <TextView
+        android:id="@+id/vendor_registration_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/opensans_bold"
+        android:gravity="right"
+        android:text="@string/locationAddress"
+        android:textAllCaps="true"
+        android:textColor="@color/colorNativeWhite"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/box_details"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/box_details"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tenants" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/name" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="@string/separator" />
+
+            <TextView
+                android:id="@+id/tenant_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/name" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/duration" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="@string/separator" />
+
+            <TextView
+                android:id="@+id/tenant_box_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/duration" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/rent_due" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="@string/separator" />
+
+            <TextView
+                android:id="@+id/tenant_box_due"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rent_due" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/price" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="@string/separator" />
+
+            <TextView
+                android:id="@+id/tenant_box_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/price" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/box_details">
+
+        <Button
+            android:id="@+id/btn_vendor_box_access"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_access" />
+
+        <Button
+            android:id="@+id/btn_vendor_box_enable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_enable" />
+
+        <Button
+            android:id="@+id/btn_vendor_box_disable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_disable" />
+
+        <Button
+            android:id="@+id/btn_vendor_box_contacts_tenant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_contact_tenant" />
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -4,13 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 
 @IgnoreExtraProperties
 public class UserVendor implements Parcelable {
-    private User user;
+    private String vendorOwner;
     private String vendorName;
     private String vendorAddress;
     private String vendorID;
@@ -22,27 +23,15 @@ public class UserVendor implements Parcelable {
     private String vendorIDImgPath;
     private Boolean vendorAccepted;
     private @ServerTimestamp Date vendorRegistrationTimestamp;
+    private Double vendorStatsCode;
+    private String vendorBoxPrice;
+    private GeoPoint vendorGeoLocation;
 
     public UserVendor() {
     }
 
-    public UserVendor(User user, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp) {
-        this.user = user;
-        this.vendorName = vendorName;
-        this.vendorAddress = vendorAddress;
-        this.vendorID = vendorID;
-        this.vendorIDNumber = vendorIDNumber;
-        this.vendorNPWP = vendorNPWP;
-        this.vendorCompany = vendorCompany;
-        this.vendorStorageName = vendorStorageName;
-        this.vendorStorageLocation = vendorStorageLocation;
-        this.vendorIDImgPath = vendorIDImgPath;
-        this.vendorAccepted = vendorAccepted;
-        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
-    }
-
     protected UserVendor(Parcel in) {
-        user = in.readParcelable(User.class.getClassLoader());
+        vendorOwner = in.readString();
         vendorName = in.readString();
         vendorAddress = in.readString();
         vendorID = in.readString();
@@ -54,6 +43,39 @@ public class UserVendor implements Parcelable {
         vendorIDImgPath = in.readString();
         byte tmpVendorAccepted = in.readByte();
         vendorAccepted = tmpVendorAccepted == 0 ? null : tmpVendorAccepted == 1;
+        if (in.readByte() == 0) {
+            vendorStatsCode = null;
+        } else {
+            vendorStatsCode = in.readDouble();
+        }
+        vendorBoxPrice = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(vendorOwner);
+        dest.writeString(vendorName);
+        dest.writeString(vendorAddress);
+        dest.writeString(vendorID);
+        dest.writeString(vendorIDNumber);
+        dest.writeString(vendorNPWP);
+        dest.writeString(vendorCompany);
+        dest.writeString(vendorStorageName);
+        dest.writeString(vendorStorageLocation);
+        dest.writeString(vendorIDImgPath);
+        dest.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
+        if (vendorStatsCode == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(vendorStatsCode);
+        }
+        dest.writeString(vendorBoxPrice);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<UserVendor> CREATOR = new Creator<UserVendor>() {
@@ -68,12 +90,51 @@ public class UserVendor implements Parcelable {
         }
     };
 
-    public User getUser() {
-        return user;
+    @Override
+    public String toString() {
+        return "UserVendor{" +
+                "vendorOwner='" + vendorOwner + '\'' +
+                ", vendorName='" + vendorName + '\'' +
+                ", vendorAddress='" + vendorAddress + '\'' +
+                ", vendorID='" + vendorID + '\'' +
+                ", vendorIDNumber='" + vendorIDNumber + '\'' +
+                ", vendorNPWP='" + vendorNPWP + '\'' +
+                ", vendorCompany='" + vendorCompany + '\'' +
+                ", vendorStorageName='" + vendorStorageName + '\'' +
+                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
+                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
+                ", vendorAccepted=" + vendorAccepted +
+                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
+                ", vendorStatsCode=" + vendorStatsCode +
+                ", vendorBoxPrice='" + vendorBoxPrice + '\'' +
+                ", vendorGeoLocation=" + vendorGeoLocation +
+                '}';
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice, GeoPoint vendorGeoLocation) {
+        this.vendorOwner = vendorOwner;
+        this.vendorName = vendorName;
+        this.vendorAddress = vendorAddress;
+        this.vendorID = vendorID;
+        this.vendorIDNumber = vendorIDNumber;
+        this.vendorNPWP = vendorNPWP;
+        this.vendorCompany = vendorCompany;
+        this.vendorStorageName = vendorStorageName;
+        this.vendorStorageLocation = vendorStorageLocation;
+        this.vendorIDImgPath = vendorIDImgPath;
+        this.vendorAccepted = vendorAccepted;
+        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
+        this.vendorStatsCode = vendorStatsCode;
+        this.vendorBoxPrice = vendorBoxPrice;
+        this.vendorGeoLocation = vendorGeoLocation;
+    }
+
+    public String getVendorOwner() {
+        return vendorOwner;
+    }
+
+    public void setVendorOwner(String vendorOwner) {
+        this.vendorOwner = vendorOwner;
     }
 
     public String getVendorName() {
@@ -164,41 +225,27 @@ public class UserVendor implements Parcelable {
         this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Double getVendorStatsCode() {
+        return vendorStatsCode;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(user, i);
-        parcel.writeString(vendorName);
-        parcel.writeString(vendorAddress);
-        parcel.writeString(vendorID);
-        parcel.writeString(vendorIDNumber);
-        parcel.writeString(vendorNPWP);
-        parcel.writeString(vendorCompany);
-        parcel.writeString(vendorStorageName);
-        parcel.writeString(vendorStorageLocation);
-        parcel.writeString(vendorIDImgPath);
-        parcel.writeByte((byte) (vendorAccepted == null ? 0 : vendorAccepted ? 1 : 2));
+    public void setVendorStatsCode(Double vendorStatsCode) {
+        this.vendorStatsCode = vendorStatsCode;
     }
 
-    @Override
-    public String toString() {
-        return "UserVendor{" +
-                "user=" + user +
-                ", vendorName='" + vendorName + '\'' +
-                ", vendorAddress='" + vendorAddress + '\'' +
-                ", vendorID='" + vendorID + '\'' +
-                ", vendorIDNumber='" + vendorIDNumber + '\'' +
-                ", vendorNPWP='" + vendorNPWP + '\'' +
-                ", vendorCompany='" + vendorCompany + '\'' +
-                ", vendorStorageName='" + vendorStorageName + '\'' +
-                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
-                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
-                ", vendorAccepted=" + vendorAccepted +
-                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
-                '}';
+    public String getVendorBoxPrice() {
+        return vendorBoxPrice;
+    }
+
+    public void setVendorBoxPrice(String vendorBoxPrice) {
+        this.vendorBoxPrice = vendorBoxPrice;
+    }
+
+    public GeoPoint getVendorGeoLocation() {
+        return vendorGeoLocation;
+    }
+
+    public void setVendorGeoLocation(GeoPoint vendorGeoLocation) {
+        this.vendorGeoLocation = vendorGeoLocation;
     }
 }

@@ -7,4 +7,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+    <style name="style_fab">
+        <item name="android:background">@drawable/fab_label_bg</item>
+        <item name="android:textColor">@color/colorNativeWhite</item>
+    </style>
 </resources>

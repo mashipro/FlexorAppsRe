@@ -59,9 +59,7 @@
         </activity>
         <activity android:name=".VendorActivity" />
         <activity android:name=".VendorRegistrationActivity" />
-        <activity android:name=".biodata" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".SuperAdminActivity"></activity>
+        <activity android:name=".BoxDetailsActivity"></activity>
     </application>
 
 </manifest>

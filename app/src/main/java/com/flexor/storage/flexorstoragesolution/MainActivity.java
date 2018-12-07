@@ -33,6 +33,7 @@ import com.bumptech.glide.module.AppGlideModule;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Utility.MyAppGlideModule;
+import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,11 +44,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -55,6 +58,9 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private StorageReference storageReference;
     private DocumentReference docReference;
     NavigationView navigationView;
+    private CollectionReference collectionReference;
+    private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
 //    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private boolean mLocationPermissionGranted = false;
@@ -393,6 +401,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void logout() {
+        mAuth.signOut();
+        startActivity(new Intent(getApplicationContext(),Login.class));
     }
 
     private void afterclick(){

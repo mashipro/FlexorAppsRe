@@ -7,5 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="style_fab">
+        <item name="android:background">@drawable/fab_label_bg</item>
+        <item name="android:textColor">@color/colorNativeWhite</item>
+    </style>
 
 </resources>
