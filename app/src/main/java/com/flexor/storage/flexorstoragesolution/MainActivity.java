@@ -109,9 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-
-//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-//        getMapsFragment();
         if (checkMapServices()){
             if (mLocationPermissionGranted){
                 getMapsFragment();
@@ -146,38 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-//        collectionReference=db.collection("Vendor");
-//        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()){
-//                    Log.d(TAG, "onComplete: task success");
-//                    List<UserVendor> userVendorslist = task.getResult().toObjects(UserVendor.class);
-//                    vendorArrayList.addAll(userVendorslist);
-//                    Log.d(TAG, "onComplete: "+vendorArrayList);
-//                }
-//            }
-//        });
     }
-
-//    private void getLastKnownLocation() {
-//        Log.d(TAG, "getLastKnownLocation: called");
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
-//        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Location> task) {
-//                if (task.isSuccessful()){
-//                    Location location = task.getResult();
-//                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
-//                    Log.d(TAG, "onComplete: latitude: " +geoPoint.getLatitude());
-//                    Log.d(TAG, "onComplete: longitude: "+geoPoint.getLongitude());
-//
-//                }
-//            }
-//        });
-//    }
 
     private void getMapsFragment() {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
@@ -200,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+                        isMapsEnabled();
                     }
                 });
         final AlertDialog alert = builder.create();

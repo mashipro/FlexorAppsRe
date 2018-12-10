@@ -3,6 +3,7 @@ package com.flexor.storage.flexorstoragesolution;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,6 +47,8 @@ import com.google.maps.android.data.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
@@ -72,7 +75,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     private FirebaseFirestore mFirestore;
     private CollectionReference collectionReference;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
-    private PopupWindow popupWindow;
 
 
     @Nullable
@@ -100,6 +102,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
+        getLocationPermission();
     }
 
 
@@ -111,24 +114,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
         mFirestore = FirebaseFirestore.getInstance();
         collectionReference = mFirestore.collection("Vendor");
-//        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()){
-//                    Log.d(TAG, "onComplete: getting vendor info completed");
-//                    List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
-//                    vendorArrayList.addAll(userVendorList);
-//                    Log.d(TAG, "onComplete: vendor list: " +vendorArrayList);
-//                    //Todo addmapmarker
-////                    addMapMarkers();
-//                }
-//            }
-//        });
-//        mapView = view.findViewById(R.id.map);
-//        mapView.onCreate(savedInstanceState);
-//        mapView.onResume();
-//        mapView.getMapAsync(this);
-//        Log.d(TAG, "initMap: map is INITIALIZING");
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: getting vendor info completed");
+                    List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
+                    vendorArrayList.addAll(userVendorList);
+                    Log.d(TAG, "onComplete: vendor list: " +vendorArrayList);
+                    //Todo addmapmarker
+                    addMapMarkers();
+                }
+            }
+        });
     }
 
     @Override
@@ -145,24 +143,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mMapView.onResume();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mMapView.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mMapView.onStop();
-    }
-
-    @Override
     public void onMapReady(GoogleMap map) {
         Log.d(TAG, "onMapReady: map is READY");
         if (mLocationPermissionGranted) {
@@ -173,8 +153,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
             }
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-
-
         }
 
     }
@@ -202,29 +180,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         } else {
             Log.d(TAG, "getDeviceLocation: Failed to retrieve location");
         }
-
-
-//        try {
-//            if (mLocationPermissionGranted){
-//                Task location = mFusedLocationProviderClient.getLastLocation();
-//                location.addOnCompleteListener(new OnCompleteListener() {
-//                    @Override
-//                    public void onComplete(@NonNull Task task) {
-//                        if (task.isSuccessful()){
-//                            Log.d(TAG, "onComplete: found location!");
-//                            Location currentLocation = (Location) task.getResult();
-//                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
-//                            Log.d(TAG, "onComplete: device current location: lat= "+ currentLocation.getLatitude() +" lng= "+currentLocation.getLongitude());
-//                        }else{
-//                            Log.d(TAG, "onComplete: current location is null");
-//                            Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//            }
-//        }catch (SecurityException e){
-//            Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
-//        }
     }
         private void moveCamera(LatLng latLng, int zoom, int offsetX, int offsetY) {
         Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);
@@ -233,205 +188,102 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         android.graphics.Point mapPoint = mMap.getProjection().toScreenLocation(latLng);
         mapPoint.set(mapPoint.x+offsetX,mapPoint.y+offsetY);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom));
-//            Double defLat = latLng.latitude;
-//            Double defLon = latLng.longitude;
-//            LatLng newLatlng = new LatLng(defLat+offsetX,defLon+offsetY);
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLatlng,zoom));
 
     }
 
-    @Override
-    public void onPause() {
-        mMapView.onPause();
-        super.onPause();
-    }
+    private void addMapMarkers(){
+        for (final UserVendor mUserVendor: vendorArrayList){
+            try{
+                Log.d(TAG, "onMapReady: pin"+ mUserVendor.getVendorGeoLocation().toString());
+                final MarkerOptions newMarker = new MarkerOptions()
+                        .position(new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(),mUserVendor.getVendorGeoLocation().getLongitude()))
+                        .title(mUserVendor.getVendorStorageName())
+                        .snippet(mUserVendor.getVendorAddress())
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_maps_pin_green));
+                mMap.addMarker(newMarker);
+                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+                mMap.setInfoWindowAdapter(customMapInfo);
+                Marker m = mMap.addMarker(newMarker);
+                m.setTag(mUserVendor);
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+                        marker.showInfoWindow();
+                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
 
-    @Override
-    public void onDestroy() {
-        mMapView.onDestroy();
-        super.onDestroy();
-    }
+                        return true;
+                    }
+                });
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        popupShow(getView());
 
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
+                    }
 
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//        mMap = googleMap;
-//        Log.d(TAG, "onMapReady: map is READY");
-//
-////        getDeviceLocation();
-//        if (mLocationPermissionGranted) {
-//            getDeviceLocation();
-//            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                return;
-//            }
-//            mMap.setMyLocationEnabled(true);
-//            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//        }
-//    }
-//
-//    private void getDeviceLocation() {
-//        Log.d(TAG, "getDeviceLocation: getting device current location");
-//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-//        try {
-//            if (mLocationPermissionGranted){
-//                Task location = mFusedLocationProviderClient.getLastLocation();
-//                location.addOnCompleteListener(new OnCompleteListener() {
-//                    @Override
-//                    public void onComplete(@NonNull Task task) {
-//                        if (task.isSuccessful()){
-//                            Log.d(TAG, "onComplete: found location!");
-//                            Location currentLocation = (Location) task.getResult();
-//                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
-//                        }else{
-//                            Log.d(TAG, "onComplete: current location is null");
-//                            Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//            }
-//        }catch (SecurityException e){
-//            Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
-//        }
-//    }
-//
-//    private void moveCamera(LatLng latLng, float zoom) {
-//        Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-//    }
-
-//    private void addMapMarkers(){
-//        for (final UserVendor mUserVendor: vendorArrayList){
-//            try{
-//                Log.d(TAG, "onMapReady: pin"+ mUserVendor.getVendorGeoLocation().toString());
-//                final MarkerOptions newMarker = new MarkerOptions()
-//                        .position(new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(),mUserVendor.getVendorGeoLocation().getLongitude()))
-//                        .title(mUserVendor.getVendorStorageName())
-//                        .snippet(mUserVendor.getVendorAddress())
-//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_maps_pin_green));
-//                mMap.addMarker(newMarker);
-//                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
-//                mMap.setInfoWindowAdapter(customMapInfo);
-////                UserVendor userVendorForTags = new UserVendor();
-////                userVendorForTags.setVendorIDImgPath(mUserVendor.getVendorIDImgPath());
-////                userVendorForTags.setVendorStorageName(mUserVendor.getVendorStorageName());
-//                Marker m = mMap.addMarker(newMarker);
-//                m.setTag(mUserVendor);
-//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//                    @Override
-//                    public boolean onMarkerClick(Marker marker) {
-//                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
-//                        marker.showInfoWindow();
-//                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
-//                        return true;
-//                    }
-//                });
-//                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//                    @Override
-//                    public void onInfoWindowClick(Marker marker) {
+                    private void popupShow(View view) {
+                        Log.d(TAG, "onInfoWindowClick: clicked");
+//                        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
 //                        LayoutInflater inflater = LayoutInflater.from(getContext());
 //                        View popupView = inflater.inflate(R.layout.popup_user_vendor_facade,null);
-//                        int width = popupView.getWidth();
-//                        int height = popupView.getHeight();
-//                        popupWindow = new PopupWindow(popupView,width,height, true);
-//                        popupWindow.showAtLocation(getView(), Gravity.CENTER, 0,0);
-//
-//                        ImageView vendorImage = popupView.findViewById(R.id.popup_vendor_bg);
-//                        TextView vendorName = popupView.findViewById(R.id.vendor_name);
-//                        TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
-//                        TextView cancelAction = popupView.findViewById(R.id.cancel_action);
-//                        Button vendorAccess = popupView.findViewById(R.id.access_vendor);
-//                        Button vendorContact = popupView.findViewById(R.id.contact_vendor);
-//
-//                        //Todo: update vendor detail image
-//
-//                        vendorName.setText(mUserVendor.getVendorStorageName());
-//                        vendorLocation.setText(mUserVendor.getVendorAddress());
-//                        cancelAction.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                popupWindow.dismiss();
-//                            }
-//                        });
-//                        vendorAccess.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                //Todo: Set Vendor Access method
-//                                Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorName()+" With ID: "+ mUserVendor.getVendorID());
-//                            }
-//                        });
-//                        vendorContact.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                //Todo: Set Vendor Contact Button to contact vendor
-//                            }
-//                        });
-//                    }
-//                });
-//
-//            } catch (NullPointerException e){
-//                Log.d(TAG, "onMapReady: ERROR "+e.getMessage());
-//            }
-//        }
-////        if (mMap != null){
-////            if (clusterManager == null){
-////                clusterManager = new ClusterManager<ClusterMarker>(getActivity().getApplicationContext(),mMap);
-////            }
-////            if (clusterManagerRenderer == null){
-////                clusterManagerRenderer = new ClusterManagerRenderer(
-////                        getActivity(),
-////                        mMap,
-////                        clusterManager
-////                );
-////            }
-////            for (UserVendor mUserVendor: vendorArrayList){
-////                //Todo fix avatar not displayed
-////                Log.d(TAG, "addMapMarkers: location: " + mUserVendor.getVendorGeoLocation().toString());
-////                try{
-////                    String title = mUserVendor.getVendorStorageName();
-////                    String snippet = mUserVendor.getVendorStorageLocation();
-////                    int avatar = R.drawable.ic_map_pin_available;
-////                    ClusterMarker newClusterMarker = new ClusterMarker(
-////                            new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(), mUserVendor.getVendorGeoLocation().getLongitude()),
-////                            title,
-////                            snippet,
-////                            avatar,
-////                            mUserVendor
-////                    );
-////                    clusterManager.addItem(newClusterMarker);
-////
-////                }catch (NullPointerException e){
-////                    Log.e(TAG, "addMapMarkers: NullPointer", e.getCause() );
-////                }
-////            }
-////            clusterManager.cluster();
-////        }
-//    }
+                        View popupView = getLayoutInflater().inflate(R.layout.popup_user_vendor_facade, null);
+                        final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                        ImageView vendorImage = popupView.findViewById(R.id.popup_vendor_bg);
+                        TextView vendorName = popupView.findViewById(R.id.vendor_name);
+                        TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
+                        CircleImageView cancelAction = popupView.findViewById(R.id.cancel_action);
+                        Button vendorAccess = popupView.findViewById(R.id.access_vendor);
+                        Button vendorContact = popupView.findViewById(R.id.contact_vendor);
+
+                        //Todo: update vendor detail image
+
+                        vendorName.setText(mUserVendor.getVendorStorageName());
+                        vendorLocation.setText(mUserVendor.getVendorAddress());
+                        cancelAction.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                popupWindow.dismiss();
+                            }
+                        });
+                        vendorAccess.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Todo: Set Vendor Access method
+                                Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorName()+" With ID: "+ mUserVendor.getVendorID());
+                            }
+                        });
+                        vendorContact.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Todo: Set Vendor Contact Button to contact vendor
+                            }
+                        });
+                        popupWindow.setBackgroundDrawable(new ColorDrawable());
+                        popupWindow.showAtLocation(view, Gravity.CENTER, 0,0);
+                        popupWindow.setBackgroundDrawable(new ColorDrawable());
+                        if (popupWindow.isShowing()){
+                            Log.d(TAG, "onInfoWindowClick: popup show");
+                        }
+                    }
+                });
+
+            } catch (NullPointerException e){
+                Log.d(TAG, "onMapReady: ERROR "+e.getMessage());
+            }
+        }
+    }
 
     private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permission");
-        String[] permission = {FINE_LOCATION, COARSE_LOCATION};
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "getLocationPermission: location permission Denied");
             ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             Log.d(TAG, "getLocationPermission: location permission Granted");
             mLocationPermissionGranted = true;
-
         }
-//        if (ContextCompat.checkSelfPermission(getActivity(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//            if (ContextCompat.checkSelfPermission(getActivity(),COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//                Log.d(TAG, "getLocationPermission: location permission granted");
-//                mLocationPermissionGranted = true;
-//            } else {
-//                Log.d(TAG, "getLocationPermission: location permission denied");
-//                requestPermissions(permission,LOCATION_PERMISSION_REQUEST_CODE);
-//            }
-//        }
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -450,7 +302,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                     }
                     mLocationPermissionGranted=true;
                     Log.d(TAG, "onRequestPermissionsResult: permission granted");
-
                 }
 
             }
@@ -461,5 +312,40 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     public void onClick(View view) {
         //Todo: Onclick button setup
 
+    }
+    @Override
+    public void onPause() {
+        mMapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mMapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mMapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mMapView.onStop();
     }
 }

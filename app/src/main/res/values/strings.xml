@@ -79,6 +79,8 @@
     <string name="button_disable">Disable</string>
     <string name="button_contact_tenant">Contact Tenant</string>
     <string name="box_stat_null">NULL</string>
+    <string name="access_vendor">Open Vendor</string>
+    <string name="contact_vendor">Contact Vendor</string>
 
 
 </resources>
