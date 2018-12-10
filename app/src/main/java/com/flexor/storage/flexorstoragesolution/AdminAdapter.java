@@ -12,22 +12,35 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.User;
+import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.model.ResourcePath;
 
 import java.util.ArrayList;
 
-public class AdminAdapter extends FirestoreRecyclerAdapter<User, AdminAdapter.AdminHolder> {
+import javax.annotation.Nullable;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+
+public class AdminAdapter extends FirestoreRecyclerAdapter<UserVendor, AdminAdapter.AdminHolder> {
 
     private OnItemClickListener listener;
-    public AdminAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
+    public AdminAdapter(@NonNull FirestoreRecyclerOptions<UserVendor> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull AdminHolder holder, int position, @NonNull User model) {
+    protected void onBindViewHolder(@NonNull AdminHolder holder, int position, @NonNull UserVendor model) {
 
-        holder.textViewName.setText(model.getUserName());
-        holder.textViewUID.setText(model.getUserID());
+        if (model.getVendorStatsCode() == 211) {
+            holder.textViewName.setText(model.getVendorName());
+            holder.textViewUID.setText(model.getVendorID());
+        }
 
     }
 
@@ -39,6 +52,19 @@ public class AdminAdapter extends FirestoreRecyclerAdapter<User, AdminAdapter.Ad
                 parent, false);
         return new AdminHolder(v);
 
+    }
+
+    public void rejectItem(int position){
+//        getSnapshots().getSnapshot(position).getReference().delete();
+        final UserVendor userVendor = (((UserClient) getApplicationContext()).getUserVendor());
+        User user = ((UserClient) getApplicationContext()).getUser();
+        DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(user.getUserID());
+        db.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                userVendor.setVendorStatsCode((double)299);
+            }
+        });
     }
 
     public class AdminHolder extends RecyclerView.ViewHolder{
@@ -54,7 +80,7 @@ public class AdminAdapter extends FirestoreRecyclerAdapter<User, AdminAdapter.Ad
             rejectButton = itemView.findViewById(R.id.rejectBtn);
             acceptButton = itemView.findViewById(R.id.acceptBtn);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            rejectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
@@ -63,12 +89,23 @@ public class AdminAdapter extends FirestoreRecyclerAdapter<User, AdminAdapter.Ad
                     }
                 }
             });
+            acceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null){
+                        listener.onAcceptClick(getSnapshots().getSnapshot(position), position);
+                    }
+
+                }
+            });
 
         }
     }
     public interface OnItemClickListener{
-        void onItemClick(DocumentSnapshot documentSnapshot, int position);
-        void onDeleteClick(DocumentSnapshot documentSnapshot,int position);
+        void onAcceptClick(DocumentSnapshot documentSnapshot, int position);
+        void onDeleteClick(DocumentSnapshot documentSnapshot, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){

@@ -1,24 +1,41 @@
 package com.flexor.storage.flexorstoragesolution;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.User;
+import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.Nullable;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class SuperAdminActivity extends AppCompatActivity {
 
@@ -31,55 +48,34 @@ public class SuperAdminActivity extends AppCompatActivity {
 
     private AdminAdapter adminAdapter;
 
-    private ArrayList<User> mUser;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_super_admin);
 
+        UserVendor userVendor = (((UserClient) getApplicationContext()).getUserVendor());
         User user = ((UserClient) getApplicationContext()).getUser();
+
 
         adminbookRef = db.collection("Vendor").document(user.getUserID());
 
         mAuth = FirebaseAuth.getInstance();
         authUser = mAuth.getCurrentUser();
 
+
         setUpRecyclerView();
 
-        adminAdapter.setOnItemClickListener(new AdminAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
-
-            }
-
-            @Override
-            public void onDeleteClick(DocumentSnapshot documentSnapshot, int position) {
-
-                documentSnapshot.getReference().delete();
-            }
-        });
-
-    }
-
-    public void rejectUser(int position){
-        mUser.remove(position);
-        adminAdapter.notifyDataSetChanged();
     }
 
 
     public void setUpRecyclerView() {
 
-//        Query query = adminbookRef.orderBy("Users", Query.Direction.DESCENDING);
-        User user = ((UserClient) getApplicationContext()).getUser();
-
-
         Query query = db
-                .collection("Users");
+                .collection("Vendor");
 
 
-        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
-                .setQuery(query, User.class)
+        FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
+                .setQuery(query, UserVendor.class)
                 .build();
 
         adminAdapter = new AdminAdapter(options);
@@ -89,17 +85,38 @@ public class SuperAdminActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adminAdapter);
 
-//        adminAdapter.setOnItemClickListener(new AdminAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(int position) {
-//
-//            }
-//
-//            @Override
-//            public void onDeleteClick(int position) {
-//                rejectUser(position);
-//            }
-//        });
+        adminAdapter.setOnItemClickListener(new AdminAdapter.OnItemClickListener() {
+            @Override
+            public void onAcceptClick(DocumentSnapshot documentSnapshot, int position) {
+
+            }
+
+            @Override
+            public void onDeleteClick(DocumentSnapshot documentSnapshot, int position) {
+                final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
+                DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+
+                db.update("vendorStatsCode", (double)299)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "onSuccess: yo!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "onFailure: sad", e);
+                            }
+                        });
+
+                //success
+
+//                Map<String, Object> data = new HashMap<>();
+//                data.put("vendorStatsCode", 299);
+//                db.set(data, SetOptions.merge());
+            }
+        });
 
     }
 
@@ -107,6 +124,12 @@ public class SuperAdminActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         adminAdapter.startListening();
+        adminbookRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+            }
+        });
     }
 
     @Override

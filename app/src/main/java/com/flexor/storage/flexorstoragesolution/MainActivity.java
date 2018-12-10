@@ -162,11 +162,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void getUserDetails(FirebaseUser user) {
         String userUID = user.getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
-                .setPersistenceEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setTimestampsInSnapshotsEnabled(true)
+//                .setPersistenceEnabled(true)
+//                .build();
+//        db.setFirestoreSettings(settings);
 
         DocumentReference userRef = db.collection("Users").document(userUID);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
