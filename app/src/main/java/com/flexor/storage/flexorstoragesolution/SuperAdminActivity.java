@@ -1,141 +1,90 @@
 package com.flexor.storage.flexorstoragesolution;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-
-public class SuperAdminActivity extends AppCompatActivity {
+public class SuperAdminActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "SuperAdminActivity";
+    private DrawerLayout drawerlayout;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private DocumentReference adminbookRef;
-    private FirebaseUser authUser;
     private FirebaseAuth mAuth;
-
-    private AdminAdapter adminAdapter;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_super_admin);
-
-        UserVendor userVendor = (((UserClient) getApplicationContext()).getUserVendor());
-        User user = ((UserClient) getApplicationContext()).getUser();
-
-
-        adminbookRef = db.collection("Vendor").document(user.getUserID());
-
         mAuth = FirebaseAuth.getInstance();
-        authUser = mAuth.getCurrentUser();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    startActivity(new Intent(SuperAdminActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+            }
+        };
 
+        drawerlayout = findViewById(R.id.super_admin);
 
-        setUpRecyclerView();
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_superAdmin);
+        setSupportActionBar(toolbar);
 
+        NavigationView navigationView = findViewById(R.id.nav_view_superAdmin);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerlayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
+        drawerlayout.addDrawerListener(toggle);
+        toggle.syncState();
     }
 
+    private void afterclick() {
+        if (drawerlayout.isDrawerOpen(GravityCompat.START)){
+            drawerlayout.closeDrawer(GravityCompat.START);
+        }
+    }
 
-    public void setUpRecyclerView() {
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.nav_vendorAppList:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VendorApplistFragment()).commit();
+                afterclick();
+                break;
+            case R.id.nav_vendorList:
 
-        Query query = db
-                .collection("Vendor");
+                afterclick();
+                break;
+            case R.id.nav_vendorSettings:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
+                afterclick();
+                break;
+        }
+        return true;
+    }
 
-
-        FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
-                .setQuery(query, UserVendor.class)
-                .build();
-
-        adminAdapter = new AdminAdapter(options);
-
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adminAdapter);
-
-        adminAdapter.setOnItemClickListener(new AdminAdapter.OnItemClickListener() {
-            @Override
-            public void onAcceptClick(DocumentSnapshot documentSnapshot, int position) {
-
-            }
-
-            @Override
-            public void onDeleteClick(DocumentSnapshot documentSnapshot, int position) {
-                final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
-                DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
-
-                db.update("vendorStatsCode", (double)299)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "onSuccess: yo!");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "onFailure: sad", e);
-                            }
-                        });
-
-                //success
-
-//                Map<String, Object> data = new HashMap<>();
-//                data.put("vendorStatsCode", 299);
-//                db.set(data, SetOptions.merge());
-            }
-        });
+    @Override
+    public void onClick(View view) {
 
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        adminAdapter.startListening();
-        adminbookRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+    public void onBackPressed() {
+        if (drawerlayout.isDrawerOpen(GravityCompat.START)){
+            drawerlayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
 
-            }
-        });
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adminAdapter.stopListening();
-    }
-
 }

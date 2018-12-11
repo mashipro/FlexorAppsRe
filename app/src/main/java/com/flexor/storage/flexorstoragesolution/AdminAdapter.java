@@ -54,19 +54,6 @@ public class AdminAdapter extends FirestoreRecyclerAdapter<UserVendor, AdminAdap
 
     }
 
-    public void rejectItem(int position){
-//        getSnapshots().getSnapshot(position).getReference().delete();
-        final UserVendor userVendor = (((UserClient) getApplicationContext()).getUserVendor());
-        User user = ((UserClient) getApplicationContext()).getUser();
-        DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(user.getUserID());
-        db.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                userVendor.setVendorStatsCode((double)299);
-            }
-        });
-    }
-
     public class AdminHolder extends RecyclerView.ViewHolder{
 
             TextView textViewName;
