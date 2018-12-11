@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ActiveStorageFragment">
+    tools:context=".ActiveStorageFragment"
+    android:layout_gravity="center">
 
     <TextView
         android:id="@+id/textNoBox"
@@ -23,6 +24,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewBoxDetails"
+        android:foregroundGravity="center"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -32,7 +34,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerImage">
+        app:layout_constraintTop_toBottomOf="@+id/headerImage"
+        >
 
     </android.support.v7.widget.RecyclerView>
 

@@ -59,7 +59,8 @@
         </activity>
         <activity android:name=".VendorActivity" />
         <activity android:name=".VendorRegistrationActivity" />
-        <activity android:name=".BoxDetailsActivity"></activity>
+        <activity android:name=".BoxDetailsActivity" />
+        <activity android:name=".StorageDetailsActivity"></activity>
     </application>
 
 </manifest>

@@ -23,6 +23,7 @@ import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomSpanCount;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -179,7 +180,8 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
 
             }
         };
-        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        int spanNumber = CustomSpanCount.calculateNoOfColumns(getApplicationContext(), 120);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanNumber);
         recyclerViewBoxDetails.setHasFixedSize(true);
         recyclerViewBoxDetails.setItemViewCacheSize(20);
         recyclerViewBoxDetails.setDrawingCacheEnabled(true);
