@@ -5,17 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".StorageDetailsActivity">
+
     <ImageView
         android:id="@+id/vendor_header_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/colorNativeLightBlue"/>
+        android:background="@color/colorNativeLightBlue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/vendor_header_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/vendor_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/name"
+            android:textColor="@color/colorNativeWhite"
+            android:textSize="26sp" />
+        <TextView
+            android:id="@+id/vendor_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_regular"
+            android:text="@string/name"
+            android:textColor="@color/colorNativeWhite"
+            android:textSize="20sp" />
 
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewVendorDetails"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vendor_header_image">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </android.support.v7.widget.RecyclerView>
 
 </android.support.constraint.ConstraintLayout>

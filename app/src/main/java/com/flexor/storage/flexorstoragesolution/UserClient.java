@@ -4,8 +4,11 @@ import android.app.Application;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.GlobalSettings;
+import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+
+import java.util.ArrayList;
 
 public class UserClient extends Application {
     private User user = null;
@@ -33,5 +36,13 @@ public class UserClient extends Application {
     }
     public void setBox(Box box) {
         this.box = box;
+    }
+
+    private TransitionalStatCode transitionalStatCode = null;
+    public TransitionalStatCode getTransitionalStatCode() {
+        return transitionalStatCode;
+    }
+    public void setTransitionalStatCode(TransitionalStatCode transitionalStatCode) {
+        this.transitionalStatCode = transitionalStatCode;
     }
 }

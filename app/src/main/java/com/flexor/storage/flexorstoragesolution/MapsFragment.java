@@ -1,6 +1,8 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
@@ -50,11 +53,13 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
     //Components
+    private Context context;
 //    private MapView mapView;
     private MapView mMapView;
     private ImageView screenMarkOne;
@@ -81,6 +86,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
+        context = view.getContext();
         mMapView = view.findViewById(R.id.map);
         screenMarkOne = view.findViewById(R.id.screen_mark_one);
 
@@ -117,11 +123,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Log.d(TAG, "onComplete: getting vendor info completed");
                     List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
                     vendorArrayList.addAll(userVendorList);
-                    Log.d(TAG, "onComplete: vendor list: " +vendorArrayList);
+                    Log.d(TAG, "onComplete: vendor list: " + vendorArrayList);
                     //Todo addmapmarker
                     addMapMarkers();
                 }
@@ -162,7 +168,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        if (mFusedLocationProviderClient != null){
+        if (mFusedLocationProviderClient != null) {
             mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {
@@ -171,8 +177,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
                         Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
                         Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
-                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()),DEFAULT_ZOOM, 0,0);
-                        Log.d(TAG, "UserLocationDetails: Lat: "+ location.getLatitude() + ", long: "+location.getLongitude());
+                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, 0, 0);
+                        Log.d(TAG, "UserLocationDetails: Lat: " + location.getLatitude() + ", long: " + location.getLongitude());
 
                     }
                 }
@@ -181,7 +187,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
             Log.d(TAG, "getDeviceLocation: Failed to retrieve location");
         }
     }
-        private void moveCamera(LatLng latLng, int zoom, int offsetX, int offsetY) {
+
+    private void moveCamera(LatLng latLng, int zoom, @Nullable int offsetX, @Nullable int offsetY) {
         Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);
         Log.d(TAG, "moveCamera: with offset of: X" + offsetX+ " Y"+ offsetY);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
@@ -240,7 +247,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         //Todo: update vendor detail image
 
                         vendorName.setText(mUserVendor.getVendorStorageName());
-                        vendorLocation.setText(mUserVendor.getVendorAddress());
+                        vendorLocation.setText(mUserVendor.getVendorStorageLocation());
                         cancelAction.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -250,8 +257,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         vendorAccess.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                ((UserClient)(getApplicationContext())).setUserVendor(mUserVendor);
+                                Intent intent = new Intent(context,StorageDetailsActivity.class);
+                                context.startActivity(intent);
                                 //Todo: Set Vendor Access method
-                                Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorName()+" With ID: "+ mUserVendor.getVendorID());
+                                Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorStorageName()+" With ID: "+ mUserVendor.getVendorID());
+
                             }
                         });
                         vendorContact.setOnClickListener(new View.OnClickListener() {
@@ -310,6 +321,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
     @Override
     public void onClick(View view) {
+        CircleImageView center = view.findViewById(R.id.center_button);
+        if (center.isPressed()){
+            getDeviceLocation();
+        }
         //Todo: Onclick button setup
 
     }

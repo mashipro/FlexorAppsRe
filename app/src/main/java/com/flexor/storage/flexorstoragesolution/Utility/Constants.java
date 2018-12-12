@@ -9,6 +9,7 @@ public class Constants {
     public static final int PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 9004;
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     public static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
+    public static final int SINGLEBOX_SPAN_WIDTH = 120;
 
 
 }
