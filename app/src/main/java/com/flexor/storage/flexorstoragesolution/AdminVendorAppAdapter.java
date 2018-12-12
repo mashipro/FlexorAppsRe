@@ -5,37 +5,23 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldPath;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.model.ResourcePath;
 
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-
-public class AdminAdapter extends FirestoreRecyclerAdapter<UserVendor, AdminAdapter.AdminHolder> {
+public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, AdminVendorAppAdapter.AdminVendorAppHolder> {
 
     private OnItemClickListener listener;
-    public AdminAdapter(@NonNull FirestoreRecyclerOptions<UserVendor> options) {
+    public AdminVendorAppAdapter(@NonNull FirestoreRecyclerOptions<UserVendor> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull AdminHolder holder, int position, @NonNull UserVendor model) {
+    protected void onBindViewHolder(@NonNull AdminVendorAppHolder holder, int position, @NonNull UserVendor model) {
 
         if (model.getVendorStatsCode() == 211) {
             holder.textViewName.setText(model.getVendorName());
@@ -46,22 +32,23 @@ public class AdminAdapter extends FirestoreRecyclerAdapter<UserVendor, AdminAdap
 
     @NonNull
     @Override
-    public AdminHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdminVendorAppHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_userdetails,
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_vendor_app_details,
                 parent, false);
-        return new AdminHolder(v);
+        return new AdminVendorAppHolder(v);
 
     }
 
-    public class AdminHolder extends RecyclerView.ViewHolder{
+    public class AdminVendorAppHolder extends RecyclerView.ViewHolder{
 
             TextView textViewName;
             TextView textViewUID;
             public Button rejectButton, acceptButton;
 
-        public AdminHolder(View itemView) {
+        public AdminVendorAppHolder(View itemView) {
             super(itemView);
+            //vendorapplication
             textViewName = itemView.findViewById(R.id.userName);
             textViewUID = itemView.findViewById(R.id.userUID);
             rejectButton = itemView.findViewById(R.id.rejectBtn);
