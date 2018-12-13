@@ -3,23 +3,24 @@ package com.flexor.storage.flexorstoragesolution.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 public class TransitionalStatCode implements Parcelable {
     private int derivedPaging;
+    private ArrayList<SingleBox> singleBoxesContainer;
 
     public TransitionalStatCode() {
     }
 
-    public TransitionalStatCode(int derivedPaging) {
-        this.derivedPaging = derivedPaging;
-    }
-
     protected TransitionalStatCode(Parcel in) {
         derivedPaging = in.readInt();
+        singleBoxesContainer = in.createTypedArrayList(SingleBox.CREATOR);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(derivedPaging);
+        dest.writeTypedList(singleBoxesContainer);
     }
 
     @Override
@@ -39,6 +40,19 @@ public class TransitionalStatCode implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        return "TransitionalStatCode{" +
+                "derivedPaging=" + derivedPaging +
+                ", singleBoxesContainer=" + singleBoxesContainer +
+                '}';
+    }
+
+    public TransitionalStatCode(int derivedPaging, ArrayList<SingleBox> singleBoxesContainer) {
+        this.derivedPaging = derivedPaging;
+        this.singleBoxesContainer = singleBoxesContainer;
+    }
+
     public int getDerivedPaging() {
         return derivedPaging;
     }
@@ -47,10 +61,11 @@ public class TransitionalStatCode implements Parcelable {
         this.derivedPaging = derivedPaging;
     }
 
-    @Override
-    public String toString() {
-        return "TransitionalStatCode{" +
-                "derivedPaging=" + derivedPaging +
-                '}';
+    public ArrayList<SingleBox> getSingleBoxesContainer() {
+        return singleBoxesContainer;
+    }
+
+    public void setSingleBoxesContainer(ArrayList<SingleBox> singleBoxesContainer) {
+        this.singleBoxesContainer = singleBoxesContainer;
     }
 }

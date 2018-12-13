@@ -60,7 +60,8 @@
         <activity android:name=".VendorActivity" />
         <activity android:name=".VendorRegistrationActivity" />
         <activity android:name=".BoxDetailsActivity" />
-        <activity android:name=".StorageDetailsActivity"></activity>
+        <activity android:name=".StorageDetailsActivity" />
+        <activity android:name=".VendorFacadeActivity"></activity>
     </application>
 
 </manifest>

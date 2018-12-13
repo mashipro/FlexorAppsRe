@@ -22,7 +22,6 @@ public class User implements Parcelable {
     private String userAddress;
     private @ServerTimestamp Date userRegistrationTimestamp;
 
-
     public User() {
     }
 

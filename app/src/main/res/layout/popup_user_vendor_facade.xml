@@ -55,6 +55,36 @@
                 android:text="@string/name"
                 android:textColor="@color/colorNativeWhite"
                 android:textSize="20sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="@string/box_rate_perday"
+                    android:textColor="@color/colorNativeWhite"
+                    android:textSize="20sp"
+                    android:layout_marginEnd="10dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="@string/currency"
+                    android:textColor="@color/colorNativeWhite"
+                    android:textSize="20sp"
+                    android:layout_marginEnd="5dp"/>
+                <TextView
+                    android:id="@+id/vendor_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="@string/box_rate_perday"
+                    android:textColor="@color/colorNativeWhite"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout

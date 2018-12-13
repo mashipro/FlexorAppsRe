@@ -80,6 +80,9 @@
     <string name="box_stat_null">NULL</string>
     <string name="access_vendor">Open Vendor</string>
     <string name="contact_vendor">Contact Vendor</string>
+    <string name="rent_box_from_vendor">Rent Box</string>
+    <string name="box_rate_perday">Rent rate/day:</string>
+    <string name="currency">Rp.</string>
 
 
 </resources>

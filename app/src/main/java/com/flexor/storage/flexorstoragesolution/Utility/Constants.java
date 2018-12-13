@@ -10,6 +10,9 @@ public class Constants {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     public static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     public static final int SINGLEBOX_SPAN_WIDTH = 120;
+    public static final int TRANSITIONAL_STATS_CODE_IS_USER = 101;
+    public static final int TRANSITIONAL_STATS_CODE_IS_VENDOR = 102;
+    public static final int TRANSITIONAL_STATS_CODE_IS_MASTER = 103;
 
 
 }

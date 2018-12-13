@@ -118,9 +118,9 @@ public class StorageDetailsActivity extends AppCompatActivity {
         recyclerViewVendorDetails.setAdapter(mFirestoreRecyclerAdapter);
         recyclerViewVendorDetails.setLayoutManager(mLayoutManager);
         recyclerViewVendorDetails.getChildCount();
-        TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
-        transitionalStatCode.setDerivedPaging(101);
-        ((UserClient)(getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
+//        TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
+////        transitionalStatCode.setDerivedPaging(101);
+////        ((UserClient)(getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
 
 
 

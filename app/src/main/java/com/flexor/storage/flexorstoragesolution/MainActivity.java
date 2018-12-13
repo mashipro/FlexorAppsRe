@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseUser firebaseUser;
     private FirebaseFirestore mFirestore;
     private FirebaseDatabase mDatabase;
     private FirebaseStorage mStorage;
@@ -83,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-//        mFirestore = FirebaseFirestore.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+        mFirestore = FirebaseFirestore.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -92,10 +94,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (authUser == null) {
                     startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }else {
-                    getUserDetails(authUser);
+                    getUserDetails();
                 }
             }
         };
+
 
         drawerLayout = findViewById(R.id.drawer_layout_main);
 
@@ -112,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (checkMapServices()){
             if (mLocationPermissionGranted){
                 getMapsFragment();
+                getUserDetails();
             }else {
                 getLocationPermission();
             }
@@ -123,15 +127,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void getUserDetails(FirebaseUser user) {
-        String userUID = user.getUid();
+    private void getUserDetails() {
+        Log.d(TAG, "getUserDetails: getting User Details from: "+firebaseUser.getUid());
+        String userUID = firebaseUser.getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                .setTimestampsInSnapshotsEnabled(true)
-//                .setPersistenceEnabled(true)
-//                .build();
-//        db.setFirestoreSettings(settings);
-
         DocumentReference userRef = db.collection("Users").document(userUID);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -139,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (task.isSuccessful()){
                     Log.d(TAG, "onComplete: User data retrieved");
                     User currentUser = task.getResult().toObject(User.class);
+                    Log.d(TAG, "onComplete: User Is: "+ currentUser.toString());
                     ((UserClient)(getApplicationContext())).setUser(currentUser);
                 }
             }

@@ -18,6 +18,7 @@ import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.R;
 import com.flexor.storage.flexorstoragesolution.UserClient;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -83,9 +84,8 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         //giving rules based on passed transitional stats code
 
-        TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
-        transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
-        if (transitionalStatCode.getDerivedPaging() <= 199){
+        TransitionalStatCode transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
+        if (transitionalStatCode.getDerivedPaging() == Constants.TRANSITIONAL_STATS_CODE_IS_USER){
             boxExtra.setVisibility(View.GONE);
         }
 

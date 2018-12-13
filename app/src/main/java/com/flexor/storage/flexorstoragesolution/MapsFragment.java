@@ -24,8 +24,12 @@ import android.widget.TextView;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
+import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
+import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomMapInfo;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,6 +44,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -78,9 +84,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     private ClusterManager<ClusterMarker> clusterManager;
     private UserVendor userVendor;
     private FirebaseFirestore mFirestore;
-    private CollectionReference collectionReference;
+    private CollectionReference collectionReference, userBoxRef, vendorBoxRef;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
-
+    private ArrayList<SingleBox> userBoxArrayList = new ArrayList<>();
+    private ArrayList<SingleBox> vendorBoxArrayList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -92,7 +99,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
         initGoogleMap(savedInstanceState);
 
-
         return view;
     }
 
@@ -100,6 +106,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         // *** IMPORTANT ***
         // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
         // objects or sub-Bundles.
+
         Log.d(TAG, "initGoogleMap: Maps Initializing");
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -111,7 +118,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         getLocationPermission();
     }
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -119,6 +125,35 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         mFirestore = FirebaseFirestore.getInstance();
+
+        /**
+         * Getting User from userClient
+         */
+
+        User currentUser = ((UserClient)(getApplicationContext())).getUser();
+        String UIDS;
+        if (currentUser != null){
+            UIDS = currentUser.getUserID();
+        } else {
+            Log.d(TAG, "onViewCreated: user Not Found from UserClient");
+            String firebaseUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            UIDS = firebaseUser;
+        }
+        userBoxRef = mFirestore.collection("Users").document(UIDS).collection("MyRentedBox");
+        userBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    List<SingleBox> userRentedBoxList = task.getResult().toObjects(SingleBox.class);
+                    userBoxArrayList.addAll(userRentedBoxList);
+                    Log.d(TAG, "onComplete: user rented box: "+vendorArrayList);
+                    getVendorList();
+                }
+            }
+        });
+    }
+
+    private void getVendorList() {
         collectionReference = mFirestore.collection("Vendor");
         collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -128,7 +163,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                     List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
                     vendorArrayList.addAll(userVendorList);
                     Log.d(TAG, "onComplete: vendor list: " + vendorArrayList);
-                    //Todo addmapmarker
                     addMapMarkers();
                 }
             }
@@ -226,11 +260,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         popupShow(getView());
-
+                        Log.d(TAG, "onInfoWindowClick: showing popup window");
                     }
 
                     private void popupShow(View view) {
-                        Log.d(TAG, "onInfoWindowClick: clicked");
+                        Log.d(TAG, "popupShow: success");
+                        Log.d(TAG, "popupShow: getting vendor box list to compare with users");
+                        vendorBoxRef = mFirestore.collection("Vendor").document(mUserVendor.getVendorID()).collection("MyBox");
+                        vendorBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                List<SingleBox> vendorBoxList = task.getResult().toObjects(SingleBox.class);
+                                vendorBoxArrayList.addAll(vendorBoxList);
+                                Log.d(TAG, "onComplete: vendorBoxList id: "+vendorBoxArrayList);
+                            }
+                        });
+
+
 //                        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
 //                        LayoutInflater inflater = LayoutInflater.from(getContext());
 //                        View popupView = inflater.inflate(R.layout.popup_user_vendor_facade,null);
@@ -240,12 +286,39 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         ImageView vendorImage = popupView.findViewById(R.id.popup_vendor_bg);
                         TextView vendorName = popupView.findViewById(R.id.vendor_name);
                         TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
+                        TextView vendorRate = popupView.findViewById(R.id.vendor_rate);
                         CircleImageView cancelAction = popupView.findViewById(R.id.cancel_action);
                         Button vendorAccess = popupView.findViewById(R.id.access_vendor);
                         Button vendorContact = popupView.findViewById(R.id.contact_vendor);
 
                         //Todo: update vendor detail image
-
+                        //Todo: getting vendor availability, capacity and other details
+                        if (boxRented()){
+                            vendorAccess.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
+                                    transitionalStatCode.setDerivedPaging(Constants.TRANSITIONAL_STATS_CODE_IS_USER);
+                                    transitionalStatCode.setSingleBoxesContainer(userBoxArrayList);
+                                    ((UserClient)(getApplicationContext())).setUserVendor(mUserVendor);
+                                    Intent intent = new Intent(context,StorageDetailsActivity.class);
+                                    context.startActivity(intent);
+                                    //Todo: Set Vendor Access method
+                                    Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorStorageName()+" With ID: "+ mUserVendor.getVendorID());
+                                }
+                            });
+                        } else {
+                            vendorAccess.setText(R.string.rent_box_from_vendor);
+                            vendorAccess.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    User currentUser = ((UserClient)(getApplicationContext())).getUser();
+                                    Log.d(TAG, "onClick: user clicking: " +currentUser.toString());
+                                }
+                            });
+                            //Todo: Rent Method
+                        }
+                        vendorRate.setText(mUserVendor.getVendorBoxPrice().toString());
                         vendorName.setText(mUserVendor.getVendorStorageName());
                         vendorLocation.setText(mUserVendor.getVendorStorageLocation());
                         cancelAction.setOnClickListener(new View.OnClickListener() {
@@ -254,17 +327,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                                 popupWindow.dismiss();
                             }
                         });
-                        vendorAccess.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                ((UserClient)(getApplicationContext())).setUserVendor(mUserVendor);
-                                Intent intent = new Intent(context,StorageDetailsActivity.class);
-                                context.startActivity(intent);
-                                //Todo: Set Vendor Access method
-                                Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorStorageName()+" With ID: "+ mUserVendor.getVendorID());
 
-                            }
-                        });
                         vendorContact.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -284,6 +347,33 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                 Log.d(TAG, "onMapReady: ERROR "+e.getMessage());
             }
         }
+    }
+
+    private boolean boxRented() {
+        Log.d(TAG, "boxRented: comparing");
+        Log.d(TAG, "boxRented: checking user box list");
+        if (userBoxArrayList!= null){
+            Log.d(TAG, "boxRented: user box exist!");
+            Log.d(TAG, "boxRented: user box: "+userBoxArrayList);
+        }
+        Log.d(TAG, "boxRented: checking vendor box list");
+        if (vendorBoxArrayList != null){
+            Log.d(TAG, "boxRented: vendor box exist!");
+            Log.d(TAG, "boxRented: vendor box: "+vendorBoxArrayList);
+        }
+        ArrayList<SingleBox> results = new ArrayList<>();
+        for (SingleBox compareOne: userBoxArrayList){
+            boolean found = false;
+            for (SingleBox compareTwo: vendorBoxArrayList){
+                if (compareOne.getBoxID() == compareTwo.getBoxID()){
+                    found = true;
+                }
+            }
+            if (found){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void getLocationPermission() {
