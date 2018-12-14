@@ -1,5 +1,6 @@
 package com.flexor.storage.flexorstoragesolution;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -73,6 +74,7 @@ public class VendorListFragment extends Fragment {
             public void onInfoClick(DocumentSnapshot documentSnapshot, int position) {
                 final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
                 DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+                startActivity(new Intent(getActivity(), MapsAdminActivity.class));
                 Log.d(TAG, "onInfoClick: terklik");
                 Toast.makeText(getContext(), "Stats Code: " + userVendor.getVendorStatsCode() , Toast.LENGTH_SHORT).show();
             }

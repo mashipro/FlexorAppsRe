@@ -24,10 +24,28 @@ public class UserVendor implements Parcelable {
     private Boolean vendorAccepted;
     private @ServerTimestamp Date vendorRegistrationTimestamp;
     private Double vendorStatsCode;
-    private String vendorBoxPrice;
+    private Long vendorBoxPrice;
     private GeoPoint vendorGeoLocation;
 
     public UserVendor() {
+    }
+
+    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, Long vendorBoxPrice, GeoPoint vendorGeoLocation) {
+        this.vendorOwner = vendorOwner;
+        this.vendorName = vendorName;
+        this.vendorAddress = vendorAddress;
+        this.vendorID = vendorID;
+        this.vendorIDNumber = vendorIDNumber;
+        this.vendorNPWP = vendorNPWP;
+        this.vendorCompany = vendorCompany;
+        this.vendorStorageName = vendorStorageName;
+        this.vendorStorageLocation = vendorStorageLocation;
+        this.vendorIDImgPath = vendorIDImgPath;
+        this.vendorAccepted = vendorAccepted;
+        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
+        this.vendorStatsCode = vendorStatsCode;
+        this.vendorBoxPrice = vendorBoxPrice;
+        this.vendorGeoLocation = vendorGeoLocation;
     }
 
     protected UserVendor(Parcel in) {
@@ -48,7 +66,11 @@ public class UserVendor implements Parcelable {
         } else {
             vendorStatsCode = in.readDouble();
         }
-        vendorBoxPrice = in.readString();
+        if (in.readByte() == 0) {
+            vendorBoxPrice = null;
+        } else {
+            vendorBoxPrice = in.readLong();
+        }
     }
 
     @Override
@@ -70,7 +92,12 @@ public class UserVendor implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeDouble(vendorStatsCode);
         }
-        dest.writeString(vendorBoxPrice);
+        if (vendorBoxPrice == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(vendorBoxPrice);
+        }
     }
 
     @Override
@@ -89,45 +116,6 @@ public class UserVendor implements Parcelable {
             return new UserVendor[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "UserVendor{" +
-                "vendorOwner='" + vendorOwner + '\'' +
-                ", vendorName='" + vendorName + '\'' +
-                ", vendorAddress='" + vendorAddress + '\'' +
-                ", vendorID='" + vendorID + '\'' +
-                ", vendorIDNumber='" + vendorIDNumber + '\'' +
-                ", vendorNPWP='" + vendorNPWP + '\'' +
-                ", vendorCompany='" + vendorCompany + '\'' +
-                ", vendorStorageName='" + vendorStorageName + '\'' +
-                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
-                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
-                ", vendorAccepted=" + vendorAccepted +
-                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
-                ", vendorStatsCode=" + vendorStatsCode +
-                ", vendorBoxPrice='" + vendorBoxPrice + '\'' +
-                ", vendorGeoLocation=" + vendorGeoLocation +
-                '}';
-    }
-
-    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, String vendorBoxPrice, GeoPoint vendorGeoLocation) {
-        this.vendorOwner = vendorOwner;
-        this.vendorName = vendorName;
-        this.vendorAddress = vendorAddress;
-        this.vendorID = vendorID;
-        this.vendorIDNumber = vendorIDNumber;
-        this.vendorNPWP = vendorNPWP;
-        this.vendorCompany = vendorCompany;
-        this.vendorStorageName = vendorStorageName;
-        this.vendorStorageLocation = vendorStorageLocation;
-        this.vendorIDImgPath = vendorIDImgPath;
-        this.vendorAccepted = vendorAccepted;
-        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
-        this.vendorStatsCode = vendorStatsCode;
-        this.vendorBoxPrice = vendorBoxPrice;
-        this.vendorGeoLocation = vendorGeoLocation;
-    }
 
     public String getVendorOwner() {
         return vendorOwner;
@@ -233,11 +221,11 @@ public class UserVendor implements Parcelable {
         this.vendorStatsCode = vendorStatsCode;
     }
 
-    public String getVendorBoxPrice() {
+    public Long getVendorBoxPrice() {
         return vendorBoxPrice;
     }
 
-    public void setVendorBoxPrice(String vendorBoxPrice) {
+    public void setVendorBoxPrice(Long vendorBoxPrice) {
         this.vendorBoxPrice = vendorBoxPrice;
     }
 
@@ -247,5 +235,26 @@ public class UserVendor implements Parcelable {
 
     public void setVendorGeoLocation(GeoPoint vendorGeoLocation) {
         this.vendorGeoLocation = vendorGeoLocation;
+    }
+
+    @Override
+    public String toString() {
+        return "UserVendor{" +
+                "vendorOwner='" + vendorOwner + '\'' +
+                ", vendorName='" + vendorName + '\'' +
+                ", vendorAddress='" + vendorAddress + '\'' +
+                ", vendorID='" + vendorID + '\'' +
+                ", vendorIDNumber='" + vendorIDNumber + '\'' +
+                ", vendorNPWP='" + vendorNPWP + '\'' +
+                ", vendorCompany='" + vendorCompany + '\'' +
+                ", vendorStorageName='" + vendorStorageName + '\'' +
+                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
+                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
+                ", vendorAccepted=" + vendorAccepted +
+                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
+                ", vendorStatsCode=" + vendorStatsCode +
+                ", vendorBoxPrice=" + vendorBoxPrice +
+                ", vendorGeoLocation=" + vendorGeoLocation +
+                '}';
     }
 }

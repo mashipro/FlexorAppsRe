@@ -223,7 +223,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom));
 //            Double defLat = latLng.latitude;
 //            Double defLon = latLng.longitude;
-//            LatLng newLatlng = new LatLng(defLat+offsetX,defLon+offsetY);
+//            LatLng newLatlng = new LatLng(defLat+offsetX,defLo    n+offsetY);
 //            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLatlng,zoom));
 
     }
