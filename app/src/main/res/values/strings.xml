@@ -83,6 +83,17 @@
     <string name="rent_box_from_vendor">Rent Box</string>
     <string name="box_rate_perday">Rent rate/day:</string>
     <string name="currency">Rp.</string>
+    <string name="popboxRent">Please select duration of your rent:</string>
+    <string name="popboxRentExplain">Rent Rate for this box is:</string>
+    <string name="total">Total:</string>
+    <string name="cancel">Cancel</string>
+
+    <string-array name="day_rate_options">
+        <item>3 day</item>
+        <item>7 day</item>
+        <item>14 day</item>
+        <item>30 day</item>
+    </string-array>
 
 
 </resources>

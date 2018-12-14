@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="300dp"
+        android:layout_height="400dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorNativeLightBlue"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:text="@string/rent_box_from_vendor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleText">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/popboxRent"
+                android:textColor="@color/colorNativeWhite" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <RadioGroup
+                    android:id="@+id/radio_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/checkbox3day"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="3 day"
+                        android:textColor="@color/colorNativeWhite" />
+
+                    <RadioButton
+                        android:id="@+id/checkbox7day"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="7 day"
+                        android:textColor="@color/colorNativeWhite" />
+
+                    <RadioButton
+                        android:id="@+id/checkbox14day"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="14 day"
+                        android:textColor="@color/colorNativeWhite" />
+
+                    <RadioButton
+                        android:id="@+id/checkbox30day"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="30 day"
+                        android:textColor="@color/colorNativeWhite" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/popboxRentExplain"
+                    android:textColor="@color/colorNativeWhite" />
+
+                <TextView
+                    android:id="@+id/box_rate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0000000"
+                    android:textColor="@color/colorNativeWhite" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total"
+                        android:textColor="@color/colorNativeWhite" />
+
+                    <TextView
+                        android:id="@+id/bill_total"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/opensans_extrabold"
+                        android:text="00000000000"
+                        android:textColor="@color/colorNativeWhite"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                tools:layout_editor_absoluteX="177dp"
+                tools:layout_editor_absoluteY="321dp" />
+
+            <Button
+                android:id="@+id/accept_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/accept"
+                tools:layout_editor_absoluteX="55dp"
+                tools:layout_editor_absoluteY="321dp" />
+        </LinearLayout>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>
