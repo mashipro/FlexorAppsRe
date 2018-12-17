@@ -434,7 +434,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
                 }
             });
-            //Todo: Rent Method
         }
         vendorRate.setText(mUserVendor.getVendorBoxPrice().toString());
         vendorName.setText(mUserVendor.getVendorStorageName());
@@ -573,11 +572,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                                     thisBox.setBoxTenant(currentUser.getUserID());
                                     thisBox.setBoxRentTimestamp(null);
                                     thisBox.setBoxLastChange(null);
-                                    thisBox.setBoxStatCode(Double.valueOf(302));
+                                    thisBox.setBoxStatCode(Double.valueOf(311));
                                     vendorBoxReff.set(thisBox).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()){
+                                                SingleBox newUserSingleBox = new SingleBox();
+                                                newUserSingleBox.setBoxID(thisBox.getBoxID());
+                                                userBoxArrayList.add(newUserSingleBox);
                                                 goToVendorPage(popupWindowAgain, mUserVendor);
                                             }
                                         }

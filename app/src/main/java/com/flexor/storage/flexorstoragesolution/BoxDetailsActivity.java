@@ -110,6 +110,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 
         ////Filling View////
         //Todo get vendor image
+        tenantName.setText(box.getBoxTenant());
 
 
 //        tenantName.setText(box.getBoxTenant());

@@ -17,6 +17,7 @@ public class User implements Parcelable {
     private String userCity;
     private String userPhone;
     private Integer userBalance;
+
     private Integer userAuthCode;
     private String userGender;
     private String userAddress;

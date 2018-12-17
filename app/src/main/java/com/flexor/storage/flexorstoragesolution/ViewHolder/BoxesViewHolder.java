@@ -27,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -45,6 +47,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private String boxID;
     private Box boxDetailsSend;
     private Box box;
+    private ArrayList<SingleBox> singleBoxArrayList = new ArrayList<>();
 
 
 
@@ -60,34 +63,37 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         Log.d(TAG, "bindBox: id: "+ singleBox);
         mStorage = FirebaseStorage.getInstance();
         mStorageRef = mStorage.getReference();
+        TransitionalStatCode transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
+        singleBoxArrayList= transitionalStatCode.getSingleBoxesContainer();
+        int transitionCode = transitionalStatCode.getDerivedPaging();
 
         mFirestore = FirebaseFirestore.getInstance();
         mDocumentRef= mFirestore.collection("Boxes").document(singleBox.getBoxID());
-        mDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                box = new Box();
-                box = task.getResult().toObject(Box.class);
 
-                boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
-                boxName = mView.findViewById(R.id.storage_name);
-                boxStatus = mView.findViewById(R.id.box_status);
-
-                boxName.setText(box.getBoxName());
-                getBoxStat(box);
-
-                //Todo show Image for box card list
-            }
-        });
         boxExtra = mView.findViewById(R.id.box_extra);
+        boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
+        boxName = mView.findViewById(R.id.storage_name);
+        boxStatus = mView.findViewById(R.id.box_status);
+
         boxExtra.setOnClickListener(this);
 
-        //giving rules based on passed transitional stats code
+        if (transitionCode == Constants.STATSCODE_USER_USER){
 
-        TransitionalStatCode transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
-        if (transitionalStatCode.getDerivedPaging() == Constants.TRANSITIONAL_STATS_CODE_IS_USER){
             boxExtra.setVisibility(View.GONE);
+            if (userBox(singleBox)){
+                Log.d(TAG, "bindBox: " +singleBox + " is user box!");
+                updateView();
+            } else {
+                Log.d(TAG, "bindBox: " + singleBox + " is not User Box!");
+                itemView.setVisibility(View.GONE);
+            }
+
+        } else {
+            updateView();
+            boxExtra.setVisibility(View.VISIBLE);
+
         }
+
 
         //Todo: Getting Transitional Stats Code from Vendor
 
@@ -105,6 +111,39 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 //        getBoxStat(box);
 //        boxStatus.setText(box.getBoxStatCode().toString());
 
+    }
+
+    private void updateView() {
+        mDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                box = new Box();
+                box = task.getResult().toObject(Box.class);
+
+                boxName.setText(box.getBoxName());
+                getBoxStat(box);
+
+                //Todo show Image for box card list
+            }
+        });
+    }
+
+    private boolean userBox(SingleBox singleBox) {
+        Log.d(TAG, "userBox: " + singleBoxArrayList);
+        for (SingleBox singleBoxes: singleBoxArrayList){
+            boolean found = false;
+            Log.d(TAG, "userBox: checking " +singleBox+ " is the same with " + singleBox);
+            if (singleBoxes.getBoxID().equals(singleBox.getBoxID())){
+                Log.d(TAG, "userBox: "+ singleBox+ " == " +singleBoxes);
+                found = true;
+            } else {
+                Log.d(TAG, "userBox: "+ singleBox+ " != " +singleBoxes);
+            }
+            if (found){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void getBoxStat(Box box) {
