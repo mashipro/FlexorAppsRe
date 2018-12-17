@@ -1,11 +1,9 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
@@ -41,7 +38,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -49,7 +45,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -57,14 +52,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.data.Point;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
@@ -96,6 +89,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     private ArrayList<SingleBox> userBoxArrayList = new ArrayList<>();
     private ArrayList<SingleBox> vendorBoxArrayList = new ArrayList<>();
     private ArrayList<Box> boxArrayList = new ArrayList<>();
+    private boolean giveCondition;
 
     @Nullable
     @Override
@@ -303,7 +297,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
         TextView vendorRate = popupView.findViewById(R.id.vendor_rate);
         CircleImageView cancelAction = popupView.findViewById(R.id.cancel_action);
-        Button vendorAccess = popupView.findViewById(R.id.access_vendor);
+        final Button vendorAccess = popupView.findViewById(R.id.access_vendor);
         Button vendorContact = popupView.findViewById(R.id.contact_vendor);
 
         //Todo: update vendor detail image
@@ -312,12 +306,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
             vendorAccess.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
-                    transitionalStatCode.setDerivedPaging(Constants.TRANSITIONAL_STATS_CODE_IS_USER);
-                    transitionalStatCode.setSingleBoxesContainer(userBoxArrayList);
-                    ((UserClient)(getApplicationContext())).setUserVendor(mUserVendor);
-                    Intent intent = new Intent(context,StorageDetailsActivity.class);
-                    context.startActivity(intent);
+                    vendorAccess.setText(R.string.access_vendor);
+                    goToVendorPage(popupWindow, mUserVendor);
                     //Todo: Set Vendor Access method
                     Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorStorageName()+" With ID: "+ mUserVendor.getVendorID());
                 }
@@ -390,29 +380,29 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                     RadioButton radioButton = rentPopupView.findViewById(R.id.checkbox3day);
                     radioButton.setChecked(true);
 
-                    updatePrice(3);
+                    updatePrice(3, mUserVendor, popupWindowAgain);
 
                     radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                        long duraValue;
+                        int duraValue;
                         @Override
                         public void onCheckedChanged(RadioGroup group, int checkedId) {
                             switch (checkedId){
                                 case R.id.checkbox3day:
 
                                     duraValue = 3;
-                                    updatePrice(duraValue);
+                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
                                     break;
                                 case R.id.checkbox7day:
                                     duraValue = 7;
-                                    updatePrice(duraValue);
+                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
                                     break;
                                 case R.id.checkbox14day:
                                     duraValue = 14;
-                                    updatePrice(duraValue);
+                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
                                     break;
                                 case R.id.checkbox30day:
                                     duraValue = 30;
-                                    updatePrice(duraValue);
+                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
                                     break;
                             }
                         }
@@ -431,14 +421,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
                 }
 
-                private void updatePrice(long duraValue) {
+                private void updatePrice(int duraValue, final UserVendor mUserVendor, final PopupWindow popupWindowAgain) {
                     boxRate.setText("Rp. "+mUserVendor.getVendorBoxPrice().toString() + "/day");
-                    long totalBillValue = duraValue*mUserVendor.getVendorBoxPrice();
+                    final int totalBillValue = duraValue*mUserVendor.getVendorBoxPrice().intValue();
                     totalPrice.setText("Rp. "+totalBillValue);
                     acceptButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            checkAvailableBox();
+                            checkAvailableBox(mUserVendor, totalBillValue, popupWindowAgain);
                         }
                     });
 
@@ -471,10 +461,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
     }
 
-    private void checkAvailableBox() {
+    private void checkAvailableBox(final UserVendor mUserVendor, final int totalBillValue, final PopupWindow popupWindowAgain) {
         boxArrayList.clear();
 
-        final ArrayList<String> newIDArrayList = new ArrayList<>();
+        final ArrayList<Box> newIDArrayList = new ArrayList<>();
 
         for (int i = 0; i< vendorBoxArrayList.size(); i++){
             Log.d(TAG, "checkAvailableBox: "+ vendorBoxArrayList.get(i).getBoxID());
@@ -486,9 +476,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                         Box thisBox = task.getResult().toObject(Box.class);
                         if (thisBox.getBoxTenant() == null && boxArrayList.size() == 0){
                             boxArrayList.add(thisBox);
-                            newIDArrayList.add(thisBox.getBoxID());
+                            newIDArrayList.add(thisBox);
                             Log.d(TAG, "onComplete: adding empty box to list: "+thisBox.getBoxID());
-                            prepareSetUpRent(thisBox.getBoxID());
+                            prepareSetUpRent(thisBox,mUserVendor, totalBillValue, popupWindowAgain);
                         }
                     }
                 }
@@ -536,39 +526,134 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 //        Log.d(TAG, "checkAvailableBox: how many box is empty: " +boxArrayList.size());
     }
 
-    private void prepareSetUpRent(String value) {
+    private void prepareSetUpRent(final Box thisBox, final UserVendor mUserVendor, final int totalBillValue, final PopupWindow popupWindowAgain) {
         Log.d(TAG, "prepareSetUpRent: deployed");
         Log.d(TAG, "prepareSetUpRent: boxArrayListSize: "+boxArrayList.size());
-        Log.d(TAG, "prepareSetUpRent: id>> " + value);
+        Log.d(TAG, "prepareSetUpRent: id>> " + thisBox.getBoxID() + " ||| on Vendor: " +mUserVendor.getVendorID());
         //todo: Give alert for rent confirmation
         //todo: SetUp box Auto rent
+
+        /**
+         * getting user balance
+         */
+
+        final User currentUser = ((UserClient)(getApplicationContext())).getUser();
+
+        if (rentConfirmed(currentUser.getUserBalance().intValue(), totalBillValue)){
+            Log.d(TAG, "prepareSetUpRent: giveConditon: "+giveCondition);
+
+            final DocumentReference vendorBoxReff = mFirestore.collection("Boxes").document(thisBox.getBoxID());
+            final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
+            userDocReff.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()){
+                        final User currentUserUpdt = task.getResult().toObject(User.class);
+                        ((UserClient)(getApplicationContext())).setUser(currentUserUpdt);
+                        Log.d(TAG, "prepareSetUpRent: userBalance is " + currentUserUpdt.getUserBalance());
+
+                        Integer userBalance = currentUserUpdt.getUserBalance().intValue();
+                        Log.d(TAG, "prepareSetUpRent: rent proceed confirmed: " + rentConfirmed(userBalance, totalBillValue));
+
+                        /**
+                         * getting confirmation and make transaction or cancel
+                         */
+                        if (rentConfirmed(userBalance, totalBillValue)){
+                            Log.d(TAG, "prepareSetUpRent: "+ rentConfirmed(userBalance, totalBillValue));
+                            Log.d(TAG, "prepareSetUpRent: begin calculation");
+                            int userFinalBalance = userBalance-totalBillValue;
+                            Log.d(TAG, "prepareSetUpRent: userFinalBalance: "+userFinalBalance);
+                            final SingleBox singleBox = new SingleBox();
+                            singleBox.setBoxID(boxArrayList.get(0).getBoxID());
+                            currentUserUpdt.setUserBalance(userFinalBalance);
+                            userDocReff.set(currentUserUpdt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Log.d(TAG, "onComplete: userBalance now: " + currentUserUpdt.getUserBalance());
+                                    thisBox.setBoxTenant(currentUser.getUserID());
+                                    thisBox.setBoxRentTimestamp(null);
+                                    thisBox.setBoxLastChange(null);
+                                    thisBox.setBoxStatCode(Double.valueOf(302));
+                                    vendorBoxReff.set(thisBox).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()){
+                                                goToVendorPage(popupWindowAgain, mUserVendor);
+                                            }
+                                        }
+                                    });
+                                    userDocReff.collection("MyRentedBox").document(thisBox.getBoxID()).set(singleBox);
+                                }
+                            });
+
+
+                        }
+                    }
+                }
+            });
+        }
+
+//        final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
+//        userDocReff.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()){
+//                    final User currentUserUpdt = task.getResult().toObject(User.class);
+//                    ((UserClient)(getApplicationContext())).setUser(currentUserUpdt);
+//                    Log.d(TAG, "prepareSetUpRent: userBalance is " + currentUserUpdt.getUserBalance());
+//
+//                    Integer userBalance = currentUserUpdt.getUserBalance().intValue();
+//
+//                    /**
+//                     * getting simple calculation to determine user balance is sufficient to make transaction
+//                     */
+//                    Log.d(TAG, "prepareSetUpRent: rent proceed confirmed: " + rentConfirmed(userBalance, (int) totalBillValue));
+//
+//                    /**
+//                     * getting confirmation and make transaction or cancel
+//                     */
+//                    if (rentConfirmed(userBalance, totalBillValue)){
+//                        Log.d(TAG, "prepareSetUpRent: "+ rentConfirmed(userBalance, totalBillValue));
+//                        Log.d(TAG, "prepareSetUpRent: begin calculation");
+//                        int userFinalBalance = userBalance-totalBillValue;
+//                        Double userFBDoub =(double) userFinalBalance;
+//                        Log.d(TAG, "prepareSetUpRent: userFinalBalance: "+userFinalBalance);
+//                        currentUserUpdt.setUserBalance(userFBDoub);
+//                        userDocReff.set(currentUserUpdt).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<Void> task) {
+//                                Log.d(TAG, "onComplete: userBalance now: " + currentUserUpdt.getUserBalance());
+//                            }
+//                        });
+//                    }
+//                }
+//
+//            }
+//        });
+
+
     }
 
-//    private void newIDArrayLookup(ArrayList<String> newIDArrayList, Boolean value) {
-//        if (value){
-//            Log.d(TAG, "checkAvailableBox: newIDARRAYList: " +newIDArrayList);
-//        }
-//        Log.d(TAG, "checkAvailableBox: newIDARRAYList: " +newIDArrayList);
-//    }
-//
-//    private Boolean stopIterate(boolean value) {
-//        if (value == false){
-//            return true;
-//        }
-//        return false;
-//    }
+    private void goToVendorPage(PopupWindow popupWindow, UserVendor mUserVendor) {
+        TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
+        transitionalStatCode.setDerivedPaging(Constants.TRANSITIONAL_STATS_CODE_IS_USER);
+        transitionalStatCode.setSingleBoxesContainer(userBoxArrayList);
+        ((UserClient)(getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
+        ((UserClient)(getApplicationContext())).setUserVendor(mUserVendor);
+        popupWindow.dismiss();
+        Intent intent = new Intent(context,StorageDetailsActivity.class);
+        context.startActivity(intent);
+    }
 
-
-//    private String getEmptyBox(ArrayList<Box> boxArrayList) {
-//
-//        for (Box boxesArrayList: boxArrayList){
-//            if (boxesArrayList.getBoxTenant() == null){
-//                return boxesArrayList.getBoxID();
-//            }else {
-//                return null;
-//            }
-//        }
-//    }
+    private Boolean rentConfirmed(Integer userBalance, Integer vendorBoxPrice) {
+        if (userBalance-1 <= vendorBoxPrice){
+            Log.d(TAG, "rentConfirmed: false");
+            return false;
+        } else {
+            Log.d(TAG, "rentConfirmed: true");
+            return true;
+        }
+    }
 
     private boolean boxRented() {
         Log.d(TAG, "boxRented: comparing");
@@ -589,7 +674,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         for (SingleBox compareOne: userBoxArrayList){
             boolean found = false;
             for (SingleBox compareTwo: vendorBoxArrayList){
-                if (compareOne.getBoxID() == compareTwo.getBoxID()){
+                if (compareOne.getBoxID().equals(compareTwo.getBoxID())){
                     found = true;
                 }
             }

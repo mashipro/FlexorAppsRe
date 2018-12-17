@@ -16,16 +16,17 @@ public class User implements Parcelable {
     private String userAvatar;
     private String userCity;
     private String userPhone;
-    private Double userBalance;
-    private Double userAuthCode;
+    private Integer userBalance;
+    private Integer userAuthCode;
     private String userGender;
     private String userAddress;
+    private SingleBox MyRentedBox;
     private @ServerTimestamp Date userRegistrationTimestamp;
 
     public User() {
     }
 
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Double userBalance, Double userAuthCode, String userGender, String userAddress, Date userRegistrationTimestamp) {
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Integer userBalance, Integer userAuthCode, String userGender, String userAddress, SingleBox myRentedBox, Date userRegistrationTimestamp) {
         this.userEmail = userEmail;
         this.userID = userID;
         this.userName = userName;
@@ -36,6 +37,7 @@ public class User implements Parcelable {
         this.userAuthCode = userAuthCode;
         this.userGender = userGender;
         this.userAddress = userAddress;
+        MyRentedBox = myRentedBox;
         this.userRegistrationTimestamp = userRegistrationTimestamp;
     }
 
@@ -49,15 +51,46 @@ public class User implements Parcelable {
         if (in.readByte() == 0) {
             userBalance = null;
         } else {
-            userBalance = in.readDouble();
+            userBalance = in.readInt();
         }
         if (in.readByte() == 0) {
             userAuthCode = null;
         } else {
-            userAuthCode = in.readDouble();
+            userAuthCode = in.readInt();
         }
         userGender = in.readString();
         userAddress = in.readString();
+        MyRentedBox = in.readParcelable(SingleBox.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userEmail);
+        dest.writeString(userID);
+        dest.writeString(userName);
+        dest.writeString(userAvatar);
+        dest.writeString(userCity);
+        dest.writeString(userPhone);
+        if (userBalance == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(userBalance);
+        }
+        if (userAuthCode == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(userAuthCode);
+        }
+        dest.writeString(userGender);
+        dest.writeString(userAddress);
+        dest.writeParcelable(MyRentedBox, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -71,6 +104,24 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userEmail='" + userEmail + '\'' +
+                ", userID='" + userID + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userAvatar='" + userAvatar + '\'' +
+                ", userCity='" + userCity + '\'' +
+                ", userPhone='" + userPhone + '\'' +
+                ", userBalance=" + userBalance +
+                ", userAuthCode=" + userAuthCode +
+                ", userGender='" + userGender + '\'' +
+                ", userAddress='" + userAddress + '\'' +
+                ", MyRentedBox=" + MyRentedBox +
+                ", userRegistrationTimestamp=" + userRegistrationTimestamp +
+                '}';
+    }
 
     public String getUserEmail() {
         return userEmail;
@@ -120,19 +171,19 @@ public class User implements Parcelable {
         this.userPhone = userPhone;
     }
 
-    public Double getUserBalance() {
+    public Integer getUserBalance() {
         return userBalance;
     }
 
-    public void setUserBalance(Double userBalance) {
+    public void setUserBalance(Integer userBalance) {
         this.userBalance = userBalance;
     }
 
-    public Double getUserAuthCode() {
+    public Integer getUserAuthCode() {
         return userAuthCode;
     }
 
-    public void setUserAuthCode(Double userAuthCode) {
+    public void setUserAuthCode(Integer userAuthCode) {
         this.userAuthCode = userAuthCode;
     }
 
@@ -152,57 +203,19 @@ public class User implements Parcelable {
         this.userAddress = userAddress;
     }
 
+    public SingleBox getMyRentedBox() {
+        return MyRentedBox;
+    }
+
+    public void setMyRentedBox(SingleBox myRentedBox) {
+        MyRentedBox = myRentedBox;
+    }
+
     public Date getUserRegistrationTimestamp() {
         return userRegistrationTimestamp;
     }
 
     public void setUserRegistrationTimestamp(Date userRegistrationTimestamp) {
         this.userRegistrationTimestamp = userRegistrationTimestamp;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userEmail='" + userEmail + '\'' +
-                ", userID='" + userID + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userAvatar='" + userAvatar + '\'' +
-                ", userCity='" + userCity + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", userBalance=" + userBalance +
-                ", userAuthCode=" + userAuthCode +
-                ", userGender='" + userGender + '\'' +
-                ", userAddress='" + userAddress + '\'' +
-                ", userRegistrationTimestamp=" + userRegistrationTimestamp +
-                '}';
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(userEmail);
-        parcel.writeString(userID);
-        parcel.writeString(userName);
-        parcel.writeString(userAvatar);
-        parcel.writeString(userCity);
-        parcel.writeString(userPhone);
-        if (userBalance == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(userBalance);
-        }
-        if (userAuthCode == null) {
-            parcel.writeByte((byte) 0);
-        } else {
-            parcel.writeByte((byte) 1);
-            parcel.writeDouble(userAuthCode);
-        }
-        parcel.writeString(userGender);
-        parcel.writeString(userAddress);
     }
 }
