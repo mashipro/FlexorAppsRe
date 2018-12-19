@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -64,7 +65,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener {
+public class MapsFragment extends Fragment implements OnMapReadyCallback {
     //Components
     private Context context;
 //    private MapView mapView;
@@ -80,6 +81,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
     //    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionGranted = false;
     private static final int DEFAULT_ZOOM = 15;
+
+    //View
+    private CircleImageView center, left, right;
 
     private ClusterManagerRenderer clusterManagerRenderer;
     private ClusterManager<ClusterMarker> clusterManager;
@@ -100,6 +104,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         context = view.getContext();
         mMapView = view.findViewById(R.id.map);
         screenMarkOne = view.findViewById(R.id.screen_mark_one);
+        center = view.findViewById(R.id.center_button);
+        center.isClickable();
+        left = view.findViewById(R.id.search_button);
+        right = view.findViewById(R.id.mystorage_button);
+        left.isClickable();
+        right.isClickable();
 
         initGoogleMap(savedInstanceState);
 
@@ -192,6 +202,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         if (mLocationPermissionGranted) {
             mMap = map;
             getDeviceLocation();
+            center.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getDeviceLocation();
+                }
+            });
+            left.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchNearestBox(v);
+                }
+            });
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -199,6 +221,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
 
+    }
+
+    private void searchNearestBox(View v) {
+        mMap.getCameraPosition();
+        Log.d(TAG, "searchNearestBox: camera Position: "+mMap.getCameraPosition());
+        for (UserVendor vendorList: vendorArrayList){
+            Log.d(TAG, "searchNearestBox: "+ vendorList.getVendorID()+ "Location: " +vendorList.getVendorGeoLocation());
+        }
     }
 
     private void getDeviceLocation() {
@@ -232,8 +262,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
         android.graphics.Point mapPoint = mMap.getProjection().toScreenLocation(latLng);
         mapPoint.set(mapPoint.x+offsetX,mapPoint.y+offsetY);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom));
-
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom),2000,null);
+//        mMap.animateCamera(CameraUpdateFactory.);
     }
 
     private void addMapMarkers(){
@@ -540,9 +571,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
         final User currentUser = ((UserClient)(getApplicationContext())).getUser();
 
-        if (rentConfirmed(currentUser.getUserBalance().intValue(), totalBillValue)){
+        if (rentConfirmed(currentUser.getUserBalance(), totalBillValue)){
             Log.d(TAG, "prepareSetUpRent: giveConditon: "+giveCondition);
-
             final DocumentReference vendorBoxReff = mFirestore.collection("Boxes").document(thisBox.getBoxID());
             final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
             userDocReff.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -591,23 +621,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                             });
 
 
-                        }else{
-                            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                            alert.setTitle(R.string.insufficient_balance);
-                            alert.setMessage(R.string.please_recharge);
-                            alert.setCancelable(false);
-                            alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    popupWindowAgain.dismiss();
-                                }
-                            });
-                            AlertDialog alertDialog = alert.create();
-                            alertDialog.show();
                         }
                     }
                 }
             });
+        }else{
+            Log.d(TAG, "prepareSetUpRent: Insufficient Balance. Show Popup!");
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setTitle(R.string.insufficient_balance);
+            alert.setMessage(R.string.please_recharge);
+            alert.setCancelable(false);
+            alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    popupWindowAgain.dismiss();
+                }
+            });
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         }
 
 //        final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
@@ -733,16 +764,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
 
             }
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        CircleImageView center = view.findViewById(R.id.center_button);
-        if (center.isPressed()){
-            getDeviceLocation();
-        }
-        //Todo: Onclick button setup
-
     }
     @Override
     public void onPause() {

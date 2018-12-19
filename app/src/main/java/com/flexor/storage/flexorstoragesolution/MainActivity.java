@@ -188,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "isMapsEnabled: GPS Enabled");
             return true;
         }
-        
     }
 
     private void getLocationPermission() {
