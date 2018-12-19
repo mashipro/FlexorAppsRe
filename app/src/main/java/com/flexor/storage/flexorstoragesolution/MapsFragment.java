@@ -1,7 +1,9 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
@@ -589,6 +591,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, View.O
                             });
 
 
+                        }else{
+                            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                            alert.setTitle(R.string.insufficient_balance);
+                            alert.setMessage(R.string.please_recharge);
+                            alert.setCancelable(false);
+                            alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    popupWindowAgain.dismiss();
+                                }
+                            });
+                            AlertDialog alertDialog = alert.create();
+                            alertDialog.show();
                         }
                     }
                 }

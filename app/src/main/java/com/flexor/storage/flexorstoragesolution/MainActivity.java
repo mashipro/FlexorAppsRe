@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
                         isMapsEnabled();
+                        dialog.cancel();
                     }
                 });
         final AlertDialog alert = builder.create();

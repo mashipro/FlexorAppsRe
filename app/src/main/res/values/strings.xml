@@ -87,6 +87,8 @@
     <string name="popboxRentExplain">Rent Rate for this box is:</string>
     <string name="total">Total:</string>
     <string name="cancel">Cancel</string>
+    <string name="insufficient_balance">Insufficient Balance</string>
+    <string name="please_recharge">Please recharge your balance to proceed with rent.</string>
 
     <string-array name="day_rate_options">
         <item>3 day</item>
