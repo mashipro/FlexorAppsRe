@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -116,7 +117,16 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
                 vendorLoc.setText(userVendor.getVendorStorageLocation());
             }
         });
+
+        /**
+         * invoking button method
+         */
         btnBoxAccess.setOnClickListener(this);
+        getDistance();
+
+        /**
+         *
+         */
 
         ////Filling View////
         //Todo get vendor image
@@ -134,6 +144,28 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         //Todo Enable disable Rules
         //Todo Contacts Tenants @chats / @VOip
 
+    }
+
+    private void getDistance() {
+        FusedLocationProviderClient locationServices = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationServices.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if (task.isSuccessful()){
+                    Location location = task.getResult();
+                    userLocGeo= new LatLng(
+                            location.getLatitude(),
+                            location.getLongitude());
+                    vendorLocGeo = new LatLng(
+                            userVendor.getVendorGeoLocation().getLatitude(),
+                            userVendor.getVendorGeoLocation().getLongitude());
+                    double distance = SphericalUtil.computeDistanceBetween(userLocGeo, vendorLocGeo);
+                }
+            }
+        });
     }
 
     private void getBoxStatus() {
@@ -156,33 +188,30 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 //        }
         if (btnBoxAccess.isPressed()){
             Log.d(TAG, "onClick: box Acces click");
-            calculateUserDistance();
+            if (calculateUserDistance()<=Constants.MAXRANGE_METERS_SHORT){
+                userIsClose();
+            } else if (calculateUserDistance() <= Constants.MAXRANGE_METERS_MEDIUM){
+                userIsMedium();
+            }else if (calculateUserDistance() <= Constants.MAXRANGE_METERS_LONG){
+                userIsFar();
+            }
         }
 
     }
 
-    private void calculateUserDistance() {
-        FusedLocationProviderClient locationServices = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationServices.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.isSuccessful()){
-                    Location location = task.getResult();
-                    userLocGeo= new LatLng(
-                            location.getLatitude(),
-                            location.getLongitude());
-                    vendorLocGeo = new LatLng(
-                            userVendor.getVendorGeoLocation().getLatitude(),
-                            userVendor.getVendorGeoLocation().getLongitude());
-                    double distance = SphericalUtil.computeDistanceBetween(userLocGeo, vendorLocGeo);
-                    Log.d(TAG, "onComplete: distance is: "+ distance);
-                }
-            }
-        });
+    private void userIsFar() {
+    }
 
+    private void userIsMedium() {
+    }
 
+    private void userIsClose() {
+
+    }
+
+    private double calculateUserDistance() {
+        double distances = SphericalUtil.computeDistanceBetween(userLocGeo,vendorLocGeo);
+        Log.d(TAG, "calculateUserDistance: "+distances);
+        return distances;
     }
 }

@@ -20,6 +20,8 @@ public class Constants {
     public static final int STATSCODE_VENDOR_VALIDATED = 202;
     public static final int STATSCODE_VENDOR_ACCEPTED = 203;
     public static final int STATSCODE_VENDOR_SUSPENDED = 211;
-    
+    public static final double MAXRANGE_METERS_SHORT = 25;
+    public static final double MAXRANGE_METERS_MEDIUM = 125;
+    public static final double MAXRANGE_METERS_LONG = 1250;
 
 }
