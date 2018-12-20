@@ -11,6 +11,27 @@
         android:layout_height="match_parent"
         android:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="1pt"
+        android:layout_marginBottom="8dp"
+        android:background="#000"
+        app:layout_constraintBottom_toBottomOf="@+id/mapAdmin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="1pt"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:background="#000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,10 +53,13 @@
             android:layout_marginHorizontal="8dp"
             android:src="@mipmap/ic_my_location_white_bgblue" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@mipmap/ic_my_storage_white_bgblue" />
+        <TextView
+            android:id="@+id/tv_mapAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="30sp"/>
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -3,15 +3,20 @@ package com.flexor.storage.flexorstoragesolution;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -26,46 +31,12 @@ public class MapsAdminActivity extends AppCompatActivity {
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
+    private GoogleMap mMapAdmin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_admin);
-//
-//        if (isServiceOK()){
-//            init();
-//        }
-//
-//    }
-//
-//    private void init(){
-//        Log.d(TAG, "init: init ok");
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsAdminFragment()).commit();
-//    }
-//
-//    public boolean isServiceOK() {
-//        Log.d(TAG, "isServiceOK: ok");
-//
-//        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapsAdminActivity.this);
-//
-//        if (available == ConnectionResult.SUCCESS){
-//            return true;
-//        }
-//        else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-//            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapsAdminActivity.this, available, ERROR_DIALOG_REQUEST);
-//            dialog.show();
-//        }else{
-//            Toast.makeText(this, "You Can't Make Map Request", Toast.LENGTH_SHORT).show();
-//        }
-//            return false;
-//    }
-//
-//}
-
-
-//??????????????????????
-
-
-
 
         mAuth = FirebaseAuth.getInstance();
 
