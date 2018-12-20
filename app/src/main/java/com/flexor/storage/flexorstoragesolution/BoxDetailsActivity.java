@@ -1,10 +1,12 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -110,10 +112,10 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 userVendor = new UserVendor();
                 userVendor = task.getResult().toObject(UserVendor.class);
-
                 storageName.setText(userVendor.getVendorStorageName());
                 boxName.setText(box.getBoxName());
                 getBoxStatus();
+                getDistance();
                 vendorLoc.setText(userVendor.getVendorStorageLocation());
             }
         });
@@ -122,7 +124,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
          * invoking button method
          */
         btnBoxAccess.setOnClickListener(this);
-        getDistance();
+
 
         /**
          *
@@ -162,7 +164,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
                     vendorLocGeo = new LatLng(
                             userVendor.getVendorGeoLocation().getLatitude(),
                             userVendor.getVendorGeoLocation().getLongitude());
-                    double distance = SphericalUtil.computeDistanceBetween(userLocGeo, vendorLocGeo);
+//                    double distance = SphericalUtil.computeDistanceBetween(userLocGeo, vendorLocGeo);
                 }
             }
         });
@@ -188,29 +190,65 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 //        }
         if (btnBoxAccess.isPressed()){
             Log.d(TAG, "onClick: box Acces click");
-            if (calculateUserDistance()<=Constants.MAXRANGE_METERS_SHORT){
-                userIsClose();
-            } else if (calculateUserDistance() <= Constants.MAXRANGE_METERS_MEDIUM){
-                userIsMedium();
-            }else if (calculateUserDistance() <= Constants.MAXRANGE_METERS_LONG){
-                userIsFar();
+            if (userIsFar()){
+                getPopUp(calculateUserDistance(), getAdditionalMessage());
+            }else {
+                getPopUp(calculateUserDistance(), getAdditionalMessage());
             }
         }
 
     }
 
-    private void userIsFar() {
+    private String getAdditionalMessage() {
+        int userDistance = calculateUserDistance();
+        return "your distance to Box is "+userDistance+" Meters. please select your access method.";
     }
 
-    private void userIsMedium() {
+    private boolean userIsFar() {
+        return !(calculateUserDistance() <= Constants.MAXRANGE_METERS_SHORT);
     }
 
-    private void userIsClose() {
+//    private void userIsMedium() {
+//    }
+
+//    private void userIsClose() {
+//    }
+
+    private void getPopUp(int v, String additionalMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.box_access_request);
+        builder.setMessage(additionalMessage);
+        builder.setCancelable(true);
+        builder.setPositiveButton(R.string.access_remote, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "onClick: pos clicked");
+                getManifestPopUp();
+            }
+        });
+        builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "onClick: neut clicked");
+            }
+        });
+        builder.setNegativeButton(R.string.access_local, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "onClick: neg clicked");
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void getManifestPopUp() {
 
     }
 
-    private double calculateUserDistance() {
-        double distances = SphericalUtil.computeDistanceBetween(userLocGeo,vendorLocGeo);
+    private int calculateUserDistance() {
+        int distances = (int) SphericalUtil.computeDistanceBetween(userLocGeo,vendorLocGeo);
         Log.d(TAG, "calculateUserDistance: "+distances);
         return distances;
     }

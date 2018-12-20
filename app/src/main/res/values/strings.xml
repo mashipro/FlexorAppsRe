@@ -89,6 +89,12 @@
     <string name="cancel">Cancel</string>
     <string name="insufficient_balance">Insufficient Balance</string>
     <string name="please_recharge">Please recharge your balance to proceed with rent.</string>
+    <string name="box_access_request">Box Access Request</string>
+    <string name="range">Your current range to your box is</string>
+    <string name="metric">Meter. </string>
+    <string name="access_local">Local</string>
+    <string name="box_access_request_add">Please choose your access method.</string>
+    <string name="access_remote">Remote</string>
 
     <string-array name="day_rate_options">
         <item>3 day</item>

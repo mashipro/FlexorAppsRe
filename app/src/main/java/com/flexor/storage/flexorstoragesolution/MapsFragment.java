@@ -160,7 +160,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 if (task.isSuccessful()){
                     List<SingleBox> userRentedBoxList = task.getResult().toObjects(SingleBox.class);
                     userBoxArrayList.addAll(userRentedBoxList);
-                    Log.d(TAG, "onComplete: user rented box: "+vendorArrayList);
+                    Log.d(TAG, "onComplete: user rented box: "+userBoxArrayList);
                     getVendorList();
                 }
             }
@@ -619,8 +619,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                     userDocReff.collection("MyRentedBox").document(thisBox.getBoxID()).set(singleBox);
                                 }
                             });
-
-
                         }
                     }
                 }
