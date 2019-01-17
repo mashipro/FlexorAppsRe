@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,10 +16,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,11 +42,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.IOException;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
@@ -53,7 +60,8 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveCanceledListener,
         GoogleMap.OnCameraIdleListener,
-        View.OnClickListener, LocationListener {
+        View.OnClickListener {
+//        , LocationListener {
 
     //    private MapView mapView;
     private MapView mMapAdminView;
@@ -70,6 +78,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     Marker mCurrLocationMarker = null;
     GoogleApiClient mGoogleApiClient;
     TextView textView;
+    CircleImageView savegeoButton;
 
     private static final int MESSAGE_ID_SAVE_CAMERA_POSITION = 1;
     private static final int MESSAGE_ID_READ_CAMERA_POSITION = 2;
@@ -85,6 +94,9 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         initAdminGoogleMap(savedInstanceState);
 
         textView = view.findViewById(R.id.tv_mapAdmin);
+        savegeoButton = view.findViewById(R.id.button_saveGeo);
+
+        savegeoButton.setOnClickListener(this);
 
         return view;
     }
@@ -160,7 +172,34 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.button_saveGeo:
+                saveGeo();
+                break;
+        }
 
+    }
+
+    private void saveGeo() {
+        LatLng latLng = mMapAdmin.getCameraPosition().target;
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Anda yakin dengan koordinat berikut?\n" + "Lattitude: " + latLng.latitude + "\nLongitude: " + latLng.longitude).setPositiveButton("Setuju", dialogClickListener)
+                .setNegativeButton("Tidak", dialogClickListener).show();
     }
 
     @Override
@@ -196,27 +235,32 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
             Toast.makeText(getContext(), "The user gestured on the map.",
                     Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onCameraMoveStarted: The user gestured on the map.");
         } else if (reason == GoogleMap.OnCameraMoveStartedListener
                 .REASON_API_ANIMATION) {
             Toast.makeText(getContext(), "The user tapped something on the map.",
                     Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onCameraMoveStarted: The user tapped something on the map.");
         } else if (reason == GoogleMap.OnCameraMoveStartedListener
                 .REASON_DEVELOPER_ANIMATION) {
             Toast.makeText(getContext(), "The app moved the camera.",
                     Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onCameraMoveStarted: The app moved the camera");
         }
     }
 
     @Override
     public void onCameraMove() {
-        Toast.makeText(getContext(), "The camera is moving.",
-                Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "The camera is moving.",
+//                Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCameraMove: The camera is moving");
     }
 
     @Override
     public void onCameraMoveCanceled() {
-        Toast.makeText(getContext(), "Camera movement canceled.",
-                Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "Camera movement canceled.",
+//                Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCameraMoveCanceled: Camera movement canceled");
     }
 
 
@@ -310,27 +354,27 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         mMapAdminView.onLowMemory();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-        double lattitude = location.getLatitude();
-        double longitude = location.getLongitude();
-
-        //Place current location marker
-        LatLng latLng = new LatLng(lattitude, longitude);
-
-
-        if(mCurrLocationMarker!=null){
-            mCurrLocationMarker.setPosition(latLng);
-        }else{
-            mCurrLocationMarker = mMapAdmin.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    .title("I am here"));
-        }
-
-        textView.append("Lattitude: " + lattitude + "  Longitude: " + longitude);
-        mMapAdmin.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-
-    }
+//    @Override
+//    public void onLocationChanged(Location location) {
+//
+//        double lattitude = location.getLatitude();
+//        double longitude = location.getLongitude();
+//
+//        //Place current location marker
+//        LatLng latLng = new LatLng(lattitude, longitude);
+//
+//
+//        if(mCurrLocationMarker!=null){
+//            mCurrLocationMarker.setPosition(latLng);
+//        }else{
+//            mCurrLocationMarker = mMapAdmin.addMarker(new MarkerOptions()
+//                    .position(latLng)
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+//                    .title("I am here"));
+//        }
+//
+//        textView.append("Lattitude: " + lattitude + "  Longitude: " + longitude);
+//        mMapAdmin.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+//
+//    }
 }
