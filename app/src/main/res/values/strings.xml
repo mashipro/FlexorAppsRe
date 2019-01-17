@@ -95,6 +95,13 @@
     <string name="access_local">Local</string>
     <string name="box_access_request_add">Please choose your access method.</string>
     <string name="access_remote">Remote</string>
+    <string name="manifestHeader">Please include your list of items.</string>
+    <string name="manifestHeaderIncl">*information provided only used as item checklist.</string>
+    <string name="item_add">Add Item</string>
+    <string name="item_finish">Finish Item List</string>
+    <string name="tShirt">T-Shirt</string>
+    <string name="items">Items</string>
+    <string name="amount">Amount</string>
 
     <string-array name="day_rate_options">
         <item>3 day</item>

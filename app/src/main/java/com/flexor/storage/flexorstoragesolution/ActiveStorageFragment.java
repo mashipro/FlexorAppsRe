@@ -125,7 +125,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                     Log.d(TAG, "onComplete: UserVendor Info retrieved");
                     Log.d(TAG, "onComplete: UserVendorName: " + userVendor.getVendorStorageName());
 
-                    ////Work on Header////
+                    ////Work on Header////-
                     vendorNameTest.setText(userVendor.getVendorStorageName());
 
 //                    ////Work on Parameter//// c

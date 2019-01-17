@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -125,11 +126,6 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
          */
         btnBoxAccess.setOnClickListener(this);
 
-
-        /**
-         *
-         */
-
         ////Filling View////
         //Todo get vendor image
         tenantName.setText(box.getBoxTenant());
@@ -223,7 +219,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(TAG, "onClick: pos clicked");
-                getManifestPopUp();
+                getBoxAccessCheck();
             }
         });
         builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -243,8 +239,20 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         alertDialog.show();
     }
 
-    private void getManifestPopUp() {
+    private void getBoxAccessCheck() {
+        if (boxIsEmpty()){
+            getManifestInput();
+        }
+        //todo: give condition if box is full access either add item or remove
 
+    }
+
+    private void getManifestInput() {
+        startActivity(new Intent(BoxDetailsActivity.this,BoxItemListActivity.class));
+    }
+
+    private boolean boxIsEmpty() {
+        return box.getBoxStatCode().intValue() == 311;
     }
 
     private int calculateUserDistance() {
