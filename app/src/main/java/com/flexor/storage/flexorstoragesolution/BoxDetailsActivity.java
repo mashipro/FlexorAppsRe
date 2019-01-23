@@ -174,6 +174,8 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
             boxStatus.setText(R.string.box_stat_empty);
         } else if (boxStats == 312) {
             boxStatus.setText(R.string.box_stat_full);
+        } else if (boxStats == 321) {
+            boxStatus.setText(R.string.box_stat_wait);
         }
     }
 
@@ -242,6 +244,8 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
     private void getBoxAccessCheck() {
         if (boxIsEmpty()){
             getManifestInput();
+        } else {
+            Log.d(TAG, "getBoxAccessCheck: box stats is full.. Getting Access");
         }
         //todo: give condition if box is full access either add item or remove
 

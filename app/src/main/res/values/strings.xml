@@ -102,6 +102,10 @@
     <string name="tShirt">T-Shirt</string>
     <string name="items">Items</string>
     <string name="amount">Amount</string>
+    <string name="new_box_access_request_title">New Box Access Request.</string>
+    <string name="new_box_access_request_value">Your box tenant request box access and need your confirmation.</string>
+    <string name="box_stat_wait">Processed</string>
+
 
     <string-array name="day_rate_options">
         <item>3 day</item>

@@ -7,6 +7,10 @@ import com.flexor.storage.flexorstoragesolution.Models.GlobalSettings;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -45,4 +49,5 @@ public class UserClient extends Application {
     public void setTransitionalStatCode(TransitionalStatCode transitionalStatCode) {
         this.transitionalStatCode = transitionalStatCode;
     }
+
 }
