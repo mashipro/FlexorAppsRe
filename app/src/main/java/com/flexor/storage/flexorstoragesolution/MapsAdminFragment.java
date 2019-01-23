@@ -1,57 +1,59 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
-import com.flexor.storage.flexorstoragesolution.Utility.CustomMapInfo;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 
 import java.io.IOException;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
 
@@ -69,16 +71,20 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     private FusedLocationProviderClient mAdminFusedLocationProviderClient;
     //Var
     private static final String TAG = "MapsFragment";
-    //    private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
-    //    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionGranted = false;
     private static final int DEFAULT_ZOOM = 15;
     Marker mCurrLocationMarker = null;
     GoogleApiClient mGoogleApiClient;
-    TextView textView;
+    TextView geoPoint;
     CircleImageView savegeoButton;
+
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mReference;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseUser authUser;
+    private FirebaseAuth mAuth;
 
     private static final int MESSAGE_ID_SAVE_CAMERA_POSITION = 1;
     private static final int MESSAGE_ID_READ_CAMERA_POSITION = 2;
@@ -86,15 +92,43 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     private Handler handler;
     private GoogleMap.OnCameraIdleListener onCameraIdleListener;
 
+    private LatLng latLngYo;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps_admin, container, false);
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mReference = mFirebaseDatabase.getReference();
+        mAuth = FirebaseAuth.getInstance();
+        authUser = mAuth.getCurrentUser();
+
+        UserVendor userVendor = ((UserClient) getApplicationContext()).getUserVendor();
+
         mMapAdminView = view.findViewById(R.id.mapAdmin);
         initAdminGoogleMap(savedInstanceState);
 
-        textView = view.findViewById(R.id.tv_mapAdmin);
+        geoPoint = view.findViewById(R.id.tv_mapAdmin);
         savegeoButton = view.findViewById(R.id.button_saveGeo);
+
+        // Read from the database
+        mReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+//                String value = dataSnapshot.getValue(String.class);
+                Object value = dataSnapshot.getValue();
+                Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
 
         savegeoButton.setOnClickListener(this);
 
@@ -174,20 +208,48 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.button_saveGeo:
-                saveGeo();
+//                saveGeo();
                 break;
         }
 
     }
 
-    private void saveGeo() {
-        LatLng latLng = mMapAdmin.getCameraPosition().target;
+    private void saveGeo(final DocumentSnapshot documentSnapshot) {
+        final LatLng latLng = mMapAdmin.getCameraPosition().target;
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+//        UserVendor userVendor = ((UserClient) getApplicationContext()).getUserVendor();
+        final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
+        final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+                        Query query = db
+                                .collection("Vendor");
+
+
+                        FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
+                                .setQuery(query, UserVendor.class)
+                                .build();
+//        final UserVendor userVendor = new UserVendor();
+//        LatLng latLng = mMapAdmin.getCameraPosition().target;
+//
+//        DatabaseReference newReference = mDatabase.child("Vendor").child(userVendor.getVendorID());
+//        String geoLocation = geoPoint.getText().toString().trim();
+//
+//
+//        userVendor.setVendorAddress(userVendor.getVendorAddress());
+//        userVendor.setVendorGeoLocation(userVendor.getVendorGeoLocation());
+//        UserVendor userVendor = d
+
+                        double latt = latLngYo.latitude;
+                        double longg = latLngYo.longitude;
+                        Log.d(TAG, "writeGeo: "+latt + ", " + longg);
+
+//        String vendorID = userVendor.getVendorID();
+                        mReference.child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -200,6 +262,38 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Anda yakin dengan koordinat berikut?\n" + "Lattitude: " + latLng.latitude + "\nLongitude: " + latLng.longitude).setPositiveButton("Setuju", dialogClickListener)
                 .setNegativeButton("Tidak", dialogClickListener).show();
+    }
+
+    private void writeGeo(){
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+//        final UserVendor userVendor = ((UserClient) getApplicationContext()).getUserVendor();
+        Query query = db
+                .collection("Vendor");
+
+
+        FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
+                .setQuery(query, UserVendor.class)
+                .build();
+//        final UserVendor userVendor = new UserVendor();
+//        LatLng latLng = mMapAdmin.getCameraPosition().target;
+//
+//        DatabaseReference newReference = mDatabase.child("Vendor").child(userVendor.getVendorID());
+//        String geoLocation = geoPoint.getText().toString().trim();
+//
+//
+//        userVendor.setVendorAddress(userVendor.getVendorAddress());
+//        userVendor.setVendorGeoLocation(userVendor.getVendorGeoLocation());
+
+//        final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
+//        UserVendor userVendor = d
+
+        double latt = latLngYo.latitude;
+        double longg = latLngYo.longitude;
+        Log.d(TAG, "writeGeo: "+latt + ", " + longg);
+
+//        String vendorID = userVendor.getVendorID();
+//        mReference.child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
+
     }
 
     @Override
@@ -330,7 +424,8 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
             String country = addressList.get(0).getCountryName();
             if (!locality.isEmpty() && !country.isEmpty())
 //                textView.setText(locality + "  " + country);
-                textView.setText("Lattitude: " + latLng.latitude + "Longitude: " + latLng.longitude);
+                geoPoint.setText("Lattitude: " + latLng.latitude + "Longitude: " + latLng.longitude);
+            latLngYo = latLng;
         }
 
     }
