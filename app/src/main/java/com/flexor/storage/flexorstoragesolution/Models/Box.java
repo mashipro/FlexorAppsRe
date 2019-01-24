@@ -18,8 +18,23 @@ public class Box implements Parcelable {
     private Double boxRentDuration;
     private String boxAccessCode;
     private String boxID;
+    private Boolean boxProcess;
 
     public Box() {
+    }
+
+    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Double boxStatCode, String boxName, String boxTenant, Long boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID, Boolean boxProcess) {
+        this.userVendorOwner = userVendorOwner;
+        this.boxCreatedDate = boxCreatedDate;
+        this.boxLastChange = boxLastChange;
+        this.boxStatCode = boxStatCode;
+        this.boxName = boxName;
+        this.boxTenant = boxTenant;
+        this.boxRentTimestamp = boxRentTimestamp;
+        this.boxRentDuration = boxRentDuration;
+        this.boxAccessCode = boxAccessCode;
+        this.boxID = boxID;
+        this.boxProcess = boxProcess;
     }
 
     protected Box(Parcel in) {
@@ -43,6 +58,41 @@ public class Box implements Parcelable {
         }
         boxAccessCode = in.readString();
         boxID = in.readString();
+        byte tmpBoxProcess = in.readByte();
+        boxProcess = tmpBoxProcess == 0 ? null : tmpBoxProcess == 1;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userVendorOwner);
+        if (boxStatCode == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(boxStatCode);
+        }
+        dest.writeString(boxName);
+        dest.writeString(boxTenant);
+        if (boxRentTimestamp == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(boxRentTimestamp);
+        }
+        if (boxRentDuration == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(boxRentDuration);
+        }
+        dest.writeString(boxAccessCode);
+        dest.writeString(boxID);
+        dest.writeByte((byte) (boxProcess == null ? 0 : boxProcess ? 1 : 2));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Box> CREATOR = new Creator<Box>() {
@@ -70,20 +120,8 @@ public class Box implements Parcelable {
                 ", boxRentDuration=" + boxRentDuration +
                 ", boxAccessCode='" + boxAccessCode + '\'' +
                 ", boxID='" + boxID + '\'' +
+                ", boxProcess=" + boxProcess +
                 '}';
-    }
-
-    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Double boxStatCode, String boxName, String boxTenant, Long boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID) {
-        this.userVendorOwner = userVendorOwner;
-        this.boxCreatedDate = boxCreatedDate;
-        this.boxLastChange = boxLastChange;
-        this.boxStatCode = boxStatCode;
-        this.boxName = boxName;
-        this.boxTenant = boxTenant;
-        this.boxRentTimestamp = boxRentTimestamp;
-        this.boxRentDuration = boxRentDuration;
-        this.boxAccessCode = boxAccessCode;
-        this.boxID = boxID;
     }
 
     public String getUserVendorOwner() {
@@ -166,35 +204,11 @@ public class Box implements Parcelable {
         this.boxID = boxID;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Boolean getBoxProcess() {
+        return boxProcess;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userVendorOwner);
-        if (boxStatCode == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(boxStatCode);
-        }
-        dest.writeString(boxName);
-        dest.writeString(boxTenant);
-        if (boxRentTimestamp == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(boxRentTimestamp);
-        }
-        if (boxRentDuration == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(boxRentDuration);
-        }
-        dest.writeString(boxAccessCode);
-        dest.writeString(boxID);
+    public void setBoxProcess(Boolean boxProcess) {
+        this.boxProcess = boxProcess;
     }
 }

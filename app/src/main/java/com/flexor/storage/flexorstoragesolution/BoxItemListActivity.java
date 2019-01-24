@@ -180,7 +180,7 @@ public class BoxItemListActivity extends AppCompatActivity {
 
     private void savingNewStats() {
         Log.d(TAG, "savingNewStats: saving new stats code for box");
-        boxSaved.setBoxStatCode((double)321);
+        boxSaved.setBoxProcess(true);
         documentReference.set(boxSaved).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

@@ -104,11 +104,13 @@
     <string name="amount">Amount</string>
     <string name="new_box_access_request_title">New Box Access Request.</string>
     <string name="new_box_access_request_value">Your box tenant request box access and need your confirmation.</string>
-    <string name="box_stat_wait">Processed</string>
+    <string name="box_stat_wait">- Processed</string>
     <string name="button_contact_vendor">Contact Vendor</string>
     <string name="reject">Reject</string>
     <string name="cancel_access">Cancel Access</string>
     <string name="saving_items_please_wait">Saving your items.... Please Wait :D</string>
+    <string name="box_stat_wait_empty">Empty - Processed</string>
+    <string name="box_stat_wait_full">Full - Processed</string>
 
 
     <string-array name="day_rate_options">

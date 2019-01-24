@@ -193,26 +193,31 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 
     private void getBoxStatus() {
         boxStats = box.getBoxStatCode().intValue();
-        if (boxStats == 301) {
-            boxStatus.setText(R.string.box_stat_available);
-            Log.d(TAG, "getBoxStatus: available");
-        } else if (boxStats == 311) {
-            boxStatus.setText(R.string.box_stat_empty);
-            Log.d(TAG, "getBoxStatus: empty");
-            btnBoxAccess.setText(getString(R.string.box_access));
-        } else if (boxStats == 312) {
-            boxStatus.setText(R.string.box_stat_full);
-            Log.d(TAG, "getBoxStatus: full");
-        } else if (boxStats == 321) {
-            boxStatus.setText(R.string.box_stat_wait);
-            Log.d(TAG, "getBoxStatus: processed");
+        if (box.getBoxProcess()){
+            if (boxStats == 311){
+                boxStatus.setText(R.string.box_stat_wait_empty);
+            } else if (boxStats == 312){
+                boxStatus.setText(R.string.box_stat_wait_full);
+            }
             if (executedByUser()){
                 btnBoxAccess.setText(getString(R.string.cancel_access));
             }else{
                 btnBoxAccess.setText(getString(R.string.reject));
             }
-
+        }else{
+            if (boxStats == 301) {
+                boxStatus.setText(R.string.box_stat_available);
+                Log.d(TAG, "getBoxStatus: available");
+            } else if (boxStats == 311) {
+                boxStatus.setText(R.string.box_stat_empty);
+                Log.d(TAG, "getBoxStatus: empty");
+                btnBoxAccess.setText(getString(R.string.box_access));
+            } else if (boxStats == 312) {
+                boxStatus.setText(R.string.box_stat_full);
+                Log.d(TAG, "getBoxStatus: full");
+            }
         }
+
     }
 
     @Override
@@ -224,21 +229,22 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 //        }
         if (btnBoxAccess.isPressed()){
             Log.d(TAG, "onClick: box Acces click");
-            if (boxStats == 311){
-                if (userIsFar()){
-                    getPopUp(calculateUserDistance(), getAdditionalMessage());
-                }else {
-                    getPopUp(calculateUserDistance(), getAdditionalMessage());
-                }
-            }else if (boxStats == 312){
-                Log.d(TAG, "onClick: box full. attempt to access");
-
-            } else if (boxStats == 321){
+            if (box.getBoxProcess()){
                 if (executedByUser()){
                     cancelAccess();
                 }
-            }
+            }else{
+                if (boxStats == 311){
+                    if (userIsFar()){
+                        getPopUp(calculateUserDistance(), getAdditionalMessage());
+                    }else {
+                        getPopUp(calculateUserDistance(), getAdditionalMessage());
+                    }
+                }else if (boxStats == 312){
+                    Log.d(TAG, "onClick: box full. attempt to access");
 
+                }
+            }
         }
 
     }
@@ -261,12 +267,12 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         });
-        box.setBoxStatCode((double)311);
+        box.setBoxProcess(false);
         documentReference.set(box).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete()){
-                    Log.d(TAG, "onComplete: boxStatsCode changed to: "+ box.getBoxStatCode());
+                    Log.d(TAG, "onComplete: boxStatsCode changed to: "+ box.getBoxProcess());
                     getBoxStatus();
                 }
             }
