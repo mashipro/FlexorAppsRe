@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
+import com.flexor.storage.flexorstoragesolution.Models.BoxItem;
+import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
@@ -29,13 +31,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.SphericalUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -63,7 +70,9 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
     private User user;
     private UserVendor userVendor;
     private Box box;
+    private TransitionalStatCode transitionalStatCode;
     private LatLng userLocGeo, vendorLocGeo;
+    private int boxStats;
 
 
     @Override
@@ -78,7 +87,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         box = ((UserClient) (getApplicationContext())).getBox();
         Log.d(TAG, "onCreate: boxData : " + box.getBoxName() + " boxID: " + box.getBoxID());
 
-        ////Checking User////
+
         Log.d(TAG, "onCreate: checking User ....");
         user = ((UserClient) (getApplicationContext())).getUser();
         if (user != null) {
@@ -86,6 +95,11 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         } else {
             Log.d(TAG, "onCreate: user Not Found");
         }
+
+        /**Getting transition code*/
+        transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
+        Log.d(TAG, "onCreate: getting transitional stat code: " +transitionalStatCode.getDerivedPaging());
+
 
         ////Setting View////
 
@@ -121,6 +135,13 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
+        /**modify view based on source of execution*/
+        if (executedByUser()){
+           btnEnable.setVisibility(View.GONE);
+           btnDisable.setVisibility(View.GONE);
+           btnContact.setText(getString(R.string.button_contact_vendor));
+        }
+
         /**
          * invoking button method
          */
@@ -142,6 +163,10 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         //Todo Enable disable Rules
         //Todo Contacts Tenants @chats / @VOip
 
+    }
+
+    private boolean executedByUser() {
+        return transitionalStatCode.getDerivedPaging() == Constants.TRANSITIONAL_STATS_CODE_IS_USER;
     }
 
     private void getDistance() {
@@ -167,15 +192,26 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void getBoxStatus() {
-        int boxStats = box.getBoxStatCode().intValue();
+        boxStats = box.getBoxStatCode().intValue();
         if (boxStats == 301) {
             boxStatus.setText(R.string.box_stat_available);
+            Log.d(TAG, "getBoxStatus: available");
         } else if (boxStats == 311) {
             boxStatus.setText(R.string.box_stat_empty);
+            Log.d(TAG, "getBoxStatus: empty");
+            btnBoxAccess.setText(getString(R.string.box_access));
         } else if (boxStats == 312) {
             boxStatus.setText(R.string.box_stat_full);
+            Log.d(TAG, "getBoxStatus: full");
         } else if (boxStats == 321) {
             boxStatus.setText(R.string.box_stat_wait);
+            Log.d(TAG, "getBoxStatus: processed");
+            if (executedByUser()){
+                btnBoxAccess.setText(getString(R.string.cancel_access));
+            }else{
+                btnBoxAccess.setText(getString(R.string.reject));
+            }
+
         }
     }
 
@@ -188,13 +224,53 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 //        }
         if (btnBoxAccess.isPressed()){
             Log.d(TAG, "onClick: box Acces click");
-            if (userIsFar()){
-                getPopUp(calculateUserDistance(), getAdditionalMessage());
-            }else {
-                getPopUp(calculateUserDistance(), getAdditionalMessage());
+            if (boxStats == 311){
+                if (userIsFar()){
+                    getPopUp(calculateUserDistance(), getAdditionalMessage());
+                }else {
+                    getPopUp(calculateUserDistance(), getAdditionalMessage());
+                }
+            }else if (boxStats == 312){
+                Log.d(TAG, "onClick: box full. attempt to access");
+
+            } else if (boxStats == 321){
+                if (executedByUser()){
+                    cancelAccess();
+                }
             }
+
         }
 
+    }
+
+    private void cancelAccess() {
+        final ArrayList<BoxItem> boxItemsArray = new ArrayList<>();
+        DocumentReference documentReference = mFirestore.collection("Boxes").document(box.getBoxID());
+        final CollectionReference boxItemRef = documentReference.collection("BoxItems");
+        boxItemRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isComplete()){
+                    List<BoxItem> boxItems = task.getResult().toObjects(BoxItem.class);
+                    boxItemsArray.addAll(boxItems);
+                    Log.d(TAG, "onComplete: itemsList in box"+ boxItemsArray);
+                    for (BoxItem thisBoxItem: boxItemsArray){
+                        boxItemRef.document(thisBoxItem.getBoxItemID()).delete();
+                        Log.d(TAG, "deleting this item id: "+thisBoxItem.getBoxItemID());
+                    }
+                }
+            }
+        });
+        box.setBoxStatCode((double)311);
+        documentReference.set(box).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isComplete()){
+                    Log.d(TAG, "onComplete: boxStatsCode changed to: "+ box.getBoxStatCode());
+                    getBoxStatus();
+                }
+            }
+        });
     }
 
     private String getAdditionalMessage() {
@@ -253,6 +329,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 
     private void getManifestInput() {
         startActivity(new Intent(BoxDetailsActivity.this,BoxItemListActivity.class));
+        finish();
     }
 
     private boolean boxIsEmpty() {

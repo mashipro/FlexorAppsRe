@@ -1,6 +1,7 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.BoxItem;
@@ -132,6 +134,7 @@ public class BoxItemListActivity extends AppCompatActivity {
 
     private void saveDataListManifest() {
         //Todo: set notification for vendor
+        Toast.makeText(this, R.string.saving_items_please_wait, Toast.LENGTH_SHORT).show();
 
         /** Saving array data into firestore before save into realtimedb*/
         Log.d(TAG, "saveDataListManifest: initiated. Checking array data: .....");
@@ -140,7 +143,7 @@ public class BoxItemListActivity extends AppCompatActivity {
             +" Amount= "+ boxItem.getBoxItemAmmount()
                     );
             final DocumentReference documentReferenceEach = mFirestore.collection("Boxes")
-                    .document(boxSaved.getBoxID()).collection("boxItems").document();
+                    .document(boxSaved.getBoxID()).collection("BoxItems").document();
             boxItem.setBoxItemID(documentReferenceEach.getId());
             documentReferenceEach.set(boxItem).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
@@ -182,6 +185,8 @@ public class BoxItemListActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: stats on box: "+boxSaved.getBoxID()+" ,is changed to: "+ boxSaved.getBoxID());
+                startActivity(new Intent(BoxItemListActivity.this,BoxDetailsActivity.class));
+                finish();
             }
         });
     }

@@ -8,9 +8,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -32,13 +34,14 @@ public class NotificationManager {
     public NotificationManager() {
     }
 
-    public void setNotification (String userID, Notification notification) {
+    public void setNotification (String targetUserID, Notification notification) {
         checkNotif(notification);
 
         mDatabase = FirebaseDatabase.getInstance();
-        databaseReference = mDatabase.getReference().child("UsersData").child(userID).child("Notification").push();
+        databaseReference = mDatabase.getReference().child("UsersData").child(targetUserID).child("Notification").push();
         notification.setNotificationID(databaseReference.getKey());
         notification.setNotificationIsActive(checkNotif(notification));
+        notification.setNotificationTime(ServerValue.TIMESTAMP);
         databaseReference.setValue(notification).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
