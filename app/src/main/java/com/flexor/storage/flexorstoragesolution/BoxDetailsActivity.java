@@ -22,6 +22,7 @@ import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -99,6 +100,10 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         /**Getting transition code*/
         transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
         Log.d(TAG, "onCreate: getting transitional stat code: " +transitionalStatCode.getDerivedPaging());
+
+        /**Init NotificationSend listener*/
+        CustomNotificationManager customNotificationManager = new CustomNotificationManager();
+        customNotificationManager.notificationListener();
 
 
         ////Setting View////

@@ -111,6 +111,7 @@
     <string name="saving_items_please_wait">Saving your items.... Please Wait :D</string>
     <string name="box_stat_wait_empty">Empty - Processed</string>
     <string name="box_stat_wait_full">Full - Processed</string>
+    <string name="default_notification_channel_id">DEFAULT</string>
 
 
     <string-array name="day_rate_options">

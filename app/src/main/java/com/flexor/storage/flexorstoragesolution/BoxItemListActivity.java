@@ -1,6 +1,5 @@
 package com.flexor.storage.flexorstoragesolution;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -20,15 +19,13 @@ import android.widget.Toast;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.BoxItem;
-import com.flexor.storage.flexorstoragesolution.Models.Notification;
+import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.flexor.storage.flexorstoragesolution.Utility.NotificationManager;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxItemViewHolder;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -40,8 +37,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BoxItemListActivity extends AppCompatActivity {
     private static final String TAG = "BoxItemListActivity";
@@ -110,7 +105,7 @@ public class BoxItemListActivity extends AppCompatActivity {
         /**init Firebase ref*/
         documentReference = mFirestore.collection("Boxes").document(boxSaved.getBoxID());
         databaseReference = mDatabase.getReference().child("UsersData").child(boxSaved.getBoxTenant())
-                .child("Notification").push();
+                .child("NotificationSend").push();
 //        collectionReference = documentReference.collection("boxItems");
 
         initRecyclerView();
@@ -158,9 +153,9 @@ public class BoxItemListActivity extends AppCompatActivity {
     }
 
     private void saveToRealtimeDB() {
-        Log.d(TAG, "Save Notification: Saving.......");
+        Log.d(TAG, "Save NotificationSend: Saving.......");
 
-        Notification newNotif = new Notification();
+        NotificationSend newNotif = new NotificationSend();
         newNotif.setNotificationID(databaseReference.getKey());
         newNotif.setNotificationStatsCode(401);
         newNotif.setNotificationReference(boxSaved.getBoxID());
@@ -172,8 +167,8 @@ public class BoxItemListActivity extends AppCompatActivity {
 //                savingNewStats();
 //            }
 //        });
-        NotificationManager notificationManager = new NotificationManager();
-        notificationManager.setNotification(boxSaved.getUserVendorOwner(),newNotif);
+        CustomNotificationManager customNotificationManager = new CustomNotificationManager();
+        customNotificationManager.setNotification(boxSaved.getUserVendorOwner(),newNotif);
         savingNewStats();
 
     }

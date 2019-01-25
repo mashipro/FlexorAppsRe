@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BoxItemListActivity"></activity>
+
+        <activity android:name=".BoxItemListActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -64,6 +65,15 @@
         <activity android:name=".BoxDetailsActivity" />
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />
+
+        <service android:name=".FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorNativeLightBlue" />
     </application>
 
 </manifest>

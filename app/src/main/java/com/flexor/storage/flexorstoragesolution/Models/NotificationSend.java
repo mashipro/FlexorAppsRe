@@ -1,16 +1,18 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
-public class Notification {
+import java.util.Map;
+
+public class NotificationSend {
     private String notificationID;
-    private Long notificationStatsCode;
+    private Integer notificationStatsCode;
     private String notificationReference;
     private Boolean notificationIsActive;
-    private Long notificationTime;
+    private Map<String, String> notificationTime;
 
-    public Notification() {
+    public NotificationSend() {
     }
 
-    public Notification(String notificationID, Long notificationStatsCode, String notificationReference, Boolean notificationIsActive, Long notificationTime) {
+    public NotificationSend(String notificationID, Integer notificationStatsCode, String notificationReference, Boolean notificationIsActive, Map<String, String> notificationTime) {
         this.notificationID = notificationID;
         this.notificationStatsCode = notificationStatsCode;
         this.notificationReference = notificationReference;
@@ -20,7 +22,7 @@ public class Notification {
 
     @Override
     public String toString() {
-        return "Notification{" +
+        return "NotificationSend{" +
                 "notificationID='" + notificationID + '\'' +
                 ", notificationStatsCode=" + notificationStatsCode +
                 ", notificationReference='" + notificationReference + '\'' +
@@ -37,11 +39,11 @@ public class Notification {
         this.notificationID = notificationID;
     }
 
-    public Long getNotificationStatsCode() {
+    public Integer getNotificationStatsCode() {
         return notificationStatsCode;
     }
 
-    public void setNotificationStatsCode(Long notificationStatsCode) {
+    public void setNotificationStatsCode(Integer notificationStatsCode) {
         this.notificationStatsCode = notificationStatsCode;
     }
 
@@ -61,11 +63,11 @@ public class Notification {
         this.notificationIsActive = notificationIsActive;
     }
 
-    public Long getNotificationTime() {
+    public Map<String, String> getNotificationTime() {
         return notificationTime;
     }
 
-    public void setNotificationTime(Long notificationTime) {
+    public void setNotificationTime(Map<String, String> notificationTime) {
         this.notificationTime = notificationTime;
     }
 }
