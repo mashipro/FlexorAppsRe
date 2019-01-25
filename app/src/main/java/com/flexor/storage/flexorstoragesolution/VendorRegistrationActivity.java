@@ -234,7 +234,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             .setPersistenceEnabled(true)
                             .setTimestampsInSnapshotsEnabled(true)
                             .build();
-                    mFirestore.setFirestoreSettings(settings);
+//                    mFirestore.setFirestoreSettings(settings);
                     DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
                     final UserVendor userVendor = new UserVendor();
                     userVendor.setVendorOwner(user.getUserID());

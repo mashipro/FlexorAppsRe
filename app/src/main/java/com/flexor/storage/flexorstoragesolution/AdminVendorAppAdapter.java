@@ -6,12 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.facebook.FacebookSdk.getCallbackRequestCodeOffset;
 
 public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, AdminVendorAppAdapter.AdminVendorAppHolder> {
 
@@ -20,12 +27,15 @@ public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, 
         super(options);
     }
 
+
     @Override
     protected void onBindViewHolder(@NonNull AdminVendorAppHolder holder, int position, @NonNull UserVendor model) {
 
         if (model.getVendorStatsCode() == 211) {
             holder.textViewName.setText(model.getVendorName());
             holder.textViewUID.setText(model.getVendorID());
+        }else {
+            holder.relativeLayout.setVisibility(View.GONE);
         }
 
     }
@@ -45,6 +55,7 @@ public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, 
             TextView textViewName;
             TextView textViewUID;
             public Button rejectButton, acceptButton;
+            RelativeLayout relativeLayout;
 
         public AdminVendorAppHolder(View itemView) {
             super(itemView);
@@ -53,6 +64,8 @@ public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, 
             textViewUID = itemView.findViewById(R.id.userUID);
             rejectButton = itemView.findViewById(R.id.rejectBtn);
             acceptButton = itemView.findViewById(R.id.acceptBtn);
+            relativeLayout = itemView.findViewById(R.id.vendorAppLay);
+
 
             rejectButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,6 +90,8 @@ public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, 
 
         }
     }
+
+
     public interface OnItemClickListener{
         void onAcceptClick(DocumentSnapshot documentSnapshot, int position);
         void onDeleteClick(DocumentSnapshot documentSnapshot, int position);
@@ -87,3 +102,5 @@ public class AdminVendorAppAdapter extends FirestoreRecyclerAdapter<UserVendor, 
     }
 
 }
+
+

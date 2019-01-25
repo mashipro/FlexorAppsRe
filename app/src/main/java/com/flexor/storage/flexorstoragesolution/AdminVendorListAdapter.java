@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -25,6 +26,8 @@ public class AdminVendorListAdapter extends FirestoreRecyclerAdapter<UserVendor,
 
         if (model.getVendorStatsCode() == 201){
             holder.textViewName.setText(model.getVendorName());
+        }else{
+            holder.relativeLayout.setVisibility(View.GONE);
         }
 
     }
@@ -40,10 +43,12 @@ public class AdminVendorListAdapter extends FirestoreRecyclerAdapter<UserVendor,
     public class AdminVendorListHolder extends RecyclerView.ViewHolder {
 
         public TextView textViewName;
+        RelativeLayout relativeLayout;
 
         public AdminVendorListHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.vendorfixName);
+            relativeLayout = itemView.findViewById(R.id.vendorListLay);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

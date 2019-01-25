@@ -1,6 +1,8 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
@@ -23,6 +26,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.theartofdev.edmodo.cropper.CropImage;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class VendorApplistFragment extends Fragment {
@@ -34,6 +40,9 @@ public class VendorApplistFragment extends Fragment {
     private FirebaseUser authUser;
     private FirebaseAuth mAuth;
 
+    private TextView emptyView;
+    private View view;
+
     private AdminVendorAppAdapter adminAdapter;
 
     @Nullable
@@ -41,10 +50,15 @@ public class VendorApplistFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_vendor_applist,container,false);
+        view = inflater.inflate(R.layout.fragment_vendor_applist,container,false);
 
         mAuth = FirebaseAuth.getInstance();
         authUser = mAuth.getCurrentUser();
+
+        emptyView = (TextView) view.findViewById(R.id.text_empty);
+
+
+
 
         return view;
 
@@ -57,6 +71,8 @@ public class VendorApplistFragment extends Fragment {
         setUpRecyclerView();
     }
 
+
+
     private void setUpRecyclerView() {
         Query query = db
                 .collection("Vendor");
@@ -68,104 +84,112 @@ public class VendorApplistFragment extends Fragment {
 
         adminAdapter = new AdminVendorAppAdapter(options);
 
+
         RecyclerView recyclerView = getView().findViewById(R.id.vendorApplistRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adminAdapter);
 
-        adminAdapter.setOnItemClickListener(new AdminVendorAppAdapter.OnItemClickListener() {
-            @Override
-            public void onAcceptClick(DocumentSnapshot documentSnapshot, int position) {
-                final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
-                final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+            adminAdapter.setOnItemClickListener(new AdminVendorAppAdapter.OnItemClickListener() {
+                @Override
+                public void onAcceptClick(DocumentSnapshot documentSnapshot, int position) {
+                    final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
+                    final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
 
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                //Yes button clicked
-                                db.update("vendorStatsCode", (double)201)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "onSuccess: yo!");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "onFailure: sad", e);
-                                            }
-                                        });
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    userVendor.setVendorStatsCode((double) 201);
+//                                db.update("vendorStatsCode", (double)201)
+                                    db.set(userVendor)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d(TAG, "onSuccess: yo!");
+                                                    Log.d(TAG, "onSuccess: " + userVendor.getVendorStatsCode());
+                                                    ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
+                                                    startActivity(new Intent(getActivity(), MapsAdminActivity.class));
 
-                                //success
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "onFailure: sad", e);
+                                                }
+                                            });
 
-//                Map<String, Object> data = new HashMap<>();
-//                data.put("vendorStatsCode", 299);
-//                db.set(data, SetOptions.merge());
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                //No button clicked
-                                break;
-                        }
-                    }
-                };
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setMessage("Setuju dengan Aplikasi Vendor ini?").setPositiveButton("Setuju", dialogClickListener)
-                        .setNegativeButton("Tidak", dialogClickListener).show();
-
-
-            }
-
-            @Override
-            public void onDeleteClick(DocumentSnapshot documentSnapshot, int position) {
-                final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
-                final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
-
-
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                //Yes button clicked
-                                db.update("vendorStatsCode", (double)299)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "onSuccess: yo!");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "onFailure: sad", e);
-                                            }
-                                        });
-
-                                //success
+                                    //success
 
 //                Map<String, Object> data = new HashMap<>();
 //                data.put("vendorStatsCode", 299);
 //                db.set(data, SetOptions.merge());
-                                break;
+                                    break;
 
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                //No button clicked
-                                break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
                         }
-                    }
-                };
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Setuju dengan Aplikasi Vendor ini?").setPositiveButton("Setuju", dialogClickListener)
+                            .setNegativeButton("Tidak", dialogClickListener).show();
 
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setMessage("Tolak dan Hapus dari daftar?").setPositiveButton("Setuju", dialogClickListener)
-                        .setNegativeButton("Pending", dialogClickListener).show();
-            }
-        });
+                }
+
+                @Override
+                public void onDeleteClick(DocumentSnapshot documentSnapshot, int position) {
+                    final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
+                    final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+
+
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    db.update("vendorStatsCode", (double) 299)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d(TAG, "onSuccess: yo!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "onFailure: sad", e);
+                                                }
+                                            });
+
+                                    //success
+
+//                Map<String, Object> data = new HashMap<>();
+//                data.put("vendorStatsCode", 299);
+//                db.set(data, SetOptions.merge());
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Tolak dan Hapus dari daftar?").setPositiveButton("Setuju", dialogClickListener)
+                            .setNegativeButton("Pending", dialogClickListener).show();
+                }
+            });
+
     }
 
     @Override

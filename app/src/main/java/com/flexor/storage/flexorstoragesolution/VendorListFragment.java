@@ -42,6 +42,8 @@ public class VendorListFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         authUser = mAuth.getCurrentUser();
 
+        Log.d(TAG, "onCreateView: ");
+
         return view;
     }
 
@@ -74,8 +76,9 @@ public class VendorListFragment extends Fragment {
             public void onInfoClick(DocumentSnapshot documentSnapshot, int position) {
                 final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
                 DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
-                startActivity(new Intent(getActivity(), MapsAdminActivity.class));
+//                startActivity(new Intent(getActivity(), MapsAdminActivity.class));
                 Log.d(TAG, "onInfoClick: terklik");
+                Log.d(TAG, "onInfoClick: " + userVendor.getVendorStatsCode());
                 Toast.makeText(getContext(), "Stats Code: " + userVendor.getVendorStatsCode() , Toast.LENGTH_SHORT).show();
             }
         });

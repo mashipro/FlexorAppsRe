@@ -2,16 +2,20 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -34,6 +39,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,12 +53,18 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.app.Activity.RESULT_OK;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW_BUNDLE_KEY;
@@ -85,14 +97,20 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseUser authUser;
     private FirebaseAuth mAuth;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference storageReference;
 
     private static final int MESSAGE_ID_SAVE_CAMERA_POSITION = 1;
     private static final int MESSAGE_ID_READ_CAMERA_POSITION = 2;
     private CameraPosition lastCameraPosition;
     private Handler handler;
     private GoogleMap.OnCameraIdleListener onCameraIdleListener;
+    private UserVendor userVendor;
 
     private LatLng latLngYo;
+
+    private Uri photoURI;
+    private String imageStorageUri;
 
     @Nullable
     @Override
@@ -103,8 +121,10 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         mReference = mFirebaseDatabase.getReference();
         mAuth = FirebaseAuth.getInstance();
         authUser = mAuth.getCurrentUser();
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
 
-        UserVendor userVendor = ((UserClient) getApplicationContext()).getUserVendor();
+        userVendor = ((UserClient) getApplicationContext()).getUserVendor();
 
         mMapAdminView = view.findViewById(R.id.mapAdmin);
         initAdminGoogleMap(savedInstanceState);
@@ -130,8 +150,8 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
             }
         });
 
+//        savegeoButton.setOnClickListener(this);
         savegeoButton.setOnClickListener(this);
-
         return view;
     }
 
@@ -150,6 +170,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         getLocationPermission();
 
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -208,13 +229,15 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.button_saveGeo:
-//                saveGeo();
+                saveGeo();
                 break;
         }
 
     }
 
-    private void saveGeo(final DocumentSnapshot documentSnapshot) {
+
+
+    private void saveGeo() {
         final LatLng latLng = mMapAdmin.getCameraPosition().target;
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
@@ -222,10 +245,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-//        UserVendor userVendor = ((UserClient) getApplicationContext()).getUserVendor();
-        final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
-        final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+                        DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
                         Query query = db
                                 .collection("Vendor");
 
@@ -233,23 +253,14 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
                                 .setQuery(query, UserVendor.class)
                                 .build();
-//        final UserVendor userVendor = new UserVendor();
-//        LatLng latLng = mMapAdmin.getCameraPosition().target;
-//
-//        DatabaseReference newReference = mDatabase.child("Vendor").child(userVendor.getVendorID());
-//        String geoLocation = geoPoint.getText().toString().trim();
-//
-//
-//        userVendor.setVendorAddress(userVendor.getVendorAddress());
-//        userVendor.setVendorGeoLocation(userVendor.getVendorGeoLocation());
-//        UserVendor userVendor = d
 
                         double latt = latLngYo.latitude;
                         double longg = latLngYo.longitude;
                         Log.d(TAG, "writeGeo: "+latt + ", " + longg);
 
-//        String vendorID = userVendor.getVendorID();
-                        mReference.child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
+                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
+                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Longitude").setValue(longg);
+                        startActivity(new Intent(getApplicationContext(), AdminVendorPhotoActivity.class));
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -262,38 +273,6 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Anda yakin dengan koordinat berikut?\n" + "Lattitude: " + latLng.latitude + "\nLongitude: " + latLng.longitude).setPositiveButton("Setuju", dialogClickListener)
                 .setNegativeButton("Tidak", dialogClickListener).show();
-    }
-
-    private void writeGeo(){
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-//        final UserVendor userVendor = ((UserClient) getApplicationContext()).getUserVendor();
-        Query query = db
-                .collection("Vendor");
-
-
-        FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
-                .setQuery(query, UserVendor.class)
-                .build();
-//        final UserVendor userVendor = new UserVendor();
-//        LatLng latLng = mMapAdmin.getCameraPosition().target;
-//
-//        DatabaseReference newReference = mDatabase.child("Vendor").child(userVendor.getVendorID());
-//        String geoLocation = geoPoint.getText().toString().trim();
-//
-//
-//        userVendor.setVendorAddress(userVendor.getVendorAddress());
-//        userVendor.setVendorGeoLocation(userVendor.getVendorGeoLocation());
-
-//        final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
-//        UserVendor userVendor = d
-
-        double latt = latLngYo.latitude;
-        double longg = latLngYo.longitude;
-        Log.d(TAG, "writeGeo: "+latt + ", " + longg);
-
-//        String vendorID = userVendor.getVendorID();
-//        mReference.child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
-
     }
 
     @Override
