@@ -7,16 +7,31 @@
     tools:context=".AdminVendorPhotoActivity"
     android:background="@color/colorNativeLightBlue">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <!--<de.hdodenhof.circleimageview.CircleImageView-->
+        <!--android:id="@+id/uploadFoto"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:layout_marginStart="155dp"-->
+        <!--android:layout_marginTop="250dp"-->
+        <!--android:layout_marginEnd="156dp"-->
+        <!--android:layout_marginBottom="1dp"-->
+        <!--android:foregroundGravity="center"-->
+        <!--android:src="@mipmap/ic_upload_image"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/submitImage"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <ImageView
         android:id="@+id/uploadFoto"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="155dp"
-        android:layout_marginTop="250dp"
-        android:layout_marginEnd="156dp"
-        android:layout_marginBottom="1dp"
-        android:foregroundGravity="center"
         android:src="@mipmap/ic_upload_image"
+        android:layout_width="397dp"
+        android:layout_height="429dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:foregroundGravity="center"
         app:layout_constraintBottom_toTopOf="@+id/submitImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

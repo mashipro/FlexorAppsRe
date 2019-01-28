@@ -10,11 +10,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -28,8 +32,9 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class AdminVendorPhotoActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG = "AdminVendorPhotoActivity";
 
-    private CircleImageView uploadImage;
+//    private CircleImageView uploadImage;
     private Button submitImage;
+    private ImageView uploadImage;
 
     UserVendor userVendor;
 
@@ -111,8 +116,25 @@ public class AdminVendorPhotoActivity extends AppCompatActivity implements View.
                         //Yes button clicked
 
                         userVendor = ((UserClient) getApplicationContext()).getUserVendor();
-
+                        final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
                         StorageReference imagePath = storageReference.child("Images").child("VendorLocationImages").child(userVendor.getVendorID()).child("cropped_" + System.currentTimeMillis() + ".jpg");
+
+                        userVendor.setVendorStatsCode((double) 201);
+                        db.set(userVendor)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "onSuccess: yo!");
+                                        Log.d(TAG, "onSuccess: " + userVendor.getVendorStatsCode());
+                                        ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "onFailure: sad", e);
+                                    }
+                                });
                         uploadImageandData(photoURI, imagePath, userVendor);
                         startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class));
 

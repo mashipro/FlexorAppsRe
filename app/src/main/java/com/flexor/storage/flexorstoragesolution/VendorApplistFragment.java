@@ -102,25 +102,27 @@ public class VendorApplistFragment extends Fragment {
                             switch (which) {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     //Yes button clicked
-                                    userVendor.setVendorStatsCode((double) 201);
-//                                db.update("vendorStatsCode", (double)201)
-                                    db.set(userVendor)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Log.d(TAG, "onSuccess: yo!");
-                                                    Log.d(TAG, "onSuccess: " + userVendor.getVendorStatsCode());
-                                                    ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
-                                                    startActivity(new Intent(getActivity(), MapsAdminActivity.class));
-
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Log.w(TAG, "onFailure: sad", e);
-                                                }
-                                            });
+                                    ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
+                                    startActivity(new Intent(getActivity(), MapsAdminActivity.class));
+//                                    userVendor.setVendorStatsCode((double) 201);
+////                                db.update("vendorStatsCode", (double)201)  //not used
+//                                    db.set(userVendor)
+//                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                                @Override
+//                                                public void onSuccess(Void aVoid) {
+//                                                    Log.d(TAG, "onSuccess: yo!");
+//                                                    Log.d(TAG, "onSuccess: " + userVendor.getVendorStatsCode());
+//                                                    ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
+//                                                    startActivity(new Intent(getActivity(), MapsAdminActivity.class));
+//
+//                                                }
+//                                            })
+//                                            .addOnFailureListener(new OnFailureListener() {
+//                                                @Override
+//                                                public void onFailure(@NonNull Exception e) {
+//                                                    Log.w(TAG, "onFailure: sad", e);
+//                                                }
+//                                            });
 
                                     //success
 
