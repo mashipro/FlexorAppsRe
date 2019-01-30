@@ -6,7 +6,10 @@ import android.util.Log;
 
 import com.flexor.storage.flexorstoragesolution.Models.Notification;
 import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,6 +26,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+
 public class CustomNotificationManager {
     private static final String TAG = "CustomNotifManager";
 
@@ -38,6 +43,15 @@ public class CustomNotificationManager {
     private DocumentReference documentReference;
     private CollectionReference collectionReference;
     private DatabaseReference databaseReference;
+    private Notification incomingNotification;
+
+    private Boolean notificationActive;
+    private Long notificationCount, countToOut;
+    private ArrayList<Notification> notificationArrayList= new ArrayList<>();
+    private ArrayList<Notification> notificationActiveArrayL= new ArrayList<>();
+    private ArrayList<Notification> notificationArrayFromCallback= new ArrayList<>();
+
+    private Boolean stopIteration = false;
 
     public CustomNotificationManager() {
         mAuth = FirebaseAuth.getInstance();
@@ -48,16 +62,22 @@ public class CustomNotificationManager {
     }
 
     public void setNotification (String targetUserID, NotificationSend notificationSend) {
+        Log.d(TAG, "setNotification: new notification request with target id: ");
         DatabaseReference notifRefTarget = mDatabase.getReference().child("UsersData").child(targetUserID).child("NotificationSend").push();
-        notificationSend.setNotificationID(databaseReference.getKey());
+        notificationSend.setNotificationID(notifRefTarget.getKey());
         notificationSend.setNotificationIsActive(checkNotifActive(notificationSend));
         notificationSend.setNotificationTime(ServerValue.TIMESTAMP);
         notifRefTarget.setValue(notificationSend).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: notificationSend is Set");
+                setFCM();
             }
         });
+    }
+
+    private void setFCM() {
+        //todo: set fcm
     }
 
     private boolean checkNotifActive(NotificationSend notificationSend) {
@@ -67,30 +87,30 @@ public class CustomNotificationManager {
             return notificationSend.getNotificationIsActive();
         }
     }
-    public void notificationListener(){
-//        ValueEventListener valueEventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Notification notification = dataSnapshot.getValue(Notification.class);
-//                Log.d(TAG, "onDataChange: new notificationSend posted on user id: "+ mUser.getUid());
-//                Log.d(TAG, "onDataChange: with notificationSend ID: "+ notification.getNotificationID());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        };
-//        databaseReference.addValueEventListener(valueEventListener);
+
+
+    public void notificationListener(final NotificationListener notificationListener){
+        notificationArrayList.clear();
 
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Notification notification = dataSnapshot.getValue(Notification.class);
+                incomingNotification = dataSnapshot.getValue(Notification.class);
+                Log.d(TAG, "notificationListener: incoming notification: "+ incomingNotification);
+                if (incomingNotification.getNotificationIsActive()){
+                    notificationArrayList.add(incomingNotification);
+                    Log.d(TAG, "checkIfNotifIsActive: id: "+ incomingNotification.getNotificationID()+ " is active add to active array");
+                    notificationListener.onNewNotificationReceived(incomingNotification,notificationArrayList, notificationArrayList.size());
+                }
 
-                Log.d(TAG, "onChildAdded: new NotificationSend: "+ mUser.getUid());
-                Log.d(TAG, "onChildAdded: with id: " + dataSnapshot.getKey());
-                Log.d(TAG, "onChildAdded: notificationSend Content: "+ notification);
+                //todo: do something when new notif appeared
+
+//                getNewNotification(new CustomNotificationReceived() {
+//                    @Override
+//                    public void onCallback(ArrayList<Notification> notificationsArray, int count) {
+//                        notificationListener.onNewNotificationReceived(incomingNotification,checkIfNotifIsActive(notificationArrayList), (long) count);
+//                    }
+//                });
             }
 
             @Override
@@ -111,6 +131,23 @@ public class CustomNotificationManager {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+
+        });
+
+    }
+    public void setNotificationInactive(String notificationID){
+        Log.d(TAG, "setNotificationInactive: id: "+ notificationID);
+        databaseReference.child(notificationID).child("notificationIsActive").setValue(false)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "operation successful");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "ERROR!", e);
             }
         });
     }

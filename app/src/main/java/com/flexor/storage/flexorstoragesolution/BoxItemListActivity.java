@@ -1,5 +1,6 @@
 package com.flexor.storage.flexorstoragesolution;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -22,10 +23,13 @@ import com.flexor.storage.flexorstoragesolution.Models.BoxItem;
 import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxItemViewHolder;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -33,10 +37,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BoxItemListActivity extends AppCompatActivity {
     private static final String TAG = "BoxItemListActivity";
@@ -107,9 +113,23 @@ public class BoxItemListActivity extends AppCompatActivity {
         databaseReference = mDatabase.getReference().child("UsersData").child(boxSaved.getBoxTenant())
                 .child("NotificationSend").push();
 //        collectionReference = documentReference.collection("boxItems");
+        if (transitionalStatCodeSaved.getDerivedPaging() == Constants.STATSCODE_USER_VENDOR){
+            collectionReference = mFirestore.collection("Boxes").document(boxSaved.getBoxID()).collection("BoxItems");
+            collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()){
+                        List<BoxItem> list = task.getResult().toObjects(BoxItem.class);
+                        boxItemsArray.addAll(list);
+                        initRecyclerView();
+                    }
+                }
+            });
 
-        initRecyclerView();
 
+        }else if (transitionalStatCodeSaved.getDerivedPaging() == Constants.STATSCODE_USER_USER){
+            initRecyclerView();
+        }
 
         /**FAB METHOD*/
         fab_items_add.setOnClickListener(new View.OnClickListener() {
@@ -154,36 +174,53 @@ public class BoxItemListActivity extends AppCompatActivity {
 
     private void saveToRealtimeDB() {
         Log.d(TAG, "Save NotificationSend: Saving.......");
+        if (transitionalStatCodeSaved.getDerivedPaging()==Constants.STATSCODE_USER_USER){
+            NotificationSend newNotif = new NotificationSend();
+            newNotif.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUEST);
+            newNotif.setNotificationReference(boxSaved.getBoxID());
+            newNotif.setNotificationIsActive(true);
+            CustomNotificationManager customNotificationManager = new CustomNotificationManager();
+            customNotificationManager.setNotification(boxSaved.getUserVendorOwner(),newNotif);
+            savingNewStats();
+        }else if (transitionalStatCodeSaved.getDerivedPaging() == Constants.STATSCODE_USER_VENDOR){
+            NotificationSend newNotif = new NotificationSend();
+            newNotif.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTACCEPTED);
+            newNotif.setNotificationReference(boxSaved.getBoxID());
+            newNotif.setNotificationIsActive(true);
+            CustomNotificationManager customNotificationManager = new CustomNotificationManager();
+            customNotificationManager.setNotification(boxSaved.getBoxTenant(),newNotif);
+            savingNewStats();
+        }
 
-        NotificationSend newNotif = new NotificationSend();
-        newNotif.setNotificationID(databaseReference.getKey());
-        newNotif.setNotificationStatsCode(401);
-        newNotif.setNotificationReference(boxSaved.getBoxID());
-        newNotif.setNotificationIsActive(true);
-//        databaseReference.setValue(newNotif).addOnSuccessListener(new OnSuccessListener<Void>() {
-//            @Override
-//            public void onSuccess(Void aVoid) {
-//                Log.d(TAG, "saveToRealtimeDB: Successfully saved");
-//                savingNewStats();
-//            }
-//        });
-        CustomNotificationManager customNotificationManager = new CustomNotificationManager();
-        customNotificationManager.setNotification(boxSaved.getUserVendorOwner(),newNotif);
-        savingNewStats();
+
 
     }
 
     private void savingNewStats() {
         Log.d(TAG, "savingNewStats: saving new stats code for box");
-        boxSaved.setBoxProcess(true);
-        documentReference.set(boxSaved).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: stats on box: "+boxSaved.getBoxID()+" ,is changed to: "+ boxSaved.getBoxID());
-                startActivity(new Intent(BoxItemListActivity.this,BoxDetailsActivity.class));
-                finish();
-            }
-        });
+
+        if (transitionalStatCodeSaved.getDerivedPaging()== Constants.STATSCODE_USER_USER){
+            boxSaved.setBoxProcess(true);
+            documentReference.set(boxSaved).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: stats on box: "+boxSaved.getBoxID()+" ,is changed to: "+ boxSaved.getBoxID());
+                    startActivity(new Intent(BoxItemListActivity.this,BoxDetailsActivity.class));
+                    finish();
+                }
+            });
+        } else if (transitionalStatCodeSaved.getDerivedPaging() == Constants.STATSCODE_USER_VENDOR){
+            boxSaved.setBoxProcess(false);
+            boxSaved.setBoxStatCode(312);
+            documentReference.set(boxSaved).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: stats on box: "+boxSaved.getBoxID()+" ,is changed to: "+ boxSaved.getBoxID());
+                    startActivity(new Intent(BoxItemListActivity.this,BoxDetailsActivity.class));
+                    finish();
+                }
+            });
+        }
     }
 
     private void initRecyclerView() {
@@ -199,7 +236,8 @@ public class BoxItemListActivity extends AppCompatActivity {
 
             @Override
             public void onBindViewHolder(@NonNull final BoxItemViewHolder holder, final int position) {
-                holder.bindBoxItem(boxItemsArray.get(position));
+                final BoxItem thisItembind = boxItemsArray.get(position);
+                holder.bindBoxItem(thisItembind);
                 Button item_delete = holder.itemView.findViewById(R.id.item_delete);
                 item_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -210,6 +248,38 @@ public class BoxItemListActivity extends AppCompatActivity {
                         initRecyclerView();
                     }
                 });
+                if (transitionalStatCodeSaved.getDerivedPaging() == Constants.STATSCODE_USER_VENDOR){
+                    Button item_accept = holder.itemView.findViewById(R.id.item_accept);
+                    item_accept.setVisibility(View.VISIBLE);
+                    if (!thisItembind.getBoxItemVerivied()){
+                        item_accept.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(BoxItemListActivity.this);
+                                builder.setTitle(R.string.alert_accept_item);
+                                builder.setMessage(R.string.alert_accept_item_message);
+                                builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        thisItembind.setBoxItemVerivied(true);
+                                        initRecyclerView();
+                                        dialog.dismiss();
+                                    }
+                                });
+                                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+                                AlertDialog alertDialog = builder.create();
+                                alertDialog.show();
+                            }
+                        });
+                    }else{
+                        item_accept.setVisibility(View.GONE);
+                    }
+                }
             }
 
             @Override

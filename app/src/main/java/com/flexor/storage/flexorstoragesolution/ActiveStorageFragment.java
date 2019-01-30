@@ -93,6 +93,10 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         storageReference = FirebaseStorage.getInstance().getReference();
         authUser = mAuth.getCurrentUser();
 
+        //Document Reference//
+        userVendorRef = mFirestore.collection("Vendor").document(user.getUserID());
+        userVendorBoxesRef = mFirestore.collection("Vendor").document(user.getUserID()).collection("MyBox");
+
         //View Init //
         addBox = view.findViewById(R.id.fab_addBox);
         vendorSettings = view.findViewById(R.id.fab_vendorSettings);
@@ -103,14 +107,9 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
 
         //retrieve user//
         user = ((UserClient)(getApplicationContext())).getUser();
-//        getUserVendorInfo(user, userVendor);
-        checkUser(user);
-//        checkUserVendor(user, userVendor);
+        Log.d(TAG, "onCreateView: checking user info.....");
+        Log.d(TAG, "onCreateView: user info: id: " + user.getUserID());
 
-        //Document Reference//
-        userVendorRef = mFirestore.collection("Vendor").document(user.getUserID());
-//        userVendorBoxRef = userVendorRef.collection("Boxes").document();
-        userVendorBoxesRef = mFirestore.collection("Vendor").document(user.getUserID()).collection("MyBox");
 
         ////getting userVendor////
         Log.d(TAG, "onCreateView: checking userVendor Info .....");
@@ -123,17 +122,11 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                     userVendor = task.getResult().toObject(UserVendor.class);
                     ((UserClient)(getApplicationContext())).setUserVendor(userVendor);
                     Log.d(TAG, "onComplete: UserVendor Info retrieved");
-                    Log.d(TAG, "onComplete: UserVendorName: " + userVendor.getVendorStorageName());
+                    Log.d(TAG, "onComplete: UserVendor Name: " + userVendor.getVendorStorageName());
 
                     ////Work on Header////-
                     vendorNameTest.setText(userVendor.getVendorStorageName());
 
-//                    ////Work on Parameter//// c
-//                    if (userVendor.getVendorStatsCode().intValue() == 211){
-//                        boxLimit = 9;
-//                    } else if (userVendor.getVendorStatsCode().intValue() == 212){
-//                        boxLimit = 12;
-//                    }
                 }
             });
         }else {
@@ -148,21 +141,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         addBox.setOnClickListener(this);
         vendorSettings.setOnClickListener(this);
 
-        ////Check whether box document exist yet////
-        userVendorBoxesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (DocumentSnapshot documentSnapshot: task.getResult()){
-                        if (documentSnapshot.exists()){
-                            textNoBox.setVisibility(View.GONE);
-                        }else {
-                            textNoBox.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
-            }
-        });
         //Work on RecyclerView//
         mQuery = userVendorBoxesRef.orderBy("boxID",Query.Direction.ASCENDING);
         FirestoreRecyclerOptions<SingleBox> recyclerOptions = new FirestoreRecyclerOptions.Builder<SingleBox>()
@@ -185,24 +163,19 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         };
         int spanNumber = CustomSpanCount.calculateNoOfColumns(getApplicationContext(), Constants.SINGLEBOX_SPAN_WIDTH);
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanNumber);
-        recyclerViewBoxDetails.setHasFixedSize(true);
+        recyclerViewBoxDetails.setHasFixedSize(false);
         recyclerViewBoxDetails.setItemViewCacheSize(20);
         recyclerViewBoxDetails.setDrawingCacheEnabled(true);
         recyclerViewBoxDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerViewBoxDetails.setLayoutManager(mLayoutManager);
         recyclerViewBoxDetails.setAdapter(mFirestoreRecyclerAdapter);
-        recyclerViewBoxDetails.getChildCount();
-
-        ////Working on Alert dialog////
-
+        if (recyclerViewBoxDetails.getChildCount() <= 0){
+            textNoBox.setVisibility(View.VISIBLE);
+        } else {
+            textNoBox.setVisibility(View.GONE);
+        }
 
         return view;
-    }
-
-    private void checkUser(User user) {
-        if (user != null){
-            Log.d(TAG, "checkUser: user: "+user.getUserName()+ ", " + user.getUserID());
-        }
     }
 
 //    private void checkUserVendor(User user, UserVendor userVendor) {
@@ -290,12 +263,10 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         ////saving to box collection////
         boxCollectionRef = mFirestore.collection("Boxes").document();
         final Box newBox = new Box();
-        int newStatCode = 301;
-        Double newnewStatCode = (double) newStatCode;
         newBox.setUserVendorOwner(user.getUserID());
         newBox.setBoxName(text.toString());
         newBox.setBoxID(boxCollectionRef.getId());
-        newBox.setBoxStatCode(newnewStatCode);
+        newBox.setBoxStatCode(301);
         boxCollectionRef.set(newBox).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

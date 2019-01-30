@@ -18,15 +18,19 @@ import android.widget.TextView;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.BoxItem;
+import com.flexor.storage.flexorstoragesolution.Models.Notification;
+import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
+import com.flexor.storage.flexorstoragesolution.Utility.NotificationListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,7 +51,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class BoxDetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class BoxDetailsActivity extends AppCompatActivity {
     private static final String TAG = "BoxDetailsActivity";
 
     private FirebaseAuth mAuth;
@@ -61,6 +65,9 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
     private DocumentReference vendorRef;
     private Query mQuery;
 
+    private DocumentReference documentReference;
+    private CollectionReference collectionReference;
+
     ///View///
     private ImageView boxBG, boxDetails;
     private TextView storageName, boxName, boxStatus, vendorLoc, tenantName, duration, rentDue, rentRate;
@@ -73,7 +80,7 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
     private Box box;
     private TransitionalStatCode transitionalStatCode;
     private LatLng userLocGeo, vendorLocGeo;
-    private int boxStats;
+    private CustomNotificationManager customNotificationManager;
 
 
     @Override
@@ -86,7 +93,12 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 
         ////Getting Bundle////
         box = ((UserClient) (getApplicationContext())).getBox();
-        Log.d(TAG, "onCreate: boxData : " + box.getBoxName() + " boxID: " + box.getBoxID());
+        transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
+        userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
+        Log.d(TAG, "onCreate: transitionCode"+ transitionalStatCode.getDerivedPaging());
+        Log.d(TAG, "onCreate: userVendor: "+ userVendor);
+        Log.d(TAG, "onCreate: box: "+ box);
+
 
 
         Log.d(TAG, "onCreate: checking User ....");
@@ -98,12 +110,18 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         }
 
         /**Getting transition code*/
-        transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
-        Log.d(TAG, "onCreate: getting transitional stat code: " +transitionalStatCode.getDerivedPaging());
+
 
         /**Init NotificationSend listener*/
-        CustomNotificationManager customNotificationManager = new CustomNotificationManager();
-        customNotificationManager.notificationListener();
+        customNotificationManager = new CustomNotificationManager();
+        customNotificationManager.notificationListener(new NotificationListener() {
+            @Override
+            public void onNewNotificationReceived(Notification notification, ArrayList<Notification> activeNotificationArray, int activeNotificationCount) {
+                Log.d(TAG, "onCallback: notification Array: "+activeNotificationArray);
+                Log.d(TAG, "onCallback: notification count: "+ activeNotificationCount);
+                Log.d(TAG, "onCallback: new Notification: "+ notification);
+            }
+        });
 
 
         ////Setting View////
@@ -124,41 +142,18 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         btnDisable = findViewById(R.id.btn_vendor_box_disable);
         btnContact = findViewById(R.id.btn_vendor_box_contacts_tenant);
 
-        ////Getting Vendor////
-        String vendorUid = box.getUserVendorOwner();
-        vendorRef = mFirestore.collection("Vendor").document(vendorUid);
-        vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                userVendor = new UserVendor();
-                userVendor = task.getResult().toObject(UserVendor.class);
-                storageName.setText(userVendor.getVendorStorageName());
-                boxName.setText(box.getBoxName());
-                getBoxStatus();
-                getDistance();
-                vendorLoc.setText(userVendor.getVendorStorageLocation());
-            }
-        });
+        ////////////////////////////iki/////////////////////
+        viewChecker();
+        getDistance();
 
-        /**modify view based on source of execution*/
-        if (executedByUser()){
-           btnEnable.setVisibility(View.GONE);
-           btnDisable.setVisibility(View.GONE);
-           btnContact.setText(getString(R.string.button_contact_vendor));
-        }
-
-        /**
-         * invoking button method
-         */
-        btnBoxAccess.setOnClickListener(this);
-
-        ////Filling View////
+        /**Populate View*/
         //Todo get vendor image
+        boxName.setText(box.getBoxName());
+        storageName.setText(userVendor.getVendorStorageName());
         tenantName.setText(box.getBoxTenant());
-
-
-//        tenantName.setText(box.getBoxTenant());
-//        duration.setText(box.getBoxRentDuration().toString());
+        vendorLoc.setText(userVendor.getVendorStorageLocation());
+        String price = Constants.CURRENCY + userVendor.getVendorBoxPrice();
+        rentRate.setText(price);
 
         //Todo get tenant avatar and details
         //Todo get rent duration and due date
@@ -168,10 +163,6 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         //Todo Enable disable Rules
         //Todo Contacts Tenants @chats / @VOip
 
-    }
-
-    private boolean executedByUser() {
-        return transitionalStatCode.getDerivedPaging() == Constants.TRANSITIONAL_STATS_CODE_IS_USER;
     }
 
     private void getDistance() {
@@ -196,65 +187,305 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void getBoxStatus() {
-        boxStats = box.getBoxStatCode().intValue();
-        if (box.getBoxProcess()){
-            if (boxStats == 311){
-                boxStatus.setText(R.string.box_stat_wait_empty);
-            } else if (boxStats == 312){
-                boxStatus.setText(R.string.box_stat_wait_full);
+    private void viewChecker(){
+        int boxStatCode = box.getBoxStatCode().intValue();
+        boolean boxProcess = box.getBoxProcess();
+        if (transitionalStatCode.getDerivedPaging() == Constants.TRANSITIONAL_STATS_CODE_IS_USER){
+            btnContact.setText(R.string.contact_vendor);
+            btnDisable.setVisibility(View.GONE);
+            if (boxStatCode == 311){
+                if (boxProcess){
+                    btnEnable.setVisibility(View.GONE);
+                    btnBoxAccess.setText(R.string.cancel_access);
+                    boxStatus.setText(R.string.box_stat_wait_empty);
+                    btnBoxAccess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cancelAccess();
+                        }
+                    });
+                }else {
+                    btnEnable.setVisibility(View.GONE);
+                    btnBoxAccess.setText(R.string.box_access);
+                    boxStatus.setText(R.string.box_stat_empty);
+                    btnBoxAccess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            requestAccess();
+                        }
+                    });
+                }
+            } else if (boxStatCode == 312){
+                btnEnable.setVisibility(View.VISIBLE);
+                btnEnable.setText(R.string.box_view_item);
+                btnEnable.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        viewBoxItem();
+                    }
+                });
+                if (boxProcess){
+                    btnBoxAccess.setText(R.string.cancel_access);
+                    boxStatus.setText(R.string.box_stat_wait_full);
+                    btnBoxAccess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            cancelAccessOnFull();
+                        }
+                    });
+                }else {
+                    btnBoxAccess.setText(R.string.box_access);
+                    boxStatus.setText(R.string.box_stat_full);
+                    btnBoxAccess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            requestAccessOnFull();
+                        }
+                    });
+                }
             }
-            if (executedByUser()){
-                btnBoxAccess.setText(getString(R.string.cancel_access));
-            }else{
-                btnBoxAccess.setText(getString(R.string.reject));
-            }
-        }else{
-            if (boxStats == 301) {
-                boxStatus.setText(R.string.box_stat_available);
-                Log.d(TAG, "getBoxStatus: available");
-            } else if (boxStats == 311) {
-                boxStatus.setText(R.string.box_stat_empty);
-                Log.d(TAG, "getBoxStatus: empty");
-                btnBoxAccess.setText(getString(R.string.box_access));
-            } else if (boxStats == 312) {
-                boxStatus.setText(R.string.box_stat_full);
-                Log.d(TAG, "getBoxStatus: full");
-            }
-        }
 
+        } else if (transitionalStatCode.getDerivedPaging()== Constants.TRANSITIONAL_STATS_CODE_IS_VENDOR){
+            btnContact.setText(R.string.contact_tenant);
+            if (boxStatCode == 311){
+                btnBoxAccess.setVisibility(View.GONE);
+                if (boxProcess){
+                    btnEnable.setText(R.string.accept);
+                    btnDisable.setText(R.string.decline);
+                    boxStatus.setText(R.string.box_stat_wait_empty);
+                    btnEnable.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            acceptRequest();
+                        }
+                    });
+                    btnDisable.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            declineRequest();
+                        }
+                    });
+                }else {
+                    boxStatus.setText(R.string.box_stat_empty);
+                    btnEnable.setVisibility(View.GONE);
+                    btnDisable.setVisibility(View.GONE);
+                }
+            } else if (boxStatCode == 312){
+                if (boxProcess){
+                    boxStatus.setText(R.string.box_stat_wait_full);
+                    btnBoxAccess.setVisibility(View.GONE);
+                    btnEnable.setText(R.string.accept);
+                    btnDisable.setText(R.string.decline);
+                    btnEnable.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            acceptRequestWhileFull();
+                        }
+                    });
+                    btnDisable.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            declineRequestWhileFull();
+                        }
+                    });
+                }else {
+                    boxStatus.setText(R.string.box_stat_full);
+                    btnBoxAccess.setVisibility(View.GONE);
+                    btnEnable.setVisibility(View.GONE);
+                    btnDisable.setVisibility(View.GONE);
+                }
+            }
+
+        } else if (transitionalStatCode.getDerivedPaging() == Constants.TRANSITIONAL_STATS_CODE_IS_MASTER){
+            if (boxStatCode == 311){
+                if (boxProcess){
+                    boxStatus.setText(R.string.box_stat_wait_empty);
+                }else {
+                    boxStatus.setText(R.string.box_stat_empty);
+                }
+            } else if (boxStatCode == 312){
+                if (boxProcess){
+                    boxStatus.setText(R.string.box_stat_wait_full);
+                }else {
+                    boxStatus.setText(R.string.box_stat_full);
+                }
+            }
+
+        }
     }
 
-    @Override
-    public void onClick(View v) {
-//        switch (v.getId()){
-//            case R.id.btn_vendor_box_access:
-//                Log.d(TAG, "onClick: box Acces click");
-//                calculateUserDistance();
-//        }
-        if (btnBoxAccess.isPressed()){
-            Log.d(TAG, "onClick: box Acces click");
-            if (box.getBoxProcess()){
-                if (executedByUser()){
-                    cancelAccess();
-                }
-            }else{
-                if (boxStats == 311){
-                    if (userIsFar()){
-                        getPopUp(calculateUserDistance(), getAdditionalMessage());
-                    }else {
-                        getPopUp(calculateUserDistance(), getAdditionalMessage());
-                    }
-                }else if (boxStats == 312){
-                    Log.d(TAG, "onClick: box full. attempt to access");
+    private void declineRequestWhileFull() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxDetailsActivity.this);
+        builder.setTitle(R.string.alert_boxaccess_denied);
+        builder.setMessage(R.string.alert_boxaccess_denied_message);
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                postNewNotification(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTDENIED,box.getBoxTenant());
+                changeDBstat(false, box.getBoxStatCode());
+                viewChecker();
+                dialog.dismiss();
 
-                }
             }
-        }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void acceptRequestWhileFull() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxDetailsActivity.this);
+        builder.setTitle(R.string.alert_access_accept);
+        builder.setMessage(R.string.alert_access_accept_message);
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                postNewNotification(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTACCEPTED,box.getBoxTenant());
+                deleteBoxItem();
+                changeDBstat(false, 311);
+                viewChecker();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void cancelAccessOnFull() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxDetailsActivity.this);
+        builder.setTitle(R.string.alert_request_access);
+        builder.setMessage(R.string.alert_request_access_message);
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                postNewNotification(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTCANCEL,box.getUserVendorOwner());
+                changeDBstat(false, box.getBoxStatCode());
+                viewChecker();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void requestAccessOnFull() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxDetailsActivity.this);
+        builder.setTitle(R.string.alert_request_access);
+        builder.setMessage(R.string.alert_request_access_message);
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                postNewNotification(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUEST,box.getUserVendorOwner());
+                changeDBstat(true, box.getBoxStatCode());
+                viewChecker();
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void declineRequest() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxDetailsActivity.this);
+        builder.setTitle(R.string.alert_boxaccess_denied);
+        builder.setMessage(R.string.alert_boxaccess_denied_message);
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                postNewNotification(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTDENIED,box.getBoxTenant());
+                deleteBoxItem();
+                changeDBstat(false, box.getBoxStatCode());
+                viewChecker();
+                dialog.dismiss();
+
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void acceptRequest() {
+        startActivity(new Intent(this,BoxItemListActivity.class));
     }
 
     private void cancelAccess() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(BoxDetailsActivity.this);
+        builder.setTitle(R.string.alert_request_cancel);
+        builder.setMessage(R.string.alert_request_cancel_message);
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                postNewNotification(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTCANCEL,box.getUserVendorOwner());
+                deleteBoxItem();
+                changeDBstat(false, box.getBoxStatCode());
+                viewChecker();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void requestAccess() {
+        if (userIsFar()){
+            getPopUp(calculateUserDistance(), getAdditionalMessage());
+        }else {
+            getPopUp(calculateUserDistance(), getAdditionalMessage());
+        }
+    }
+
+    private void viewBoxItem() {
+        //todo: viewbox item method
+    }
+
+    //////END OF BUTTON RESOLVER///////
+    private void postNewNotification(int notifStat, String notifTarget){
+        NotificationSend newNotif = new NotificationSend();
+        newNotif.setNotificationStatsCode(notifStat);
+        newNotif.setNotificationReference(box.getBoxID());
+        newNotif.setNotificationIsActive(true);
+        customNotificationManager.setNotification(notifTarget,newNotif);
+    }
+
+    private void changeDBstat(Boolean inProgressState, int boxStatsCode) {
+        box.setBoxProcess(inProgressState);
+        box.setBoxStatCode(boxStatsCode);
+        DocumentReference documentReference = mFirestore.collection("Boxes").document(box.getBoxID());
+        documentReference.set(box).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "box process changed!");
+                Log.d(TAG, "this box id: "+box.getBoxID());
+                Log.d(TAG, "details: "+ box);
+                viewChecker();
+            }
+        });
+    }
+
+    private void deleteBoxItem() {
         final ArrayList<BoxItem> boxItemsArray = new ArrayList<>();
         DocumentReference documentReference = mFirestore.collection("Boxes").document(box.getBoxID());
         final CollectionReference boxItemRef = documentReference.collection("BoxItems");
@@ -272,16 +503,6 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         });
-        box.setBoxProcess(false);
-        documentReference.set(box).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isComplete()){
-                    Log.d(TAG, "onComplete: boxStatsCode changed to: "+ box.getBoxProcess());
-                    getBoxStatus();
-                }
-            }
-        });
     }
 
     private String getAdditionalMessage() {
@@ -293,12 +514,6 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
         return !(calculateUserDistance() <= Constants.MAXRANGE_METERS_SHORT);
     }
 
-//    private void userIsMedium() {
-//    }
-
-//    private void userIsClose() {
-//    }
-
     private void getPopUp(int v, String additionalMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.box_access_request);
@@ -308,7 +523,8 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(TAG, "onClick: pos clicked");
-                getBoxAccessCheck();
+                startActivity(new Intent(BoxDetailsActivity.this,BoxItemListActivity.class));
+                finish();
             }
         });
         builder.setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -326,25 +542,6 @@ public class BoxDetailsActivity extends AppCompatActivity implements View.OnClic
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-    private void getBoxAccessCheck() {
-        if (boxIsEmpty()){
-            getManifestInput();
-        } else {
-            Log.d(TAG, "getBoxAccessCheck: box stats is full.. Getting Access");
-        }
-        //todo: give condition if box is full access either add item or remove
-
-    }
-
-    private void getManifestInput() {
-        startActivity(new Intent(BoxDetailsActivity.this,BoxItemListActivity.class));
-        finish();
-    }
-
-    private boolean boxIsEmpty() {
-        return box.getBoxStatCode().intValue() == 311;
     }
 
     private int calculateUserDistance() {

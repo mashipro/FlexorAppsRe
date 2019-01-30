@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="110dp"
     android:layout_height="wrap_content"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     cardview:cardCornerRadius="5dp"
-    android:elevation="3dp"
+    android:elevation="4dp"
     android:layout_gravity="center_horizontal">
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,24 +18,32 @@
             android:scaleType="centerCrop"
             android:background="@color/colorNativeBlue"/>
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="right"
+            android:gravity="left"
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/linearLayout8"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:orientation="vertical">
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"
+                cardview:layout_constraintBottom_toBottomOf="parent"
+                cardview:layout_constraintEnd_toStartOf="@+id/box_extra"
+                cardview:layout_constraintStart_toStartOf="parent"
+                cardview:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/storage_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Slot 1"
                     android:maxLength="7"
+                    android:text="Slot 1"
                     android:textColor="#000000"
                     android:textSize="13sp" />
 
@@ -47,20 +56,18 @@
                     android:textSize="8sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="end"
-                android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/box_extra"
+                android:layout_width="18dp"
+                android:layout_height="34dp"
+                android:src="@mipmap/ic_dots"
+                cardview:layout_constraintBottom_toBottomOf="parent"
+                cardview:layout_constraintEnd_toEndOf="parent"
+                cardview:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/box_extra"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@mipmap/ic_dots" />
-            </LinearLayout>
 
-        </LinearLayout>
+
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 

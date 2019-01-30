@@ -78,7 +78,6 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         boxExtra.setOnClickListener(this);
 
         if (transitionCode == Constants.STATSCODE_USER_USER){
-
             boxExtra.setVisibility(View.GONE);
             if (userBox(singleBox)){
                 Log.d(TAG, "bindBox: " +singleBox + " is user box!");
@@ -96,20 +95,6 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
 
         //Todo: Getting Transitional Stats Code from Vendor
-
-//        Log.d(TAG, "bindBox: "+ box.getBoxID());
-//        Log.d(TAG, "7bindBox: "+box.toString());
-//        Log.d(TAG, "bindBox: binding data for box: " +box.getBoxID());
-
-//        boxID = box.getBoxID();
-//
-//        boxIndividualImage.setImageURI(null);
-//        boxExtra.setOnClickListener(this);
-//        boxName.setText(box.getBoxID());
-//        boxDetailsSend = box;
-
-//        getBoxStat(box);
-//        boxStatus.setText(box.getBoxStatCode().toString());
 
     }
 

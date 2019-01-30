@@ -71,7 +71,8 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="color" value="ffffff" />
+                                                <entry key="color" value="ff0800" />
+                                                <entry key="paddingPercent" value="15" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -82,7 +83,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_check_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_assignment_late_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -92,9 +93,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="backgroundColor" value="0fff36" />
                                       <entry key="iconShape" value="CIRCLE" />
-                                      <entry key="outputName" value="ic_check_circle_green" />
+                                      <entry key="outputName" value="ic_declined_white_circle" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -126,44 +126,6 @@
                         <option name="values">
                           <map>
                             <entry key="outputIconType" value="LAUNCHER_LEGACY" />
-                          </map>
-                        </option>
-                      </PersistentState>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </PersistentState>
-          </value>
-        </entry>
-        <entry key="vectorWizard">
-          <value>
-            <PersistentState>
-              <option name="children">
-                <map>
-                  <entry key="vectorAssetStep">
-                    <value>
-                      <PersistentState>
-                        <option name="children">
-                          <map>
-                            <entry key="clipartAsset">
-                              <value>
-                                <PersistentState>
-                                  <option name="values">
-                                    <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_clear_black_24dp.xml" />
-                                    </map>
-                                  </option>
-                                </PersistentState>
-                              </value>
-                            </entry>
-                          </map>
-                        </option>
-                        <option name="values">
-                          <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_clear_white_24dp" />
-                            <entry key="sourceFile" value="C:\Users\Casteluke CL" />
                           </map>
                         </option>
                       </PersistentState>

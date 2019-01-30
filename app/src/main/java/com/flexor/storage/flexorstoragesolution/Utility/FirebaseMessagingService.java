@@ -1,4 +1,4 @@
-package com.flexor.storage.flexorstoragesolution;
+package com.flexor.storage.flexorstoragesolution.Utility;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,6 +11,8 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.flexor.storage.flexorstoragesolution.MainActivity;
+import com.flexor.storage.flexorstoragesolution.R;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {

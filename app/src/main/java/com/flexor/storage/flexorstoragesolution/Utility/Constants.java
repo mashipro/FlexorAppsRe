@@ -23,5 +23,10 @@ public class Constants {
     public static final double MAXRANGE_METERS_SHORT = 25;
     public static final double MAXRANGE_METERS_MEDIUM = 125;
     public static final double MAXRANGE_METERS_LONG = 1250;
+    public static final int NOTIFICATION_STATS_USERBOXACCESSREQUEST = 401;
+    public static final int NOTIFICATION_STATS_USERBOXACCESSREQUESTCANCEL = 491;
+    public static final int NOTIFICATION_STATS_USERBOXACCESSREQUESTACCEPTED = 402;
+    public static final int NOTIFICATION_STATS_USERBOXACCESSREQUESTDENIED = 492;
 
+    public static final String CURRENCY = "Rp.";
 }

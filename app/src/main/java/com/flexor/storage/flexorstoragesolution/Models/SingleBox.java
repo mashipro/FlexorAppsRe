@@ -5,16 +5,31 @@ import android.os.Parcelable;
 
 public class SingleBox implements Parcelable {
     private String boxID;
+    private String boxVendor;
 
     public SingleBox() {
     }
 
-    public SingleBox(String boxID) {
+    public SingleBox(String boxID, String boxVendor) {
         this.boxID = boxID;
+        this.boxVendor = boxVendor;
     }
+
 
     protected SingleBox(Parcel in) {
         boxID = in.readString();
+        boxVendor = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(boxID);
+        dest.writeString(boxVendor);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<SingleBox> CREATOR = new Creator<SingleBox>() {
@@ -29,6 +44,14 @@ public class SingleBox implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        return "SingleBox{" +
+                "boxID='" + boxID + '\'' +
+                ", boxVendor='" + boxVendor + '\'' +
+                '}';
+    }
+
     public String getBoxID() {
         return boxID;
     }
@@ -37,20 +60,11 @@ public class SingleBox implements Parcelable {
         this.boxID = boxID;
     }
 
-    @Override
-    public String toString() {
-        return "SingleBox{" +
-                "boxID='" + boxID + '\'' +
-                '}';
+    public String getBoxVendor() {
+        return boxVendor;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(boxID);
+    public void setBoxVendor(String boxVendor) {
+        this.boxVendor = boxVendor;
     }
 }

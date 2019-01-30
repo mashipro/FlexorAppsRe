@@ -604,7 +604,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                     thisBox.setBoxTenant(currentUser.getUserID());
                                     thisBox.setBoxRentTimestamp(null);
                                     thisBox.setBoxLastChange(null);
-                                    thisBox.setBoxStatCode(Double.valueOf(311));
+                                    thisBox.setBoxStatCode(311);
                                     vendorBoxReff.set(thisBox).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {

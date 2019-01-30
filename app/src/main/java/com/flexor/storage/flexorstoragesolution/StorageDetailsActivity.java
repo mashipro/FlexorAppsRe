@@ -111,29 +111,12 @@ public class StorageDetailsActivity extends AppCompatActivity {
         };
         int spanNumber = CustomSpanCount.calculateNoOfColumns(this,Constants.SINGLEBOX_SPAN_WIDTH);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this,spanNumber);
-        recyclerViewVendorDetails.setHasFixedSize(true);
+        recyclerViewVendorDetails.setHasFixedSize(false);
         recyclerViewVendorDetails.setItemViewCacheSize(20);
         recyclerViewVendorDetails.setDrawingCacheEnabled(true);
         recyclerViewVendorDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerViewVendorDetails.setAdapter(mFirestoreRecyclerAdapter);
         recyclerViewVendorDetails.setLayoutManager(mLayoutManager);
-        recyclerViewVendorDetails.getChildCount();
-//        TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
-////        transitionalStatCode.setDerivedPaging(101);
-////        ((UserClient)(getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
-
-
-
-
-//        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()){
-//                    vendorBoxAL.addAll(task.getResult().toObjects(SingleBox.class));
-//                    Log.d(TAG, "onCreate: vendorBoxALContent: "+vendorBoxAL);
-//                }
-//            }
-//        });
 
     }
     @Override

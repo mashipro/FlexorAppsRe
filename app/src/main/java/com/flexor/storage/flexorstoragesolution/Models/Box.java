@@ -11,7 +11,7 @@ public class Box implements Parcelable {
     private String userVendorOwner;
     private @ServerTimestamp Date boxCreatedDate;
     private @ServerTimestamp Date boxLastChange;
-    private Double boxStatCode;
+    private Integer boxStatCode;
     private String boxName;
     private String boxTenant;
     private Long boxRentTimestamp;
@@ -23,7 +23,7 @@ public class Box implements Parcelable {
     public Box() {
     }
 
-    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Double boxStatCode, String boxName, String boxTenant, Long boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID, Boolean boxProcess) {
+    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Integer boxStatCode, String boxName, String boxTenant, Long boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID, Boolean boxProcess) {
         this.userVendorOwner = userVendorOwner;
         this.boxCreatedDate = boxCreatedDate;
         this.boxLastChange = boxLastChange;
@@ -36,76 +36,6 @@ public class Box implements Parcelable {
         this.boxID = boxID;
         this.boxProcess = boxProcess;
     }
-
-    protected Box(Parcel in) {
-        userVendorOwner = in.readString();
-        if (in.readByte() == 0) {
-            boxStatCode = null;
-        } else {
-            boxStatCode = in.readDouble();
-        }
-        boxName = in.readString();
-        boxTenant = in.readString();
-        if (in.readByte() == 0) {
-            boxRentTimestamp = null;
-        } else {
-            boxRentTimestamp = in.readLong();
-        }
-        if (in.readByte() == 0) {
-            boxRentDuration = null;
-        } else {
-            boxRentDuration = in.readDouble();
-        }
-        boxAccessCode = in.readString();
-        boxID = in.readString();
-        byte tmpBoxProcess = in.readByte();
-        boxProcess = tmpBoxProcess == 0 ? null : tmpBoxProcess == 1;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userVendorOwner);
-        if (boxStatCode == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(boxStatCode);
-        }
-        dest.writeString(boxName);
-        dest.writeString(boxTenant);
-        if (boxRentTimestamp == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(boxRentTimestamp);
-        }
-        if (boxRentDuration == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(boxRentDuration);
-        }
-        dest.writeString(boxAccessCode);
-        dest.writeString(boxID);
-        dest.writeByte((byte) (boxProcess == null ? 0 : boxProcess ? 1 : 2));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Box> CREATOR = new Creator<Box>() {
-        @Override
-        public Box createFromParcel(Parcel in) {
-            return new Box(in);
-        }
-
-        @Override
-        public Box[] newArray(int size) {
-            return new Box[size];
-        }
-    };
 
     @Override
     public String toString() {
@@ -148,11 +78,11 @@ public class Box implements Parcelable {
         this.boxLastChange = boxLastChange;
     }
 
-    public Double getBoxStatCode() {
+    public Integer getBoxStatCode() {
         return boxStatCode;
     }
 
-    public void setBoxStatCode(Double boxStatCode) {
+    public void setBoxStatCode(Integer boxStatCode) {
         this.boxStatCode = boxStatCode;
     }
 
@@ -210,5 +140,15 @@ public class Box implements Parcelable {
 
     public void setBoxProcess(Boolean boxProcess) {
         this.boxProcess = boxProcess;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
     }
 }

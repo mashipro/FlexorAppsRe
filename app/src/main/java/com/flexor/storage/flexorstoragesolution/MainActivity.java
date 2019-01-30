@@ -1,40 +1,40 @@
 package com.flexor.storage.flexorstoragesolution;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
+import com.bumptech.glide.load.resource.bitmap.CenterInside;
+import com.flexor.storage.flexorstoragesolution.Models.Notification;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
+import com.flexor.storage.flexorstoragesolution.Utility.NotificationListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,16 +43,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -75,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private boolean mLocationPermissionGranted = false;
+    private CustomNotificationManager customNotificationManager;
+    private TextView notifCount;
 
     @Override
     protected void onStart() {
@@ -102,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
+        /**Init Notification listener*/
+
 
         drawerLayout = findViewById(R.id.drawer_layout_main);
 
@@ -128,7 +127,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
+        final TextView textView = (TextView) navigationView.getMenu().findItem(R.id.nav_main_notification).getActionView();
+
+        customNotificationManager = new CustomNotificationManager();
+        customNotificationManager.notificationListener(new NotificationListener() {
+            @Override
+            public void onNewNotificationReceived(Notification notification, ArrayList<Notification> activeNotificationArray, int activeNotificationCount) {
+                Log.d(TAG, "onNewNotificationReceived: "+ notification);
+                Log.d(TAG, "onNewNotificationReceived: "+ activeNotificationCount);
+                Log.d(TAG, "onNewNotificationReceived: "+ activeNotificationArray);
+                textView.setText(activeNotificationCount>0?String.valueOf(activeNotificationCount): null);
+            }
+
+        });
     }
+
+
 
     private void getUserDetails() {
         Log.d(TAG, "getUserDetails: getting User Details from: "+firebaseUser.getUid());
@@ -143,13 +157,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     User currentUser = task.getResult().toObject(User.class);
                     Log.d(TAG, "onComplete: User Is: "+ currentUser.toString());
                     ((UserClient)(getApplicationContext())).setUser(currentUser);
+                    if (currentUser.getUserAuthCode()==Constants.STATSCODE_USER_VENDOR){
+                        DocumentReference vendorRef = mFirestore.collection("Vendor").document(currentUser.getUserID());
+                        vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()){
+                                    UserVendor userVendor = task.getResult().toObject(UserVendor.class);
+                                    ((UserClient)(getApplicationContext())).setUserVendor(userVendor);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         });
     }
 
     private void getMapsFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).addToBackStack(null).commit();
     }
 
     private boolean checkMapServices(){
@@ -263,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(mLocationPermissionGranted){
                     getMapsFragment();
+
 //                    getLastKnownLocation();
                 }
                 else{
@@ -272,23 +299,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_Maps:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapsFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_myStorageList:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_main_notification:
-
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new NotificationFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_main_message:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_vendor_register:
@@ -307,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_main_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_logout:
@@ -341,7 +369,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (getFragmentManager().getBackStackEntryCount() >0){
+                getFragmentManager().popBackStackImmediate();
+            }else {
+                super.onBackPressed();
+            }
         }
 
     }
@@ -365,4 +397,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
 }
