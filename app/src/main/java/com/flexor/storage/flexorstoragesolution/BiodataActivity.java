@@ -108,7 +108,7 @@ public class biodata extends AppCompatActivity implements View.OnClickListener {
             biodataUser.setUserAddress(userAddressString);
             biodataUser.setUserGender(userGenderString);
             biodataUser.setUserCity(userCityString);
-            biodataUser.setUserAuthCode((double) 101);
+            biodataUser.setUserAuthCode(101);
             StorageReference imagePath = storageReference.child("Images").child("UserImages").child(newUserDocuments.getId()).child("cropped_" + System.currentTimeMillis() + ".jpg");
             uploadImageandData(photoURI, imagePath, biodataUser, newUserDocuments);
             Log.d(TAG, "storeUserInfo: users UID: " + user.getUid());

@@ -11,5 +11,9 @@
         <item name="android:background">@drawable/fab_label_bg</item>
         <item name="android:textColor">@color/colorNativeWhite</item>
     </style>
+    <style name="custom_popup">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
 
 </resources>

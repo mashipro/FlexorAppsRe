@@ -82,6 +82,47 @@
     <string name="button_disable">Disable</string>
     <string name="button_contact_tenant">Contact Tenant</string>
     <string name="box_stat_null">NULL</string>
+    <string name="access_vendor">Open Vendor</string>
+    <string name="contact_vendor">Contact Vendor</string>
+    <string name="rent_box_from_vendor">Rent Box</string>
+    <string name="box_rate_perday">Rent rate/day:</string>
+    <string name="currency">Rp.</string>
+    <string name="popboxRent">Please select duration of your rent:</string>
+    <string name="popboxRentExplain">Rent Rate for this box is:</string>
+    <string name="total">Total:</string>
+    <string name="cancel">Cancel</string>
+    <string name="insufficient_balance">Insufficient Balance</string>
+    <string name="please_recharge">Please recharge your balance to proceed with rent.</string>
+    <string name="box_access_request">Box Access Request</string>
+    <string name="range">Your current range to your box is</string>
+    <string name="metric">Meter. </string>
+    <string name="access_local">Local</string>
+    <string name="box_access_request_add">Please choose your access method.</string>
+    <string name="access_remote">Remote</string>
+    <string name="manifestHeader">Please include your list of items.</string>
+    <string name="manifestHeaderIncl">*information provided only used as item checklist.</string>
+    <string name="item_add">Add Item</string>
+    <string name="item_finish">Finish Item List</string>
+    <string name="tShirt">T-Shirt</string>
+    <string name="items">Items</string>
+    <string name="amount">Amount</string>
+    <string name="new_box_access_request_title">New Box Access Request.</string>
+    <string name="new_box_access_request_value">Your box tenant request box access and need your confirmation.</string>
+    <string name="box_stat_wait">- Processed</string>
+    <string name="button_contact_vendor">Contact Vendor</string>
+    <string name="reject">Reject</string>
+    <string name="cancel_access">Cancel Access</string>
+    <string name="saving_items_please_wait">Saving your items.... Please Wait :D</string>
+    <string name="box_stat_wait_empty">Empty - Processed</string>
+    <string name="box_stat_wait_full">Full - Processed</string>
+
+
+    <string-array name="day_rate_options">
+        <item>3 day</item>
+        <item>7 day</item>
+        <item>14 day</item>
+        <item>30 day</item>
+    </string-array>
 
     <!--Biodata-->
     <string name="gender">Gender</string>

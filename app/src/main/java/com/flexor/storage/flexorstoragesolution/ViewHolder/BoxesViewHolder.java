@@ -15,8 +15,10 @@ import android.widget.TextView;
 import com.flexor.storage.flexorstoragesolution.BoxDetailsActivity;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
+import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.R;
 import com.flexor.storage.flexorstoragesolution.UserClient;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,6 +26,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -43,6 +47,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private String boxID;
     private Box boxDetailsSend;
     private Box box;
+    private ArrayList<SingleBox> singleBoxArrayList = new ArrayList<>();
 
 
 
@@ -58,27 +63,39 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         Log.d(TAG, "bindBox: id: "+ singleBox);
         mStorage = FirebaseStorage.getInstance();
         mStorageRef = mStorage.getReference();
+        TransitionalStatCode transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
+        singleBoxArrayList= transitionalStatCode.getSingleBoxesContainer();
+        int transitionCode = transitionalStatCode.getDerivedPaging();
 
         mFirestore = FirebaseFirestore.getInstance();
         mDocumentRef= mFirestore.collection("Boxes").document(singleBox.getBoxID());
-        mDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                box = new Box();
-                box = task.getResult().toObject(Box.class);
 
-                boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
-                boxName = mView.findViewById(R.id.storage_name);
-                boxStatus = mView.findViewById(R.id.box_status);
-
-                boxName.setText(box.getBoxName());
-                getBoxStat(box);
-
-                //Todo show Image for box card list
-            }
-        });
         boxExtra = mView.findViewById(R.id.box_extra);
+        boxIndividualImage = mView.findViewById(R.id.boxIndividualImage);
+        boxName = mView.findViewById(R.id.storage_name);
+        boxStatus = mView.findViewById(R.id.box_status);
+
         boxExtra.setOnClickListener(this);
+
+        if (transitionCode == Constants.STATSCODE_USER_USER){
+
+            boxExtra.setVisibility(View.GONE);
+            if (userBox(singleBox)){
+                Log.d(TAG, "bindBox: " +singleBox + " is user box!");
+                updateView();
+            } else {
+                Log.d(TAG, "bindBox: " + singleBox + " is not User Box!");
+                itemView.setVisibility(View.GONE);
+            }
+
+        } else {
+            updateView();
+            boxExtra.setVisibility(View.VISIBLE);
+
+        }
+
+
+        //Todo: Getting Transitional Stats Code from Vendor
 
 //        Log.d(TAG, "bindBox: "+ box.getBoxID());
 //        Log.d(TAG, "7bindBox: "+box.toString());
@@ -94,6 +111,39 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
 //        getBoxStat(box);
 //        boxStatus.setText(box.getBoxStatCode().toString());
 
+    }
+
+    private void updateView() {
+        mDocumentRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                box = new Box();
+                box = task.getResult().toObject(Box.class);
+
+                boxName.setText(box.getBoxName());
+                getBoxStat(box);
+
+                //Todo show Image for box card list
+            }
+        });
+    }
+
+    private boolean userBox(SingleBox singleBox) {
+        Log.d(TAG, "userBox: " + singleBoxArrayList);
+        for (SingleBox singleBoxes: singleBoxArrayList){
+            boolean found = false;
+            Log.d(TAG, "userBox: checking " +singleBox+ " is the same with " + singleBox);
+            if (singleBoxes.getBoxID().equals(singleBox.getBoxID())){
+                Log.d(TAG, "userBox: "+ singleBox+ " == " +singleBoxes);
+                found = true;
+            } else {
+                Log.d(TAG, "userBox: "+ singleBox+ " != " +singleBoxes);
+            }
+            if (found){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void getBoxStat(Box box) {
@@ -116,6 +166,8 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
             inflater.inflate(R.menu.menu_box_details, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(new MenuItemClickListener());
             popupMenu.show();
+        } else if (boxIndividualImage.isPressed()){
+            accessBoxDetails();
         }
 
     }
@@ -125,17 +177,10 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()){
                 case R.id.nav_box_Details:
-//                    Log.d(TAG, "boxDetails Pressed with id: "+boxID);
-                    boxClickedSaveData();
-                    Intent movePage = new Intent(mContext,BoxDetailsActivity.class);
-//                    movePage.putExtra("boxIDforExtra",boxID);
-//                    movePage.putExtra("boxTypeforExtra","vendor");
-                    mContext.startActivity(movePage);
-
+                    accessBoxDetails();
 
                     return true;
                 case R.id.nav_box_Access:
-
                     Log.d(TAG, "onMenuItemClick: boxAccess pressed");
 
                     //Todo boxAccess pressed
@@ -149,9 +194,17 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
             return false;
         }
     }
-
     private void boxClickedSaveData() {
         ((UserClient)(getApplicationContext())).setBox(box);
-
     }
+
+    private void accessBoxDetails() {
+        boxClickedSaveData();
+        Intent movePage = new Intent(mContext,BoxDetailsActivity.class);
+        mContext.startActivity(movePage);
+    }
+
+
+
+
 }

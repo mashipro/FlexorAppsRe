@@ -21,8 +21,11 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
+import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomSpanCount;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -122,7 +125,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                     Log.d(TAG, "onComplete: UserVendor Info retrieved");
                     Log.d(TAG, "onComplete: UserVendorName: " + userVendor.getVendorStorageName());
 
-                    ////Work on Header////
+                    ////Work on Header////-
                     vendorNameTest.setText(userVendor.getVendorStorageName());
 
 //                    ////Work on Parameter//// c
@@ -169,6 +172,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
             @Override
             protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull SingleBox model) {
                 holder.bindBox(model);
+                Log.d(TAG, "onBindViewHolder: binding: "+model);
             }
 
             @NonNull
@@ -179,7 +183,8 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
 
             }
         };
-        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        int spanNumber = CustomSpanCount.calculateNoOfColumns(getApplicationContext(), Constants.SINGLEBOX_SPAN_WIDTH);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanNumber);
         recyclerViewBoxDetails.setHasFixedSize(true);
         recyclerViewBoxDetails.setItemViewCacheSize(20);
         recyclerViewBoxDetails.setDrawingCacheEnabled(true);

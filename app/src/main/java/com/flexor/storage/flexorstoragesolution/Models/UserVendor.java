@@ -26,26 +26,9 @@ public class UserVendor implements Parcelable {
     private Double vendorStatsCode;
     private Long vendorBoxPrice;
     private GeoPoint vendorGeoLocation;
+    private SingleBox singleBox;
 
     public UserVendor() {
-    }
-
-    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, Long vendorBoxPrice, GeoPoint vendorGeoLocation) {
-        this.vendorOwner = vendorOwner;
-        this.vendorName = vendorName;
-        this.vendorAddress = vendorAddress;
-        this.vendorID = vendorID;
-        this.vendorIDNumber = vendorIDNumber;
-        this.vendorNPWP = vendorNPWP;
-        this.vendorCompany = vendorCompany;
-        this.vendorStorageName = vendorStorageName;
-        this.vendorStorageLocation = vendorStorageLocation;
-        this.vendorIDImgPath = vendorIDImgPath;
-        this.vendorAccepted = vendorAccepted;
-        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
-        this.vendorStatsCode = vendorStatsCode;
-        this.vendorBoxPrice = vendorBoxPrice;
-        this.vendorGeoLocation = vendorGeoLocation;
     }
 
     protected UserVendor(Parcel in) {
@@ -71,6 +54,7 @@ public class UserVendor implements Parcelable {
         } else {
             vendorBoxPrice = in.readLong();
         }
+        singleBox = in.readParcelable(SingleBox.class.getClassLoader());
     }
 
     @Override
@@ -98,6 +82,7 @@ public class UserVendor implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeLong(vendorBoxPrice);
         }
+        dest.writeParcelable(singleBox, flags);
     }
 
     @Override
@@ -116,6 +101,47 @@ public class UserVendor implements Parcelable {
             return new UserVendor[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "UserVendor{" +
+                "vendorOwner='" + vendorOwner + '\'' +
+                ", vendorName='" + vendorName + '\'' +
+                ", vendorAddress='" + vendorAddress + '\'' +
+                ", vendorID='" + vendorID + '\'' +
+                ", vendorIDNumber='" + vendorIDNumber + '\'' +
+                ", vendorNPWP='" + vendorNPWP + '\'' +
+                ", vendorCompany='" + vendorCompany + '\'' +
+                ", vendorStorageName='" + vendorStorageName + '\'' +
+                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
+                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
+                ", vendorAccepted=" + vendorAccepted +
+                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
+                ", vendorStatsCode=" + vendorStatsCode +
+                ", vendorBoxPrice=" + vendorBoxPrice +
+                ", vendorGeoLocation=" + vendorGeoLocation +
+                ", singleBox=" + singleBox +
+                '}';
+    }
+
+    public UserVendor(String vendorOwner, String vendorName, String vendorAddress, String vendorID, String vendorIDNumber, String vendorNPWP, String vendorCompany, String vendorStorageName, String vendorStorageLocation, String vendorIDImgPath, Boolean vendorAccepted, Date vendorRegistrationTimestamp, Double vendorStatsCode, Long vendorBoxPrice, GeoPoint vendorGeoLocation, SingleBox singleBox) {
+        this.vendorOwner = vendorOwner;
+        this.vendorName = vendorName;
+        this.vendorAddress = vendorAddress;
+        this.vendorID = vendorID;
+        this.vendorIDNumber = vendorIDNumber;
+        this.vendorNPWP = vendorNPWP;
+        this.vendorCompany = vendorCompany;
+        this.vendorStorageName = vendorStorageName;
+        this.vendorStorageLocation = vendorStorageLocation;
+        this.vendorIDImgPath = vendorIDImgPath;
+        this.vendorAccepted = vendorAccepted;
+        this.vendorRegistrationTimestamp = vendorRegistrationTimestamp;
+        this.vendorStatsCode = vendorStatsCode;
+        this.vendorBoxPrice = vendorBoxPrice;
+        this.vendorGeoLocation = vendorGeoLocation;
+        this.singleBox = singleBox;
+    }
 
     public String getVendorOwner() {
         return vendorOwner;
@@ -237,24 +263,11 @@ public class UserVendor implements Parcelable {
         this.vendorGeoLocation = vendorGeoLocation;
     }
 
-    @Override
-    public String toString() {
-        return "UserVendor{" +
-                "vendorOwner='" + vendorOwner + '\'' +
-                ", vendorName='" + vendorName + '\'' +
-                ", vendorAddress='" + vendorAddress + '\'' +
-                ", vendorID='" + vendorID + '\'' +
-                ", vendorIDNumber='" + vendorIDNumber + '\'' +
-                ", vendorNPWP='" + vendorNPWP + '\'' +
-                ", vendorCompany='" + vendorCompany + '\'' +
-                ", vendorStorageName='" + vendorStorageName + '\'' +
-                ", vendorStorageLocation='" + vendorStorageLocation + '\'' +
-                ", vendorIDImgPath='" + vendorIDImgPath + '\'' +
-                ", vendorAccepted=" + vendorAccepted +
-                ", vendorRegistrationTimestamp=" + vendorRegistrationTimestamp +
-                ", vendorStatsCode=" + vendorStatsCode +
-                ", vendorBoxPrice=" + vendorBoxPrice +
-                ", vendorGeoLocation=" + vendorGeoLocation +
-                '}';
+    public SingleBox getSingleBox() {
+        return singleBox;
+    }
+
+    public void setSingleBox(SingleBox singleBox) {
+        this.singleBox = singleBox;
     }
 }

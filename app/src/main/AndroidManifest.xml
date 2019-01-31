@@ -20,6 +20,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".AdminVendorPhotoActivity"></activity>
 
+        <activity android:name=".BoxItemListActivity"></activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDwOUQYrB-WTMLU89G9puuCEMTVMVpnGII" />
@@ -64,6 +66,8 @@
         <activity android:name=".BoxDetailsActivity" />
         <activity android:name=".SuperAdminActivity" />
         <activity android:name=".MapsAdminActivity" />
+        <activity android:name=".StorageDetailsActivity" />
+        <activity android:name=".VendorFacadeActivity" />
     </application>
 
 </manifest>
