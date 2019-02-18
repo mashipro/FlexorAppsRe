@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,13 +14,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
@@ -28,23 +31,33 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.opencensus.tags.Tag;
 
-public class biodata extends AppCompatActivity implements View.OnClickListener {
+public class BiodataActivity extends AppCompatActivity implements View.OnClickListener {
 
 
-    private static final String TAG = "biodata";
+    private static final String TAG = "BiodataActivity";
     EditText userName, userAddress, userGender, userCity;
     Button userSubmit;
     CircleImageView userAvatar;
 
-    private FirebaseStorage firebaseStorage;
-    private StorageReference storageReference;
     private FirebaseAuth mAuth;
-    private FirebaseUser user;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseStorage firebaseStorage;
+    private FirebaseFirestore firebaseFirestore;
+    private DocumentReference documentReference;
+    private CollectionReference collectionReference;
+    private FirebaseUser firebaseUser;
+    private StorageReference storageReference;
+    private User user;
 
     private Uri photoURI;
     private String imageStorageUri;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -68,9 +81,10 @@ public class biodata extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.biodata);
 
         mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        firebaseUser = mAuth.getCurrentUser();
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
+        firebaseFirestore = FirebaseFirestore.getInstance();
 
         userName = (EditText) findViewById(R.id.biodata_name);
         userAddress = (EditText) findViewById(R.id.biodata_address);
@@ -79,9 +93,55 @@ public class biodata extends AppCompatActivity implements View.OnClickListener {
         userSubmit = (Button) findViewById(R.id.button_submit);
         userAvatar = (CircleImageView) findViewById(R.id.user_avatar);
 
+        user = ((UserClient) getApplicationContext()).getUser();
+        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                if (firebaseAuth.getCurrentUser() == null) {
+                        startActivity(new Intent(BiodataActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        finish();
+                }
+            }
+        };
+
+
+//        DocumentReference docRef = firebaseFirestore.collection("Users").document(firebaseUser.getUid());
+//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()){
+//                    user = task.getResult().toObject(User.class);
+//                    Log.d(TAG, "onComplete: user bos" + user);
+//                    ((UserClient)(getApplicationContext())).setUser(user);
+//                    if (isExist()){
+//                        startActivity(new Intent(BiodataActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//                        finish();
+//                        Log.d(TAG, "onComplete: masuk mainactivity");
+//                    }else{
+//
+//                    }
+//                }
+//            }
+//        });
+
         userSubmit.setOnClickListener(this);
         userAvatar.setOnClickListener(this);
 
+
+    }
+
+    private void checkerBiodata(){
+        if (user.getUserAddress() != null){
+            startActivity(new Intent(BiodataActivity.this, MainActivity.class));
+            finish();
+        }
+    }
+
+    private boolean isExist(){
+        return this.user.getUserAddress() != null;
     }
 
     private void storeUserInfo() {
@@ -117,8 +177,11 @@ public class biodata extends AppCompatActivity implements View.OnClickListener {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUid());
-                        Toast.makeText(biodata.this, "Biodata Updated!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(biodata.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        Toast.makeText(BiodataActivity.this, "Biodata Updated!", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                        startActivity(new Intent(BiodataActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        Toast.makeText(BiodataActivity.this, "Please Re-Login", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "onComplete: biodata update" + biodataUser.getUserAddress());
                     } else {
                         Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
                     }
@@ -160,14 +223,12 @@ public class biodata extends AppCompatActivity implements View.OnClickListener {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     User user = ((UserClient) (getApplicationContext())).getUser();
-                    Log.d(TAG, "onComplete: user Biodata uploaded Succesfully");
-                    Log.d(TAG, "userBiodata: user: " + user.getUserName());
+                    Log.d(TAG, "onComplete: firebaseUser Biodata uploaded Succesfully");
+                    Log.d(TAG, "userBiodata: firebaseUser: " + user.getUserName());
 //                    Log.d(TAG, "userVendorData: vendorName: "+userVendor.getVendorName());
 //                    Log.d(TAG, "userVendorData: vendorAddress: "+userVendor.getVendorAddress());
 //                    Log.d(TAG, "userVendorData: storageName: "+userVendor.getVendorStorageName());
 //                    Log.d(TAG, "userVendorData: storageLocation: "+userVendor.getVendorStorageLocation());
-                    startActivity(new Intent(biodata.this, MainActivity.class));
-                    finish();
                 } else {
                     Log.d(TAG, "onComplete: Error Check LOG");
                 }

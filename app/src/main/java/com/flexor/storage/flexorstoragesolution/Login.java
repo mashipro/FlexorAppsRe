@@ -1,14 +1,9 @@
 package com.flexor.storage.flexorstoragesolution;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -25,7 +20,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -41,8 +35,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
@@ -50,7 +42,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 
-import java.security.MessageDigest;
 import java.util.Arrays;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
@@ -63,13 +54,16 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private static final String EMAIL = "email";
     private int flag = 0;
     private FirebaseAuth mAuth;
-    private FirebaseUser user;
+    private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private CallbackManager mCallbackManager;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDatabaseRef;
     private FirebaseStorage mStorage;
     GoogleSignInClient mGoogleSignInClient;
+
+    private User user;
+
 
     private static final String TAG = "Login";
 
@@ -78,7 +72,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-
+//        mAuth.signOut();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +83,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         /// INIT PHASE ///
         mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        firebaseUser = mAuth.getCurrentUser();
         mCallbackManager = CallbackManager.Factory.create();
         mDatabase = FirebaseDatabase.getInstance();
         mDatabaseRef = mDatabase.getReference();
@@ -107,9 +101,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         progress_bar_main = findViewById(R.id.progress_bar_main);
         progress_bar_main.setVisibility(View.GONE);
         flag = 0;
+        user = ((UserClient) getApplicationContext()).getUser();
+
 
 
         link_register.setOnClickListener(this);
+        link_forgot.setOnClickListener(this);
         button_login.setOnClickListener(this);
         button_google.setOnClickListener(this);
         button_facebook.setOnClickListener(this);
@@ -117,9 +114,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
                 if (firebaseAuth.getCurrentUser() != null) {
-                        startActivity(new Intent(Login.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                        finish();
+//                        startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//                        finish();
+                }else{
+
                 }
             }
         };
@@ -186,13 +186,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success, update UI with the signed-in firebaseUser's information
                             Log.d(TAG, "signInWithCredential:success");
-                            storeUserInfo();
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
+//                            storeUserInfo();
+//                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+//                            updateUI(firebaseUser);
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // If sign in fails, display a message to the firebaseUser.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
 //                            updateUI(null);
@@ -211,14 +211,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     public void onComplete(@NonNull Task<AuthResult> task) {
 //                        progressBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success, update UI with the signed-in firebaseUser's information
                             Log.d("TAG", "signInWithCredential:success");
-                            storeUserInfo();
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
+//                            storeUserInfo();
+//                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+//                            updateUI(firebaseUser);
                         } else {
 
-                            // If sign in fails, display a message to the user.
+                            // If sign in fails, display a message to the firebaseUser.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication Failed :(", Toast.LENGTH_SHORT).show();
 //                            Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
@@ -247,6 +247,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 if (link_register.isPressed()) {
                     register();
                     Log.d("TAG", "Register Pressed!");
+                }
+                break;
+
+            case R.id.tvLinkForgot:
+                if (link_forgot.isPressed()){
+                    forgotPass();
+                    Log.d(TAG, "onClick: forgot");
+                    Log.d(TAG, "onClick: go back to login");
                 }
                 break;
             case R.id.button_login:
@@ -308,6 +316,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             flag = 2;
             check();
         } else {
+
+        }
+    }
+
+    private void forgotPass() {
+        if (flag == 0) {
+            startActivity(new Intent(Login.this, ForgotPasswordActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else {
             home();
         }
     }
@@ -346,6 +362,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 //                            checkIfEmailIsVerified();
+//                                startActivity(new Intent(Login.this, MainActivity.class));
+                            startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            checkIfEmailIsVerified();
+                            finish();
                             Log.d("TAG", "SignIn with email: Success");
                         } else {
                             Log.d("TAG", "SignIn with email: failed");
@@ -367,7 +387,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         mGoogleSignInClient.signOut();
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
     }
 
     private void registerMe() {
@@ -404,22 +423,22 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         public void onComplete(@NonNull Task<AuthResult> task) {
 //                        progressBar.setVisibility(View.GONE);
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
+                                // Sign in success, update UI with the signed-in firebaseUser's information
                                 Log.d("TAG", "createUserWithEmail:success");
-                                sendEmailVerification();
-
-
+                                uploadRegisterInfo();
                                 flag = 0;
                                 check();
                                 FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
+                                checkIfEmailIsVerified();
+//                                sendEmailVerification();
+//                            updateUI(firebaseUser);
                             } else {
 
                                 if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                     Toast.makeText(getApplicationContext(), "You are already registered", Toast.LENGTH_SHORT).show();
 
                                 } else {
-                                    // If sign in fails, display a message to the user.
+                                    // If sign in fails, display a message to the firebaseUser.
                                     Log.w("TAG", "createUserWithEmail:failure", task.getException());
                                     Toast.makeText(Login.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
@@ -433,26 +452,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-//    private void storeUserInfo() {
-//        FirebaseUser newUsers = FirebaseAuth.getInstance().getCurrentUser();
-//        String userID = newUsers.getUid();
-//        String userEmail = newUsers.getEmail();
-//        DocumentReference newUserDocuments = mFirebaseFirestore.collection("Users").document();
-//        User users = new User();
-//        users.setUserID(userID);
-//        users.setUserEmail(userEmail);
-//
-//        newUserDocuments.set(users).addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                if (task.isSuccessful()){
-//                    Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + newUsers.getUid());
-//                }else{
-//                    Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
-//                }
-//            }
-//        });
-//    }
 
     private void sendEmailVerification() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -461,8 +460,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
+                        Toast.makeText(Login.this, "verification email sent", Toast.LENGTH_SHORT).show();
                         Log.d("TAG", "Email sent.");
-                        storeUserInfo();
                     }
                 }
             });
@@ -470,32 +469,29 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    private void storeUserInfo() {
-
-        final FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null){
+    private void uploadRegisterInfo() {
+        Log.d(TAG, "loginInfo: asdasdasd");
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser != null) {
             FirebaseFirestore mFirebaseFirestore = FirebaseFirestore.getInstance();
             FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                     .setPersistenceEnabled(true)
                     .setTimestampsInSnapshotsEnabled(true)
                     .build();
             mFirebaseFirestore.setFirestoreSettings(settings);
-            DocumentReference newUserDocuments = mFirebaseFirestore.collection("Users").document(user.getUid());
-            String userID = user.getUid();
-            String userEmail = user.getEmail();
-            User users = new User();
-            users.setUserID(userID);
-            users.setUserEmail(userEmail);
-            Log.d(TAG, "storeUserInfo: users UID: " + user.getUid() );
-            newUserDocuments.set(users).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+            DocumentReference newUserRef = mFirebaseFirestore.collection("Users").document(firebaseUser.getUid());
+            User newUser = new User();
+            newUser.setUserID(firebaseUser.getUid());
+            newUser.setUserEmail(firebaseUser.getEmail());
+            newUserRef.set(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()){
-                        Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUid());
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "onComplete: storing new user info success");
+                        Toast.makeText(Login.this, "Storing new user info!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 //                        mAuth.signOut();
-                    }else{
-                        Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
-                        mAuth.signOut();
                     }
                 }
             });
@@ -507,10 +503,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             if (user.isEmailVerified()){
+                startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 finish();
                 Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
             }
             else {
+                sendEmailVerification();
                 mAuth.signOut();
                 Toast.makeText(this, "Please Verify your Email first", Toast.LENGTH_SHORT).show();
 
@@ -518,7 +516,5 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
 
     }
-
-
 }
 

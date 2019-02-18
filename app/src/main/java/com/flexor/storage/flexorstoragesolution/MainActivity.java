@@ -1,17 +1,14 @@
 package com.flexor.storage.flexorstoragesolution;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,11 +16,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
@@ -32,10 +27,7 @@ import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,18 +36,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -76,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     NavigationView navigationView;
     private CollectionReference collectionReference;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
-//    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private User user;
 
     private boolean mLocationPermissionGranted = false;
 
@@ -100,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         storageReference = mStorage.getReference();
         firebaseUser = mAuth.getCurrentUser();
         mFirestore = FirebaseFirestore.getInstance();
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -139,21 +127,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
-
-        ////image
-//        User user = ((UserClient) (getApplicationContext())).getUser();
-//        final CircleImageView showUserProfilePicture  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
-//        String userID = user.getUserID();
-//
-//        storageReference.child((Objects.requireNonNull(mAuth.getUid()))).child("Images/UserImages").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//            @Override
-//            public void onSuccess(Uri uri) {
-//                Glide.with(MainActivity.this).load(uri).into(showUserProfilePicture);
-//            }
-//        });
         showUserProfilePicture  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
 
     }
@@ -176,57 +151,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "onComplete: User data retrieved");
                     User currentUser = task.getResult().toObject(User.class);
                     Log.d(TAG, "onComplete: User Is: "+ currentUser.toString());
-                    ((UserClient)(getApplicationContext())).setUser(currentUser);
-                    User sembarang = new User();
-                    sembarang = ((UserClient)(getApplicationContext())).getUser();
-                    Log.d(TAG, "onComplete: userUID: "+sembarang.getUserID());
+                    ((UserClient)getApplicationContext()).setUser(currentUser);
+//                    User sembarang = new User();
+//                    User sembarang = ((UserClient)getApplicationContext()).getUser();
+//                    if (currentUser.getUserAvatar() == null){
+//                        startActivity(new Intent(MainActivity.this, BiodataActivity.class));
+//                        finish();
+//                    }else{
+                        String userID = currentUser.getUserID();
 
-                    String userID = sembarang.getUserID();
-
-                    StorageReference storRef = storageReference.child(sembarang.getUserAvatar());
-                    Log.d(TAG, "onComplete: avatar uri"+sembarang.getUserAvatar());
-
-                    //show photo
-                    Glide.with(MainActivity.this)
-                            .load(storRef)
-                            .into(showUserProfilePicture);
-
-
-//                    storageReference.child(sembarang.getUserAvatar()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                        @Override
-//                        public void onSuccess(Uri uri) {
-//
-//                            Glide.with(MainActivity.this).load(uri).into(showUserProfilePicture);
-//
-//                        }
-//                    });
-
-
+                        StorageReference storRef = storageReference.child("Images").child("UserImages").child(currentUser.getUserID());
+                        Glide.with(MainActivity.this)
+                                .load(storRef)
+                                .into(showUserProfilePicture);
+                        Log.d(TAG, "onComplete: avatar uri"+currentUser.getUserAvatar());
+                    Log.d(TAG, "onComplete: userUID: "+currentUser.getUserID());
 
 
                 }
             }
         });
     }
-
-//    private void getLastKnownLocation() {
-//        Log.d(TAG, "getLastKnownLocation: called");
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            return;
-//        }
-//        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Location> task) {
-//                if (task.isSuccessful()){
-//                    Location location = task.getResult();
-//                    GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
-//                    Log.d(TAG, "onComplete: latitude: " +geoPoint.getLatitude());
-//                    Log.d(TAG, "onComplete: longitude: "+geoPoint.getLongitude());
-//
-//                }
-//            }
-//        });
-//    }
 
     private void getMapsFragment() {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
@@ -278,16 +223,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * onRequestPermissionsResult.
          */
         Log.d(TAG, "getLocationPermission: getting location permission");
-//        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-//                android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED && android.Manifest.permission.ACCESS_COARSE_LOCATION == PackageManager.PERMISSION_GRANTED) {
-//            mLocationPermissionGranted = true;
-//            getChatrooms();
-//        } else {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-//                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-//        }
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "getLocationPermission: location permission Denied");
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
@@ -384,7 +319,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_main_customerService:
-                startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class));
+//                startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class));
+                startActivity(new Intent(getApplicationContext(), ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 afterclick();
                 break;
             case R.id.nav_main_settings:
@@ -396,13 +332,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
         }
-//        int id = item.getItemId();
-
-//        if (id == R.id.nav_logout) {
-//            mAuth.signOut();
-//            Log.d("TAG", "Logout!!");
-//        }
-
         return true;
     }
 

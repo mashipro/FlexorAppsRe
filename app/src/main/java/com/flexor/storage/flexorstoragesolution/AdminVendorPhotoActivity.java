@@ -120,6 +120,7 @@ public class AdminVendorPhotoActivity extends AppCompatActivity implements View.
                         StorageReference imagePath = storageReference.child("Images").child("VendorLocationImages").child(userVendor.getVendorID()).child("cropped_" + System.currentTimeMillis() + ".jpg");
 
                         userVendor.setVendorStatsCode((double) 201);
+                        userVendor.setVendorAccepted(true);
                         db.set(userVendor)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override

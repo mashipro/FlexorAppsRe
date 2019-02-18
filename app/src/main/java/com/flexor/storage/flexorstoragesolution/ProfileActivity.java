@@ -2,37 +2,19 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -118,7 +100,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         switch (view.getId()){
 
             case R.id.updateProfile:
-                startActivity(new Intent(ProfileActivity.this, biodata.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                startActivity(new Intent(ProfileActivity.this, BiodataActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 
         }
 

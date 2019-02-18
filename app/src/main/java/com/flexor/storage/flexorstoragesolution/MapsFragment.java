@@ -69,7 +69,7 @@ import static com.flexor.storage.flexorstoragesolution.Utility.Constants.MAPVIEW
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     //Components
     private Context context;
-//    private MapView mapView;
+    //    private MapView mapView;
     private MapView mMapView;
     private ImageView screenMarkOne;
     private GoogleMap mMap;
@@ -146,9 +146,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
          * Getting User from userClient
          */
 
-        User currentUser = ((UserClient)(getApplicationContext())).getUser();
+        User currentUser = ((UserClient) (getApplicationContext())).getUser();
         String UIDS;
-        if (currentUser != null){
+        if (currentUser != null) {
             UIDS = currentUser.getUserID();
         } else {
             Log.d(TAG, "onViewCreated: user Not Found from UserClient");
@@ -159,10 +159,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         userBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     List<SingleBox> userRentedBoxList = task.getResult().toObjects(SingleBox.class);
                     userBoxArrayList.addAll(userRentedBoxList);
-                    Log.d(TAG, "onComplete: user rented box: "+userBoxArrayList);
+                    Log.d(TAG, "onComplete: user rented box: " + userBoxArrayList);
                     getVendorList();
                 }
             }
@@ -183,12 +183,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
-
-//        mapView = view.findViewById(R.id.map);
-//        mapView.onCreate(savedInstanceState);
-//        mapView.onResume();
-//        mapView.getMapAsync(this);
-//        Log.d(TAG, "initMap: map is INITIALIZING");
     }
 
     @Override
@@ -246,603 +240,446 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-
-    private void searchNearestBox(View v) {
-        mMap.getCameraPosition();
-        Log.d(TAG, "searchNearestBox: camera Position: "+mMap.getCameraPosition());
-        for (UserVendor vendorList: vendorArrayList){
-            Log.d(TAG, "searchNearestBox: "+ vendorList.getVendorID()+ "Location: " +vendorList.getVendorGeoLocation());
         }
-
     }
 
-    private void getDeviceLocation() {
-        Log.d(TAG, "getDeviceLocation: getting device current location");
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        if (mFusedLocationProviderClient != null) {
-            mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    if (task.isSuccessful()) {
-                        Location location = task.getResult();
-                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
-                        Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
-                        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, 0, 0);
-                        Log.d(TAG, "UserLocationDetails: Lat: " + location.getLatitude() + ", long: " + location.getLongitude());
 
-                    }
+            private void searchNearestBox (View v){
+                mMap.getCameraPosition();
+                Log.d(TAG, "searchNearestBox: camera Position: " + mMap.getCameraPosition());
+                for (UserVendor vendorList : vendorArrayList) {
+                    Log.d(TAG, "searchNearestBox: " + vendorList.getVendorID() + "Location: " + vendorList.getVendorGeoLocation());
                 }
-            });
-        } else {
-            Log.d(TAG, "getDeviceLocation: Failed to retrieve location");
-        }
-    }
 
-//        try {
-//            if (mLocationPermissionGranted){
-//                Task location = mFusedLocationProviderClient.getLastLocation();
-//                location.addOnCompleteListener(new OnCompleteListener() {
-//                    @Override
-//                    public void onComplete(@NonNull Task task) {
-//                        if (task.isSuccessful()){
-//                            Log.d(TAG, "onComplete: found location!");
-//                            Location currentLocation = (Location) task.getResult();
-//                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
-//                            Log.d(TAG, "onComplete: device current location: lat= "+ currentLocation.getLatitude() +" lng= "+currentLocation.getLongitude());
-//                        }else{
-//                            Log.d(TAG, "onComplete: current location is null");
-//                            Toast.makeText(getActivity(), "unable to get current location", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//            }
-//        }catch (SecurityException e){
-//            Log.e(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
-//        }
-    }
-        private void moveCamera(LatLng latLng, int zoom, int offsetX, int offsetY) {
-        Log.d(TAG, "moveCamera: Moving the camera to lat:" +latLng.latitude + ", lng:" +latLng.longitude);
-        Log.d(TAG, "moveCamera: with offset of: X" + offsetX+ " Y"+ offsetY);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-        android.graphics.Point mapPoint = mMap.getProjection().toScreenLocation(latLng);
-        mapPoint.set(mapPoint.x+offsetX,mapPoint.y+offsetY);
+            }
+
+            private void getDeviceLocation() {
+                Log.d(TAG, "getDeviceLocation: getting device current location");
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                if (mFusedLocationProviderClient != null) {
+                    mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Location> task) {
+                            if (task.isSuccessful()) {
+                                Location location = task.getResult();
+                                GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                                Log.d(TAG, "getDeviceLocation: latitude: " + geoPoint.getLatitude());
+                                Log.d(TAG, "getDeviceLocation: longitude: " + geoPoint.getLongitude());
+                                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, 0, 0);
+                                Log.d(TAG, "UserLocationDetails: Lat: " + location.getLatitude() + ", long: " + location.getLongitude());
+
+                            }
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "getDeviceLocation: Failed to retrieve location");
+                }
+            }
+
+        private void moveCamera (LatLng latLng,int zoom, int offsetX, int offsetY){
+            Log.d(TAG, "moveCamera: Moving the camera to lat:" + latLng.latitude + ", lng:" + latLng.longitude);
+            Log.d(TAG, "moveCamera: with offset of: X" + offsetX + " Y" + offsetY);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+            android.graphics.Point mapPoint = mMap.getProjection().toScreenLocation(latLng);
+            mapPoint.set(mapPoint.x + offsetX, mapPoint.y + offsetY);
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom),2000,null);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint), zoom), 2000, null);
 //        mMap.animateCamera(CameraUpdateFactory.);
-    }
+        }
 
-    private void addMapMarkers(){
-        for (final UserVendor mUserVendor: vendorArrayList){
-            try{
-                Log.d(TAG, "onMapReady: pin"+ mUserVendor.getVendorGeoLocation().toString());
-                final MarkerOptions newMarker = new MarkerOptions()
-                        .position(new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(),mUserVendor.getVendorGeoLocation().getLongitude()))
-                        .title(mUserVendor.getVendorStorageName())
-                        .snippet(mUserVendor.getVendorAddress())
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_maps_pin_green));
-                mMap.addMarker(newMarker);
-                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
-                mMap.setInfoWindowAdapter(customMapInfo);
-                Marker m = mMap.addMarker(newMarker);
-                m.setTag(mUserVendor);
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        private void addMapMarkers () {
+            for (final UserVendor mUserVendor : vendorArrayList) {
+                try {
+                    Log.d(TAG, "onMapReady: pin" + mUserVendor.getVendorGeoLocation().toString());
+                    final MarkerOptions newMarker = new MarkerOptions()
+                            .position(new LatLng(mUserVendor.getVendorGeoLocation().getLatitude(), mUserVendor.getVendorGeoLocation().getLongitude()))
+                            .title(mUserVendor.getVendorStorageName())
+                            .snippet(mUserVendor.getVendorAddress())
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_maps_pin_green));
+                    mMap.addMarker(newMarker);
+                    CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+                    mMap.setInfoWindowAdapter(customMapInfo);
+                    Marker m = mMap.addMarker(newMarker);
+                    m.setTag(mUserVendor);
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            Log.d(TAG, "onMarkerClick: " + marker.getTitle() + " is clicked");
+                            marker.showInfoWindow();
+                            moveCamera(marker.getPosition(), DEFAULT_ZOOM, 0, -250);
+
+                            return true;
+                        }
+                    });
+                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                        @Override
+                        public void onInfoWindowClick(Marker marker) {
+                            popupShow(getView());
+                            Log.d(TAG, "onInfoWindowClick: showing popup window");
+                        }
+
+                        private void popupShow(final View view) {
+                            Log.d(TAG, "popupShow: success");
+                            Log.d(TAG, "popupShow: getting vendor box list to compare with users");
+                            vendorBoxRef = mFirestore.collection("Vendor").document(mUserVendor.getVendorID()).collection("MyBox");
+                            vendorBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    List<SingleBox> vendorBoxList = task.getResult().toObjects(SingleBox.class);
+                                    vendorBoxArrayList.addAll(vendorBoxList);
+                                    Log.d(TAG, "onComplete: vendorBoxList id: " + vendorBoxArrayList);
+                                    openPopup(view, mUserVendor);
+                                }
+                            });
+
+                        }
+                    });
+
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "onMapReady: ERROR " + e.getMessage());
+                }
+            }
+        }
+
+        private void openPopup (View view,final UserVendor mUserVendor){
+            final View popupView = getLayoutInflater().inflate(R.layout.popup_user_vendor_facade, null);
+            final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            ImageView vendorImage = popupView.findViewById(R.id.popup_vendor_bg);
+            TextView vendorName = popupView.findViewById(R.id.vendor_name);
+            TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
+            TextView vendorRate = popupView.findViewById(R.id.vendor_rate);
+            CircleImageView cancelAction = popupView.findViewById(R.id.cancel_action);
+            final Button vendorAccess = popupView.findViewById(R.id.access_vendor);
+            Button vendorContact = popupView.findViewById(R.id.contact_vendor);
+
+            //Todo: update vendor detail image
+            //Todo: getting vendor availability, capacity and other details
+            if (boxRented()) {
+                vendorAccess.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
-                        marker.showInfoWindow();
-                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
-
-                        return true;
+                    public void onClick(View v) {
+                        vendorAccess.setText(R.string.access_vendor);
+                        goToVendorPage(popupWindow, mUserVendor);
+                        //Todo: Set Vendor Access method
+                        Log.d(TAG, "onClick: vendor Access Request on: " + mUserVendor.getVendorStorageName() + " With ID: " + mUserVendor.getVendorID());
                     }
                 });
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            } else {
+                vendorAccess.setText(R.string.rent_box_from_vendor);
+                vendorAccess.setOnClickListener(new View.OnClickListener() {
+                    private RadioGroup radioGroup;
+                    private TextView boxRate, totalPrice;
+                    private Button cancelButton, acceptButton;
+
                     @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        popupShow(getView());
-                        Log.d(TAG, "onInfoWindowClick: showing popup window");
+                    public void onClick(View v) {
+                        popupWindow.dismiss();
+                        User currentUser = ((UserClient) (getApplicationContext())).getUser();
+                        Log.d(TAG, "onClick: user clicking: " + currentUser.toString());
+                        View rentPopupView = getLayoutInflater().inflate(R.layout.popup_box_rent, null);
+                        final PopupWindow popupWindowAgain = new PopupWindow(getContext());
+                        popupWindowAgain.setContentView(rentPopupView);
+
+                        radioGroup = rentPopupView.findViewById(R.id.radio_group);
+                        boxRate = rentPopupView.findViewById(R.id.box_rate);
+                        totalPrice = rentPopupView.findViewById(R.id.bill_total);
+                        cancelButton = rentPopupView.findViewById(R.id.cancel_button);
+                        acceptButton = rentPopupView.findViewById(R.id.accept_button);
+                        RadioButton radioButton = rentPopupView.findViewById(R.id.checkbox3day);
+                        radioButton.setChecked(true);
+
+                        updatePrice(3, mUserVendor, popupWindowAgain);
+
+                        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                            int duraValue;
+
+                            @Override
+                            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                switch (checkedId) {
+                                    case R.id.checkbox3day:
+
+                                        duraValue = 3;
+                                        updatePrice(duraValue, mUserVendor, popupWindowAgain);
+                                        break;
+                                    case R.id.checkbox7day:
+                                        duraValue = 7;
+                                        updatePrice(duraValue, mUserVendor, popupWindowAgain);
+                                        break;
+                                    case R.id.checkbox14day:
+                                        duraValue = 14;
+                                        updatePrice(duraValue, mUserVendor, popupWindowAgain);
+                                        break;
+                                    case R.id.checkbox30day:
+                                        duraValue = 30;
+                                        updatePrice(duraValue, mUserVendor, popupWindowAgain);
+                                        break;
+                                }
+                            }
+                        });
+
+                        cancelButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                popupWindowAgain.dismiss();
+                            }
+                        });
+
+
+                        popupWindowAgain.showAtLocation(rentPopupView, Gravity.CENTER, 0, 0);
+
                     }
 
-                    private void popupShow(final View view) {
-                        Log.d(TAG, "popupShow: success");
-                        Log.d(TAG, "popupShow: getting vendor box list to compare with users");
-                        vendorBoxRef = mFirestore.collection("Vendor").document(mUserVendor.getVendorID()).collection("MyBox");
-                        vendorBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    private void updatePrice(int duraValue, final UserVendor mUserVendor, final PopupWindow popupWindowAgain) {
+                        boxRate.setText("Rp. " + mUserVendor.getVendorBoxPrice().toString() + "/day");
+                        final int totalBillValue = duraValue * mUserVendor.getVendorBoxPrice().intValue();
+                        totalPrice.setText("Rp. " + totalBillValue);
+                        acceptButton.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                List<SingleBox> vendorBoxList = task.getResult().toObjects(SingleBox.class);
-                                vendorBoxArrayList.addAll(vendorBoxList);
-                                Log.d(TAG, "onComplete: vendorBoxList id: "+vendorBoxArrayList);
-                                openPopup(view, mUserVendor);
+                            public void onClick(View v) {
+                                checkAvailableBox(mUserVendor, totalBillValue, popupWindowAgain);
                             }
                         });
 
                     }
                 });
-
-            } catch (NullPointerException e){
-                Log.d(TAG, "onMapReady: ERROR "+e.getMessage());
             }
-        }
-    }
-
-    private void openPopup(View view, final UserVendor mUserVendor) {
-        final View popupView = getLayoutInflater().inflate(R.layout.popup_user_vendor_facade, null);
-        final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        ImageView vendorImage = popupView.findViewById(R.id.popup_vendor_bg);
-        TextView vendorName = popupView.findViewById(R.id.vendor_name);
-        TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
-        TextView vendorRate = popupView.findViewById(R.id.vendor_rate);
-        CircleImageView cancelAction = popupView.findViewById(R.id.cancel_action);
-        final Button vendorAccess = popupView.findViewById(R.id.access_vendor);
-        Button vendorContact = popupView.findViewById(R.id.contact_vendor);
-
-        //Todo: update vendor detail image
-        //Todo: getting vendor availability, capacity and other details
-        if (boxRented()){
-            vendorAccess.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    vendorAccess.setText(R.string.access_vendor);
-                    goToVendorPage(popupWindow, mUserVendor);
-                    //Todo: Set Vendor Access method
-                    Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorStorageName()+" With ID: "+ mUserVendor.getVendorID());
-                }
-            });
-        } else {
-            vendorAccess.setText(R.string.rent_box_from_vendor);
-            vendorAccess.setOnClickListener(new View.OnClickListener() {
-                private RadioGroup radioGroup;
-                private TextView boxRate, totalPrice;
-                private Button cancelButton, acceptButton;
-
+            vendorRate.setText(mUserVendor.getVendorBoxPrice().toString());
+            vendorName.setText(mUserVendor.getVendorStorageName());
+            vendorLocation.setText(mUserVendor.getVendorStorageLocation());
+            cancelAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     popupWindow.dismiss();
-                    User currentUser = ((UserClient)(getApplicationContext())).getUser();
-                    Log.d(TAG, "onClick: user clicking: " +currentUser.toString());
+                }
+            });
 
-//                                    LayoutInflater inflaterLayout = getLayoutInflater();
-//                                    View dialogView = inflaterLayout.inflate(R.layout.popup_box_rent,null);
-//
-//                                    final Dialog dialog = new Dialog(getContext());
-//                                    dialog.setContentView(R.layout.popup_box_rent);
-//                                    RadioGroup radioGroup = dialog.findViewById(R.id.radio_group);
-//                                    RadioButton checkBox3 = dialog.findViewById(R.id.checkbox3day);
-//                                    RadioButton checkBox7 = dialog.findViewById(R.id.checkbox7day);
-//                                    RadioButton checkBox14 = dialog.findViewById(R.id.checkbox14day);
-//                                    RadioButton checkBox30 = dialog.findViewById(R.id.checkbox30day);
-//                                    TextView boxRate = dialog.findViewById(R.id.box_rate);
-//                                    TextView totalPrice = dialog.findViewById(R.id.bill_total);
-//                                    Button cancelButton = dialog.findViewById(R.id.cancel_button);
-//                                    Button acceptButton = dialog.findViewById(R.id.accept_button);
-//
-//                                    long checkBoxValue = 0;
-//                                    int checkBox3int = checkBox3.getId();
-//                                    int checkBox7int = checkBox7.getId();
-//                                    int checkBox14int = checkBox14.getId();
-//                                    int checkBox30int = checkBox30.getId();
-//
-//                                    int checkedBox = radioGroup.getCheckedRadioButtonId();
-//                                    if (checkedBox == checkBox3int){
-//                                        checkBoxValue= 3;
-//
-//                                    }else if (checkedBox == checkBox7int){
-//                                        checkBoxValue= 7;
-//                                    }else if (checkedBox == checkBox14int){
-//                                        checkBoxValue = 14;
-//                                    }else if (checkedBox == checkBox30int){
-//                                        checkBoxValue = 30;
-//                                    }
-//                                    if (checkBox3.isChecked()){
-//                                        checkBoxValue = 3;
-//                                    }
-//
-//                                    boxRate.setText("Rp. "+mUserVendor.getVendorBoxPrice().toString() + "/day");
-//                                    long totalBillValue = checkBoxValue*mUserVendor.getVendorBoxPrice();
-//                                    totalPrice.setText("Rp. "+totalBillValue);
-//
-//                                    dialog.show();
-//
-                    View rentPopupView = getLayoutInflater().inflate(R.layout.popup_box_rent,null);
-//                                    final PopupWindow popupWindowAgain = new PopupWindow(rentPopupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    final PopupWindow popupWindowAgain = new PopupWindow(getContext());
-                    popupWindowAgain.setContentView(rentPopupView);
+            vendorContact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Todo: Set Vendor Contact Button to contact vendor
+                }
+            });
 
-                    radioGroup = rentPopupView.findViewById(R.id.radio_group);
-                    boxRate = rentPopupView.findViewById(R.id.box_rate);
-                    totalPrice = rentPopupView.findViewById(R.id.bill_total);
-                    cancelButton = rentPopupView.findViewById(R.id.cancel_button);
-                    acceptButton = rentPopupView.findViewById(R.id.accept_button);
-                    RadioButton radioButton = rentPopupView.findViewById(R.id.checkbox3day);
-                    radioButton.setChecked(true);
+            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+            popupWindow.setBackgroundDrawable(new ColorDrawable());
+            if (popupWindow.isShowing()) {
+                Log.d(TAG, "onInfoWindowClick: popup show");
+            }
 
-                    updatePrice(3, mUserVendor, popupWindowAgain);
+        }
 
-                    radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                        int duraValue;
-                        @Override
-                        public void onCheckedChanged(RadioGroup group, int checkedId) {
-                            switch (checkedId){
-                                case R.id.checkbox3day:
+        private void checkAvailableBox ( final UserVendor mUserVendor, final int totalBillValue,
+        final PopupWindow popupWindowAgain){
+            boxArrayList.clear();
 
-                                    duraValue = 3;
-                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
-                                    break;
-                                case R.id.checkbox7day:
-                                    duraValue = 7;
-                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
-                                    break;
-                                case R.id.checkbox14day:
-                                    duraValue = 14;
-                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
-                                    break;
-                                case R.id.checkbox30day:
-                                    duraValue = 30;
-                                    updatePrice(duraValue, mUserVendor, popupWindowAgain);
-                                    break;
+            final ArrayList<Box> newIDArrayList = new ArrayList<>();
+
+            for (int i = 0; i < vendorBoxArrayList.size(); i++) {
+                Log.d(TAG, "checkAvailableBox: " + vendorBoxArrayList.get(i).getBoxID());
+                boxesDocRef = mFirestore.collection("Boxes").document(vendorBoxArrayList.get(i).getBoxID());
+                boxesDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Box thisBox = task.getResult().toObject(Box.class);
+                            if (thisBox.getBoxTenant() == null && boxArrayList.size() == 0) {
+                                boxArrayList.add(thisBox);
+                                newIDArrayList.add(thisBox);
+                                Log.d(TAG, "onComplete: adding empty box to list: " + thisBox.getBoxID());
+                                prepareSetUpRent(thisBox, mUserVendor, totalBillValue, popupWindowAgain);
                             }
                         }
-                    });
-
-                    cancelButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            popupWindowAgain.dismiss();
-                        }
-                    });
-
-
-
-                    popupWindowAgain.showAtLocation(rentPopupView, Gravity.CENTER,0,0);
-
-                }
-
-                private void updatePrice(int duraValue, final UserVendor mUserVendor, final PopupWindow popupWindowAgain) {
-                    boxRate.setText("Rp. "+mUserVendor.getVendorBoxPrice().toString() + "/day");
-                    final int totalBillValue = duraValue*mUserVendor.getVendorBoxPrice().intValue();
-                    totalPrice.setText("Rp. "+totalBillValue);
-                    acceptButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            checkAvailableBox(mUserVendor, totalBillValue, popupWindowAgain);
-                        }
-                    });
-
-                }
-            });
-        }
-        vendorRate.setText(mUserVendor.getVendorBoxPrice().toString());
-        vendorName.setText(mUserVendor.getVendorStorageName());
-        vendorLocation.setText(mUserVendor.getVendorStorageLocation());
-        cancelAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-            }
-        });
-
-        vendorContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Todo: Set Vendor Contact Button to contact vendor
-            }
-        });
-
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0,0);
-        popupWindow.setBackgroundDrawable(new ColorDrawable());
-        if (popupWindow.isShowing()){
-            Log.d(TAG, "onInfoWindowClick: popup show");
-        }
-
-    }
-
-    private void checkAvailableBox(final UserVendor mUserVendor, final int totalBillValue, final PopupWindow popupWindowAgain) {
-        boxArrayList.clear();
-
-        final ArrayList<Box> newIDArrayList = new ArrayList<>();
-
-        for (int i = 0; i< vendorBoxArrayList.size(); i++){
-            Log.d(TAG, "checkAvailableBox: "+ vendorBoxArrayList.get(i).getBoxID());
-            boxesDocRef = mFirestore.collection("Boxes").document(vendorBoxArrayList.get(i).getBoxID());
-            boxesDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()){
-                        Box thisBox = task.getResult().toObject(Box.class);
-                        if (thisBox.getBoxTenant() == null && boxArrayList.size() == 0){
-                            boxArrayList.add(thisBox);
-                            newIDArrayList.add(thisBox);
-                            Log.d(TAG, "onComplete: adding empty box to list: "+thisBox.getBoxID());
-                            prepareSetUpRent(thisBox,mUserVendor, totalBillValue, popupWindowAgain);
-                        }
                     }
-                }
-            });
-//            Log.d(TAG, "checkAvailableBox: "+ vendorBoxArrayList.get(i).getBoxID());
-//            boxesDocRef = mFirestore.collection("Boxes").document(vendorBoxArrayList.get(i).getBoxID());
-//            boxesDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                    if (task.isSuccessful()){
-//                        Box thisBox = task.getResult().toObject(Box.class);
-//                        if (thisBox.getBoxTenant() == null&& newIDArrayList.size() <= 0){
-//                            boxArrayList.add(thisBox);
-//                            newIDArrayList.add(thisBox.getBoxID());
-//                            exist = true;
-//                            Log.d(TAG, "onComplete: adding empty box to list: "+thisBox.getBoxID());
-//                            newIDArrayLookup(newIDArrayList, stopIterate(newIDArrayList.contains(thisBox.getBoxID())));
-//                        }
-//                    }
-//                }
-//            });
+                });
+            }
         }
-//        prepareSetUpRent();
-//        Log.d(TAG, "checkAvailableBox: newIDARRAYList: " +newIDArrayList);
-//        for (SingleBox vendorBox: vendorBoxArrayList){
-//            if (!exist){
-//                Log.d(TAG, "checkAvailableBox: exist value is false");
-//                boxesDocRef = mFirestore.collection("Boxes").document(vendorBox.getBoxID());
-//                boxesDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()){
-//                            Box thisBox = task.getResult().toObject(Box.class);
-//                            if (thisBox.getBoxTenant() == null){
-//                                boxArrayList.add(thisBox);
-//                                exist = true;
-//                                Log.d(TAG, "onComplete: adding empty box to list: "+thisBox.getBoxID());
-//                            }
-//                        }
-//                    }
-//                });
-//            }
-//
-//        }
-//        Log.d(TAG, "checkAvailableBox: how many box is empty: " +boxArrayList.size());
-    }
 
-    private void prepareSetUpRent(final Box thisBox, final UserVendor mUserVendor, final int totalBillValue, final PopupWindow popupWindowAgain) {
-        Log.d(TAG, "prepareSetUpRent: deployed");
-        Log.d(TAG, "prepareSetUpRent: boxArrayListSize: "+boxArrayList.size());
-        Log.d(TAG, "prepareSetUpRent: id>> " + thisBox.getBoxID() + " ||| on Vendor: " +mUserVendor.getVendorID());
-        //todo: Give alert for rent confirmation
-        //todo: SetUp box Auto rent
+        private void prepareSetUpRent ( final Box thisBox, final UserVendor mUserVendor,
+        final int totalBillValue, final PopupWindow popupWindowAgain){
+            Log.d(TAG, "prepareSetUpRent: deployed");
+            Log.d(TAG, "prepareSetUpRent: boxArrayListSize: " + boxArrayList.size());
+            Log.d(TAG, "prepareSetUpRent: id>> " + thisBox.getBoxID() + " ||| on Vendor: " + mUserVendor.getVendorID());
+            //todo: Give alert for rent confirmation
+            //todo: SetUp box Auto rent
 
-        /**
-         * getting user balance
-         */
+            /**
+             * getting user balance
+             */
 
-        final User currentUser = ((UserClient)(getApplicationContext())).getUser();
+            final User currentUser = ((UserClient) (getApplicationContext())).getUser();
 
-        if (rentConfirmed(currentUser.getUserBalance(), totalBillValue)){
-            Log.d(TAG, "prepareSetUpRent: giveConditon: "+giveCondition);
-            final DocumentReference vendorBoxReff = mFirestore.collection("Boxes").document(thisBox.getBoxID());
-            final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
-            userDocReff.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()){
-                        final User currentUserUpdt = task.getResult().toObject(User.class);
-                        ((UserClient)(getApplicationContext())).setUser(currentUserUpdt);
-                        Log.d(TAG, "prepareSetUpRent: userBalance is " + currentUserUpdt.getUserBalance());
+            if (rentConfirmed(currentUser.getUserBalance(), totalBillValue)) {
+                Log.d(TAG, "prepareSetUpRent: giveConditon: " + giveCondition);
+                final DocumentReference vendorBoxReff = mFirestore.collection("Boxes").document(thisBox.getBoxID());
+                final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
+                userDocReff.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            final User currentUserUpdt = task.getResult().toObject(User.class);
+                            ((UserClient) (getApplicationContext())).setUser(currentUserUpdt);
+                            Log.d(TAG, "prepareSetUpRent: userBalance is " + currentUserUpdt.getUserBalance());
 
-                        Integer userBalance = currentUserUpdt.getUserBalance().intValue();
-                        Log.d(TAG, "prepareSetUpRent: rent proceed confirmed: " + rentConfirmed(userBalance, totalBillValue));
+                            Integer userBalance = currentUserUpdt.getUserBalance().intValue();
+                            Log.d(TAG, "prepareSetUpRent: rent proceed confirmed: " + rentConfirmed(userBalance, totalBillValue));
 
-                        /**
-                         * getting confirmation and make transaction or cancel
-                         */
-                        if (rentConfirmed(userBalance, totalBillValue)){
-                            Log.d(TAG, "prepareSetUpRent: "+ rentConfirmed(userBalance, totalBillValue));
-                            Log.d(TAG, "prepareSetUpRent: begin calculation");
-                            int userFinalBalance = userBalance-totalBillValue;
-                            Log.d(TAG, "prepareSetUpRent: userFinalBalance: "+userFinalBalance);
-                            final SingleBox singleBox = new SingleBox();
-                            singleBox.setBoxID(boxArrayList.get(0).getBoxID());
-                            currentUserUpdt.setUserBalance(userFinalBalance);
-                            userDocReff.set(currentUserUpdt).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    Log.d(TAG, "onComplete: userBalance now: " + currentUserUpdt.getUserBalance());
-                                    thisBox.setBoxTenant(currentUser.getUserID());
-                                    thisBox.setBoxRentTimestamp(null);
-                                    thisBox.setBoxLastChange(null);
-                                    thisBox.setBoxStatCode(Double.valueOf(311));
-                                    vendorBoxReff.set(thisBox).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()){
-                                                SingleBox newUserSingleBox = new SingleBox();
-                                                newUserSingleBox.setBoxID(thisBox.getBoxID());
-                                                userBoxArrayList.add(newUserSingleBox);
-                                                goToVendorPage(popupWindowAgain, mUserVendor);
+                            /**
+                             * getting confirmation and make transaction or cancel
+                             */
+                            if (rentConfirmed(userBalance, totalBillValue)) {
+                                Log.d(TAG, "prepareSetUpRent: " + rentConfirmed(userBalance, totalBillValue));
+                                Log.d(TAG, "prepareSetUpRent: begin calculation");
+                                int userFinalBalance = userBalance - totalBillValue;
+                                Log.d(TAG, "prepareSetUpRent: userFinalBalance: " + userFinalBalance);
+                                final SingleBox singleBox = new SingleBox();
+                                singleBox.setBoxID(boxArrayList.get(0).getBoxID());
+                                currentUserUpdt.setUserBalance(userFinalBalance);
+                                userDocReff.set(currentUserUpdt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Log.d(TAG, "onComplete: userBalance now: " + currentUserUpdt.getUserBalance());
+                                        thisBox.setBoxTenant(currentUser.getUserID());
+                                        thisBox.setBoxRentTimestamp(null);
+                                        thisBox.setBoxLastChange(null);
+                                        thisBox.setBoxStatCode(Double.valueOf(311));
+                                        vendorBoxReff.set(thisBox).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    SingleBox newUserSingleBox = new SingleBox();
+                                                    newUserSingleBox.setBoxID(thisBox.getBoxID());
+                                                    userBoxArrayList.add(newUserSingleBox);
+                                                    goToVendorPage(popupWindowAgain, mUserVendor);
+                                                }
                                             }
-                                        }
-                                    });
-                                    userDocReff.collection("MyRentedBox").document(thisBox.getBoxID()).set(singleBox);
-                                }
-                            });
+                                        });
+                                        userDocReff.collection("MyRentedBox").document(thisBox.getBoxID()).set(singleBox);
+                                    }
+                                });
+                            }
                         }
                     }
-                }
-            });
-        }else{
-            Log.d(TAG, "prepareSetUpRent: Insufficient Balance. Show Popup!");
-            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-            alert.setTitle(R.string.insufficient_balance);
-            alert.setMessage(R.string.please_recharge);
-            alert.setCancelable(false);
-            alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    popupWindowAgain.dismiss();
-                }
-            });
-            AlertDialog alertDialog = alert.create();
-            alertDialog.show();
-        }
-
-//        final DocumentReference userDocReff = mFirestore.collection("Users").document(currentUser.getUserID());
-//        userDocReff.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()){
-//                    final User currentUserUpdt = task.getResult().toObject(User.class);
-//                    ((UserClient)(getApplicationContext())).setUser(currentUserUpdt);
-//                    Log.d(TAG, "prepareSetUpRent: userBalance is " + currentUserUpdt.getUserBalance());
-//
-//                    Integer userBalance = currentUserUpdt.getUserBalance().intValue();
-//
-//                    /**
-//                     * getting simple calculation to determine user balance is sufficient to make transaction
-//                     */
-//                    Log.d(TAG, "prepareSetUpRent: rent proceed confirmed: " + rentConfirmed(userBalance, (int) totalBillValue));
-//
-//                    /**
-//                     * getting confirmation and make transaction or cancel
-//                     */
-//                    if (rentConfirmed(userBalance, totalBillValue)){
-//                        Log.d(TAG, "prepareSetUpRent: "+ rentConfirmed(userBalance, totalBillValue));
-//                        Log.d(TAG, "prepareSetUpRent: begin calculation");
-//                        int userFinalBalance = userBalance-totalBillValue;
-//                        Double userFBDoub =(double) userFinalBalance;
-//                        Log.d(TAG, "prepareSetUpRent: userFinalBalance: "+userFinalBalance);
-//                        currentUserUpdt.setUserBalance(userFBDoub);
-//                        userDocReff.set(currentUserUpdt).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                Log.d(TAG, "onComplete: userBalance now: " + currentUserUpdt.getUserBalance());
-//                            }
-//                        });
-//                    }
-//                }
-//
-//            }
-//        });
-
-
-    }
-
-    private void goToVendorPage(PopupWindow popupWindow, UserVendor mUserVendor) {
-        TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
-        transitionalStatCode.setDerivedPaging(Constants.TRANSITIONAL_STATS_CODE_IS_USER);
-        transitionalStatCode.setSingleBoxesContainer(userBoxArrayList);
-        ((UserClient)(getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
-        ((UserClient)(getApplicationContext())).setUserVendor(mUserVendor);
-        popupWindow.dismiss();
-        Intent intent = new Intent(context,StorageDetailsActivity.class);
-        context.startActivity(intent);
-    }
-
-    private Boolean rentConfirmed(Integer userBalance, Integer vendorBoxPrice) {
-        if (userBalance-1 <= vendorBoxPrice){
-            Log.d(TAG, "rentConfirmed: false");
-            return false;
-        } else {
-            Log.d(TAG, "rentConfirmed: true");
-            return true;
-        }
-    }
-
-    private boolean boxRented() {
-        Log.d(TAG, "boxRented: comparing");
-        Log.d(TAG, "boxRented: checking user box list");
-        if (userBoxArrayList.size()>=1){
-            Log.d(TAG, "boxRented: user box exist!");
-            Log.d(TAG, "boxRented: user box: "+userBoxArrayList);
-        }else {
-            Log.d(TAG, "boxRented: user Box EMPTY!");
-        }
-        Log.d(TAG, "boxRented: checking vendor box list");
-        if (vendorBoxArrayList.size() >= 1){
-            Log.d(TAG, "boxRented: vendor box exist!");
-            Log.d(TAG, "boxRented: vendor box: "+vendorBoxArrayList);
-        } else {
-            Log.d(TAG, "boxRented: vendor Box EMPTY!");
-        }
-        for (SingleBox compareOne: userBoxArrayList){
-            boolean found = false;
-            for (SingleBox compareTwo: vendorBoxArrayList){
-                if (compareOne.getBoxID().equals(compareTwo.getBoxID())){
-                    found = true;
-                }
+                });
+            } else {
+                Log.d(TAG, "prepareSetUpRent: Insufficient Balance. Show Popup!");
+                AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                alert.setTitle(R.string.insufficient_balance);
+                alert.setMessage(R.string.please_recharge);
+                alert.setCancelable(false);
+                alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        popupWindowAgain.dismiss();
+                    }
+                });
+                AlertDialog alertDialog = alert.create();
+                alertDialog.show();
             }
-            if (found){
+        }
+
+        private void goToVendorPage (PopupWindow popupWindow, UserVendor mUserVendor){
+            TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
+            transitionalStatCode.setDerivedPaging(Constants.TRANSITIONAL_STATS_CODE_IS_USER);
+            transitionalStatCode.setSingleBoxesContainer(userBoxArrayList);
+            ((UserClient) (getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
+            ((UserClient) (getApplicationContext())).setUserVendor(mUserVendor);
+            popupWindow.dismiss();
+            Intent intent = new Intent(context, StorageDetailsActivity.class);
+            context.startActivity(intent);
+        }
+
+        private Boolean rentConfirmed (Integer userBalance, Integer vendorBoxPrice){
+            if (userBalance - 1 <= vendorBoxPrice) {
+                Log.d(TAG, "rentConfirmed: false");
+                return false;
+            } else {
+                Log.d(TAG, "rentConfirmed: true");
                 return true;
             }
         }
-        return false;
-    }
 
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: getting location permission");
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getLocationPermission: location permission Denied");
-            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            Log.d(TAG, "getLocationPermission: location permission Granted");
-            mLocationPermissionGranted = true;
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: called");
-        mLocationPermissionGranted = false;
-
-        switch (requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:{
-                if (grantResults.length>0){
-                    for (int i = 0; i < grantResults.length; i++){
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED){
-                            mLocationPermissionGranted=false;
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
-                            return;
-                        }
+        private boolean boxRented () {
+            Log.d(TAG, "boxRented: comparing");
+            Log.d(TAG, "boxRented: checking user box list");
+            if (userBoxArrayList.size() >= 1) {
+                Log.d(TAG, "boxRented: user box exist!");
+                Log.d(TAG, "boxRented: user box: " + userBoxArrayList);
+            } else {
+                Log.d(TAG, "boxRented: user Box EMPTY!");
+            }
+            Log.d(TAG, "boxRented: checking vendor box list");
+            if (vendorBoxArrayList.size() >= 1) {
+                Log.d(TAG, "boxRented: vendor box exist!");
+                Log.d(TAG, "boxRented: vendor box: " + vendorBoxArrayList);
+            } else {
+                Log.d(TAG, "boxRented: vendor Box EMPTY!");
+            }
+            for (SingleBox compareOne : userBoxArrayList) {
+                boolean found = false;
+                for (SingleBox compareTwo : vendorBoxArrayList) {
+                    if (compareOne.getBoxID().equals(compareTwo.getBoxID())) {
+                        found = true;
                     }
-                    mLocationPermissionGranted=true;
-                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
                 }
+                if (found) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
+        private void getLocationPermission () {
+            Log.d(TAG, "getLocationPermission: getting location permission");
+            if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "getLocationPermission: location permission Denied");
+                ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            } else {
+                Log.d(TAG, "getLocationPermission: location permission Granted");
+                mLocationPermissionGranted = true;
             }
         }
-    }
-    @Override
-    public void onPause() {
-        mMapView.onPause();
-        super.onPause();
+        @Override
+        public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions,
+        @NonNull int[] grantResults){
+            Log.d(TAG, "onRequestPermissionsResult: called");
+            mLocationPermissionGranted = false;
+
+            switch (requestCode) {
+                case LOCATION_PERMISSION_REQUEST_CODE: {
+                    if (grantResults.length > 0) {
+                        for (int i = 0; i < grantResults.length; i++) {
+                            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                                mLocationPermissionGranted = false;
+                                Log.d(TAG, "onRequestPermissionsResult: permission failed");
+                                return;
+                            }
+                        }
+                        mLocationPermissionGranted = true;
+                        Log.d(TAG, "onRequestPermissionsResult: permission granted");
+                    }
+
+                }
+            }
+        }
+        @Override
+        public void onPause () {
+            mMapView.onPause();
+            super.onPause();
+        }
+
+        @Override
+        public void onDestroy () {
+            mMapView.onDestroy();
+            super.onDestroy();
+        }
+
+        @Override
+        public void onLowMemory () {
+            super.onLowMemory();
+            mMapView.onLowMemory();
+        }
     }
 
-    @Override
-    public void onDestroy() {
-        mMapView.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mMapView.onResume();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mMapView.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mMapView.onStop();
-    }
-}

@@ -18,9 +18,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AdminVendorPhotoActivity"></activity>
-
-        <activity android:name=".BoxItemListActivity"></activity>
+        <activity android:name=".LoginCheckerActivity"></activity>
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".AdminVendorPhotoActivity" />
+        <activity android:name=".BoxItemListActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -68,6 +69,8 @@
         <activity android:name=".MapsAdminActivity" />
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".BiodataActivity" />
     </application>
 
 </manifest>
