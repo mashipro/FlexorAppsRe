@@ -197,6 +197,12 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
             public void onBindViewHolder(@NonNull BoxGlobalViewHolder holder, int position) {
                 final Box thisBoxBind = userVendorBoxArray.get(position);
                 holder.bindData(thisBoxBind);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        accessBoxDetails(thisBoxBind);
+                    }
+                });
                 ImageView boxExtra = holder.itemView.findViewById(R.id.box_extra);
                 boxExtra.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -342,7 +348,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         }
     }
     private boolean boxIsLimit(){
-        if (mFirestoreRecyclerAdapter.getItemCount() >= getBoxLimit()){
+        if (boxGlobalViewHolderAdapter.getItemCount() >= getBoxLimit()){
             Log.d(TAG, "boxIsLimit: true");
             return true;
         }else{

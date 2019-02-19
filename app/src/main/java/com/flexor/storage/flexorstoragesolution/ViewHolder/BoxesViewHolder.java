@@ -251,15 +251,15 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 box.setBoxStatCode(311);
                 box.setBoxTenant(((UserClient)(getApplicationContext())).getUser().getUserID());
                 box.setBoxLastChange(null);
-                if (rad3day.isChecked()){
-                    box.setBoxRentDuration((double) 3);
-                }else if (rad7day.isChecked()){
-                    box.setBoxRentDuration((double) 7);
-                }else if (rad14day.isChecked()){
-                    box.setBoxRentDuration((double) 14);
-                }else if (rad30day.isChecked()){
-                    box.setBoxRentDuration((double) 30);
-                }
+//                if (rad3day.isChecked()){
+//                    box.setBoxRentDuration((double) 3);
+//                }else if (rad7day.isChecked()){
+//                    box.setBoxRentDuration((double) 7);
+//                }else if (rad14day.isChecked()){
+//                    box.setBoxRentDuration((double) 14);
+//                }else if (rad30day.isChecked()){
+//                    box.setBoxRentDuration((double) 30);
+//                }
 
                 SingleBox singleBox = new SingleBox();
                 singleBox.setBoxID(box.getBoxID());

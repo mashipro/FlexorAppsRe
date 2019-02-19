@@ -55,9 +55,21 @@ class BoxGlobalViewHolder extends RecyclerView.ViewHolder {
                 mView.setVisibility(View.GONE);
             }else if (box.getBoxStatCode() == 301){
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_available);
+                boxStatus.setText(R.string.box_stat_available);
             }else if (box.getBoxStatCode() == 311){
+                if (box.getBoxProcess()){
+                    boxStatus.setText(R.string.box_stat_wait_empty);
+                }else {
+                    boxStatus.setText(R.string.box_stat_empty);
+                }
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_empty);
+
             }else if (box.getBoxStatCode() ==312){
+                if (box.getBoxProcess()){
+                    boxStatus.setText(R.string.box_stat_wait_full);
+                }else {
+                    boxStatus.setText(R.string.box_stat_full);
+                }
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_full);
             }
         }else {
@@ -65,18 +77,30 @@ class BoxGlobalViewHolder extends RecyclerView.ViewHolder {
             boxExtra.setVisibility(View.VISIBLE);
             if (box.getBoxStatCode() == 300){
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_disabled);
+                boxStatus.setText(R.string.box_stat_disabled);
             }else if (box.getBoxStatCode() == 301){
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_available);
+                boxStatus.setText(R.string.box_stat_available);
             }else if (box.getBoxStatCode() == 311){
+                if (box.getBoxProcess()){
+                    boxStatus.setText(R.string.box_stat_wait_empty);
+                }else {
+                    boxStatus.setText(R.string.box_stat_empty);
+                }
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_user);
             }else if (box.getBoxStatCode() ==312){
+                if (box.getBoxProcess()){
+                    boxStatus.setText(R.string.box_stat_wait_full);
+                }else {
+                    boxStatus.setText(R.string.box_stat_full);
+                }
                 boxIndividualImage.setBackgroundResource(R.mipmap.ic_box_user);
             }
         }
 
 
         boxName.setText(box.getBoxName());
-        getBoxStat(box.getBoxStatCode());
+//        getBoxStat(box.getBoxStatCode());
 
 
     }

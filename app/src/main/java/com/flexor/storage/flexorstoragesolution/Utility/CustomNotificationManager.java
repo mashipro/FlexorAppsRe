@@ -137,6 +137,7 @@ public class CustomNotificationManager {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "operation successful");
+                        notificationArrayList.clear();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override

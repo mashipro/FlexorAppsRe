@@ -323,8 +323,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         //Todo: getting vendor availability, capacity and other details
 
         final View popupView = getLayoutInflater().inflate(R.layout.popup_user_vendor_facade, null);
-        final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
+        final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(R.drawable.bg_color_grey_translucent));
         ImageView vendorImage = popupView.findViewById(R.id.popup_vendor_bg);
         TextView vendorName = popupView.findViewById(R.id.vendor_name);
         TextView vendorLocation = popupView.findViewById(R.id.vendor_location);
@@ -364,7 +364,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             vendorAccess.setText(R.string.check_available_box);
         }
         popupWindow.showAtLocation(view, Gravity.CENTER, 0,0);
-        popupWindow.setBackgroundDrawable(new ColorDrawable());
         if (popupWindow.isShowing()){
             Log.d(TAG, "onInfoWindowClick: popup show");
         }

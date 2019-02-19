@@ -114,14 +114,14 @@ public class BoxDetailsActivity extends AppCompatActivity {
 
         /**Init NotificationSend listener*/
         customNotificationManager = new CustomNotificationManager();
-        customNotificationManager.notificationListener(new NotificationListener() {
-            @Override
-            public void onNewNotificationReceived(Notification notification, ArrayList<Notification> activeNotificationArray, int activeNotificationCount) {
-                Log.d(TAG, "onCallback: notification Array: "+activeNotificationArray);
-                Log.d(TAG, "onCallback: notification count: "+ activeNotificationCount);
-                Log.d(TAG, "onCallback: new Notification: "+ notification);
-            }
-        });
+//        customNotificationManager.notificationListener(new NotificationListener() {
+//            @Override
+//            public void onNewNotificationReceived(Notification notification, ArrayList<Notification> activeNotificationArray, int activeNotificationCount) {
+//                Log.d(TAG, "onCallback: notification Array: "+activeNotificationArray);
+//                Log.d(TAG, "onCallback: notification count: "+ activeNotificationCount);
+//                Log.d(TAG, "onCallback: new Notification: "+ notification);
+//            }
+//        });
 
 
         ////Setting View////
@@ -221,6 +221,12 @@ public class BoxDetailsActivity extends AppCompatActivity {
                 btnEnable.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        checkItem();
+                    }
+                });
+                btnEnable.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                         viewBoxItem();
                     }
                 });
@@ -312,6 +318,10 @@ public class BoxDetailsActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    private void checkItem() {
+
     }
 
     private void declineRequestWhileFull() {

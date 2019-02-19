@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
-        final TextView textView = (TextView) navigationView.getMenu().findItem(R.id.nav_main_notification).getActionView();
+        notifCount = (TextView) navigationView.getMenu().findItem(R.id.nav_main_notification).getActionView();
 
         customNotificationManager = new CustomNotificationManager();
         customNotificationManager.notificationListener(new NotificationListener() {
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onNewNotificationReceived: "+ notification);
                 Log.d(TAG, "onNewNotificationReceived: "+ activeNotificationCount);
                 Log.d(TAG, "onNewNotificationReceived: "+ activeNotificationArray);
-                textView.setText(activeNotificationCount>0?String.valueOf(activeNotificationCount): null);
+                notifCount.setText(activeNotificationCount>0?String.valueOf(activeNotificationCount): null);
             }
 
         });
@@ -195,8 +195,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-                        isMapsEnabled();
-                        dialog.cancel();
+                        checkMapServices();
+                        dialog.dismiss();
                     }
                 });
         final AlertDialog alert = builder.create();
