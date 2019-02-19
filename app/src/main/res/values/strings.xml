@@ -133,6 +133,7 @@
     <string name="alert_access_accept_message">Accepting user request to access box. Accept to proceed.</string>
     <string name="alert_request_cancel">Cancel Access</string>
     <string name="alert_request_cancel_message">Box access will be cancelled. Accept to proceed.</string>
+    <string name="check_available_box">Check Vendor Box</string>
 
 
     <string-array name="day_rate_options">

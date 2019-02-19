@@ -45,13 +45,7 @@ public class CustomNotificationManager {
     private DatabaseReference databaseReference;
     private Notification incomingNotification;
 
-    private Boolean notificationActive;
-    private Long notificationCount, countToOut;
     private ArrayList<Notification> notificationArrayList= new ArrayList<>();
-    private ArrayList<Notification> notificationActiveArrayL= new ArrayList<>();
-    private ArrayList<Notification> notificationArrayFromCallback= new ArrayList<>();
-
-    private Boolean stopIteration = false;
 
     public CustomNotificationManager() {
         mAuth = FirebaseAuth.getInstance();

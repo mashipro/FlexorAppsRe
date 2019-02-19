@@ -2,26 +2,29 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
-import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
@@ -36,7 +39,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -44,8 +49,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -72,12 +78,14 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
 
     ///custom declare///
     private DocumentReference userVendorRef, userVendorBoxRef, boxCollectionRef;
-    private CollectionReference userVendorBoxesRef;
-    private BoxesViewHolder boxesViewHolder;
-    private ArrayList<Box> mBoxArray = new ArrayList<>();
+    private CollectionReference userVendorBoxesRef, boxesRef;
+    private ArrayList<Box> boxArray = new ArrayList<>();
+    private ArrayList<SingleBox> vendorSingleBoxArray = new ArrayList<>();
+    private ArrayList<SingleBox> userBoxArray = new ArrayList<>();
+    private ArrayList<Box> userVendorBoxArray = new ArrayList<>();
     private User user;
     private UserVendor userVendor;
-    private int boxLimit = 2;
+    private RecyclerView.Adapter<BoxGlobalViewHolder> boxGlobalViewHolderAdapter;
 
 
     @Override
@@ -93,10 +101,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         storageReference = FirebaseStorage.getInstance().getReference();
         authUser = mAuth.getCurrentUser();
 
-        //Document Reference//
-        userVendorRef = mFirestore.collection("Vendor").document(user.getUserID());
-        userVendorBoxesRef = mFirestore.collection("Vendor").document(user.getUserID()).collection("MyBox");
-
         //View Init //
         addBox = view.findViewById(R.id.fab_addBox);
         vendorSettings = view.findViewById(R.id.fab_vendorSettings);
@@ -110,6 +114,10 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         Log.d(TAG, "onCreateView: checking user info.....");
         Log.d(TAG, "onCreateView: user info: id: " + user.getUserID());
 
+        //Document Reference//
+        userVendorRef = mFirestore.collection("Vendor").document(user.getUserID());
+        userVendorBoxesRef = mFirestore.collection("Vendor").document(user.getUserID()).collection("MyBox");
+        boxesRef = mFirestore.collection("Boxes");
 
         ////getting userVendor////
         Log.d(TAG, "onCreateView: checking userVendor Info .....");
@@ -132,8 +140,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         }else {
             userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
         }
-
-        //------------------//
         ////Default view////
         textNoBox.setVisibility(View.VISIBLE);
 
@@ -141,7 +147,117 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         addBox.setOnClickListener(this);
         vendorSettings.setOnClickListener(this);
 
-        //Work on RecyclerView//
+        /**Getting user and vendor  box data
+         * user box data: */
+        userBoxArray = ((UserClient)(getApplicationContext())).getTransitionalStatCode().getSingleBoxesContainer();
+        //RecyclerView Method
+
+//        prepareRecycler();
+        getBoxData();
+        return view;
+    }
+
+    private void getBoxData() {
+        // TODO: 18/02/2019 Sort data in arraylist using comparator!!! 
+        userVendorBoxArray.clear();
+        userVendorBoxesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    List<SingleBox> thisBox = task.getResult().toObjects(SingleBox.class);
+                    vendorSingleBoxArray.addAll(thisBox);
+                    for (SingleBox thisSingleBox: vendorSingleBoxArray){
+                        boxesRef.document(thisSingleBox.getBoxID()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()){
+                                    userVendorBoxArray.add(task.getResult().toObject(Box.class));
+                                    Log.d(TAG, "onComplete: add box to array id: "+ task.getResult().toObject(Box.class).getBoxID());
+                                    initRecyclerView();
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    private void initRecyclerView(){
+        /**Initialize Recyclerview and bind model*/
+        boxGlobalViewHolderAdapter = new RecyclerView.Adapter<BoxGlobalViewHolder>() {
+            @NonNull
+            @Override
+            public BoxGlobalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_box, parent, false);
+                return new BoxGlobalViewHolder(view);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull BoxGlobalViewHolder holder, int position) {
+                final Box thisBoxBind = userVendorBoxArray.get(position);
+                holder.bindData(thisBoxBind);
+                ImageView boxExtra = holder.itemView.findViewById(R.id.box_extra);
+                boxExtra.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopupMenu popupMenu = new PopupMenu(getContext(),v);
+                        MenuInflater inflater = popupMenu.getMenuInflater();
+                        inflater.inflate(R.menu.menu_box_details, popupMenu.getMenu());
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()){
+                                    case R.id.nav_box_Details:
+                                        accessBoxDetails(thisBoxBind);
+
+                                        return true;
+                                    case R.id.nav_box_Access:
+                                        Log.d(TAG, "onMenuItemClick: boxAccess pressed");
+
+                                        //Todo boxAccess pressed
+                                        return true;
+                                    case R.id.nav_box_remove:
+                                        Log.d(TAG, "onMenuItemClick: boxRemove pressed");
+
+                                        //Todo boxRemove pressed
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
+                        popupMenu.show();
+                    }
+                });
+            }
+
+            @Override
+            public int getItemCount() {
+                return userVendorBoxArray.size();
+            }
+        };
+        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 3);
+        recyclerViewBoxDetails.setHasFixedSize(false);
+        recyclerViewBoxDetails.setItemViewCacheSize(20);
+        recyclerViewBoxDetails.setDrawingCacheEnabled(true);
+        recyclerViewBoxDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        recyclerViewBoxDetails.setLayoutManager(mLayoutManager);
+        recyclerViewBoxDetails.setAdapter(boxGlobalViewHolderAdapter);
+        if (recyclerViewBoxDetails.getChildCount() > 0){
+            textNoBox.setVisibility(View.VISIBLE);
+        } else {
+            textNoBox.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void accessBoxDetails(Box thisBoxBind) {
+        ((UserClient)(getApplicationContext())).setBox(thisBoxBind);
+        Intent movePage = new Intent(getContext(),BoxDetailsActivity.class);
+        getContext().startActivity(movePage);
+    }
+
+    private void prepareRecycler() {
         mQuery = userVendorBoxesRef.orderBy("boxID",Query.Direction.ASCENDING);
         FirestoreRecyclerOptions<SingleBox> recyclerOptions = new FirestoreRecyclerOptions.Builder<SingleBox>()
                 .setQuery(mQuery,SingleBox.class)
@@ -150,17 +266,19 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
             @Override
             protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull SingleBox model) {
                 holder.bindBox(model);
-                Log.d(TAG, "onBindViewHolder: binding: "+model);
+
             }
 
             @NonNull
             @Override
             public BoxesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_box, parent, false);
+
                 return new BoxesViewHolder(view);
 
             }
         };
+
         int spanNumber = CustomSpanCount.calculateNoOfColumns(getApplicationContext(), Constants.SINGLEBOX_SPAN_WIDTH);
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanNumber);
         recyclerViewBoxDetails.setHasFixedSize(false);
@@ -169,39 +287,13 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         recyclerViewBoxDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerViewBoxDetails.setLayoutManager(mLayoutManager);
         recyclerViewBoxDetails.setAdapter(mFirestoreRecyclerAdapter);
-        if (recyclerViewBoxDetails.getChildCount() <= 0){
+        if (recyclerViewBoxDetails.getChildCount() > 0){
             textNoBox.setVisibility(View.VISIBLE);
         } else {
             textNoBox.setVisibility(View.GONE);
         }
 
-        return view;
     }
-
-//    private void checkUserVendor(User user, UserVendor userVendor) {
-//        Log.d(TAG, "checkUserVendor: checking ......");
-//        if (userVendor != null){
-//            Log.d(TAG, "checkUserVendor: userVendor is: " +userVendor.getVendorStorageName()+", "+ userVendor.getVendorID());
-//        }else{
-//            Log.d(TAG, "checkUserVendor: userVendor not found, getting vendor");
-////            getUserVendorInfo(user, userVendor);
-//        }
-//    }
-//    private void getUserVendorInfo(final User user, UserVendor userVendor) {
-//        userVendorRef = mFirestore.collection("Vendor").document(user.getUserID());
-//        userVendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                Log.d(TAG, "onComplete: userVendor info retrieved from: " +userVendorRef.toString());
-//                UserVendor currentUserVendor = task.getResult().toObject(UserVendor.class);
-//                ((UserClient)(getApplicationContext())).setUserVendor(currentUserVendor);
-//                Log.d(TAG, "onComplete: UserVendor Info retrieved");
-//                Log.d(TAG, "onComplete: UserVendorName: " + currentUserVendor.getVendorStorageName());
-//                checkUserVendor(user, currentUserVendor);
-//            }
-//        });
-//
-//    }
 
     @Override
     public void onClick(View view) {
@@ -215,16 +307,17 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                     alert.setMessage(R.string.alert_new_box_message);
 
                     final EditText input = new EditText(getContext());
+                    input.setMaxLines(8);
 
                     alert.setView(input);
                     alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            if (input.getText().length() <= 1 || input.getText().length() >= 8){
+                            if (input.getText().length() <= 1 || input.getText().length() >= 9){
                                 Toast.makeText(getApplicationContext(), "Error adding box", Toast.LENGTH_SHORT).show();
                                 Toast.makeText(getApplicationContext(), "Text need to be filled and less than 8 character", Toast.LENGTH_SHORT).show();
                             }else{
-                                checkVendorLimit(input.getText());
+                                checkVendorLimit(input.getText().toString());
                             }
 
                         }
@@ -238,35 +331,43 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         }
 
     }
-
-    private void checkVendorLimit(final Editable text) {
-        userVendorBoxRef = userVendorRef.collection("Boxes").document();
-        userVendorBoxesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    int count = 0;
-                    for(DocumentSnapshot documentSnapshot : task.getResult()){
-                        count++;
-                    }
-                    if (count<=boxLimit){
-                        addVendorBox(text);
-                    }else{
-                        Toast.makeText(getApplicationContext(), R.string.error_box_limit, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
+    private int getBoxLimit(){
+        //todo: add more limiter criterion
+        if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_ACCEPTED){
+            Log.d(TAG, "getBoxLimit: box limit is: "+ Constants.BOXMAXLIMITTIER_A);
+            return Constants.BOXMAXLIMITTIER_A;
+        }else {
+            Log.d(TAG, "getBoxLimit: box limit is: "+ Constants.BOXMAXLIMITTIER_A);
+            return Constants.BOXMAXLIMITTIER_A;
+        }
+    }
+    private boolean boxIsLimit(){
+        if (mFirestoreRecyclerAdapter.getItemCount() >= getBoxLimit()){
+            Log.d(TAG, "boxIsLimit: true");
+            return true;
+        }else{
+            return false;
+        }
     }
 
-    private void addVendorBox(Editable text) {
+    private void checkVendorLimit(final String text) {
+        if (!boxIsLimit()){
+            addVendorBox(text);
+        } else{
+            Toast.makeText(getApplicationContext(), R.string.error_box_limit, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void addVendorBox(String text) {
         ////saving to box collection////
         boxCollectionRef = mFirestore.collection("Boxes").document();
         final Box newBox = new Box();
         newBox.setUserVendorOwner(user.getUserID());
-        newBox.setBoxName(text.toString());
+        newBox.setBoxName(text);
         newBox.setBoxID(boxCollectionRef.getId());
         newBox.setBoxStatCode(301);
+        newBox.setBoxProcess(false);
         boxCollectionRef.set(newBox).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -275,29 +376,30 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
                 }
             }
         });
-        saveBox(boxCollectionRef.getId());
-
+        saveBox(boxCollectionRef.getId(),newBox.getUserVendorOwner());
         textNoBox.setVisibility(View.GONE);
     }
 
-    private void saveBox(String id) {
+    private void saveBox(String id, String userVendorOwner) {
         userVendorBoxRef = userVendorRef.collection("MyBox").document(id);
-        Map<String, Object> userID = new HashMap<>();
-        userID.put("boxID", id);
-        userVendorBoxRef.set(userID);
+        SingleBox singleBox = new SingleBox();
+        singleBox.setBoxID(id);
+        singleBox.setBoxVendor(userVendorOwner);
+        userVendorBoxRef.set(singleBox);
+        getBoxData();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mFirestoreRecyclerAdapter.startListening();
+//        mFirestoreRecyclerAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (mFirestoreRecyclerAdapter != null){
-            mFirestoreRecyclerAdapter.stopListening();
+//            mFirestoreRecyclerAdapter.stopListening();
         }
     }
 }

@@ -6,6 +6,7 @@
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     cardview:cardCornerRadius="5dp"
     android:elevation="4dp"
+    android:layout_margin="4dp"
     android:layout_gravity="center_horizontal">
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +22,6 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="left"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -29,7 +29,6 @@
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:orientation="vertical"
@@ -39,6 +38,7 @@
                 cardview:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:layout_marginStart="8dp"
                     android:id="@+id/storage_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -48,6 +48,7 @@
                     android:textSize="13sp" />
 
                 <TextView
+                    android:layout_marginStart="8dp"
                     android:id="@+id/box_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,8 +59,8 @@
 
             <ImageView
                 android:id="@+id/box_extra"
-                android:layout_width="18dp"
-                android:layout_height="34dp"
+                android:layout_width="32dp"
+                android:layout_height="35dp"
                 android:src="@mipmap/ic_dots"
                 cardview:layout_constraintBottom_toBottomOf="parent"
                 cardview:layout_constraintEnd_toEndOf="parent"
