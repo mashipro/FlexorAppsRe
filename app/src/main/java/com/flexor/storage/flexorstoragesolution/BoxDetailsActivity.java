@@ -4,16 +4,20 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
@@ -321,6 +325,14 @@ public class BoxDetailsActivity extends AppCompatActivity {
     }
 
     private void checkItem() {
+        View popupView = getLayoutInflater().inflate(R.layout.popup_itemlist_independent, null);
+        final PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(R.drawable.bg_color_grey_translucent));
+
+        /**popup view*/
+        RecyclerView itemRecycler = popupView.findViewById(R.id.itemlist_recyclerview);
+        Button goButton = popupView.findViewById(R.id.buttonOk);
+
 
     }
 
@@ -529,7 +541,7 @@ public class BoxDetailsActivity extends AppCompatActivity {
         builder.setTitle(R.string.box_access_request);
         builder.setMessage(additionalMessage);
         builder.setCancelable(true);
-        builder.setPositiveButton(R.string.access_remote, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.access, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(TAG, "onClick: pos clicked");
@@ -543,12 +555,12 @@ public class BoxDetailsActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: neut clicked");
             }
         });
-        builder.setNegativeButton(R.string.access_local, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d(TAG, "onClick: neg clicked");
-            }
-        });
+//        builder.setNegativeButton(R.string.access_local, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                Log.d(TAG, "onClick: neg clicked");
+//            }
+//        });
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
