@@ -85,7 +85,7 @@ public class UserManager {
     
     public void updateUserData(final User newUserData){
         Log.d(TAG, "updateUserData: updating user data client!!!");
-        User userHistories = ((UserClient)(getApplicationContext())).getUser();
+        final User userHistories = ((UserClient)(getApplicationContext())).getUser();
         checkDifferences(userHistories, newUserData);
         ((UserClient)(getApplicationContext())).setUser(newUserData);
         Log.d(TAG, "updateUserData: updating user data in firebase !!!");
@@ -93,7 +93,7 @@ public class UserManager {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: update data success!!!");
-                generateUserLogs(newUserData.getUserID(), Constants.STATSCODE_USERDATA_UPDATE);
+                generateUserLogs(userHistories,newUserData.getUserID(), Constants.STATSCODE_USERDATA_UPDATE);
             }
         });
     }
@@ -129,12 +129,13 @@ public class UserManager {
         }
     }
 
-    private void generateUserLogs(final String newUserData, int logsStat) {
+    private void generateUserLogs(User userHistories, final String newUserData, int logsStat) {
         Log.d(TAG, "generateUserLogs: ID: "+newUserData);
         UserLogsStore userLogsStore = new UserLogsStore();
         userLogsStore.setLogsTime(ServerValue.TIMESTAMP);
         userLogsStore.setUserLogsID(newUserData);
         userLogsStore.setUserLogsStatsCode(logsStat);
+        userLogsStore.setUserHistory(userHistories);
         final DatabaseReference dataref=userLogsRef.child("UsersData").child(newUserData).child("UserLogs");
         dataref.push().setValue(userLogsStore).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -143,4 +144,5 @@ public class UserManager {
             }
         });
     }
+
 }

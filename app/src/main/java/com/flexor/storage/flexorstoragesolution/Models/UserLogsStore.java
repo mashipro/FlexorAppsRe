@@ -6,14 +6,16 @@ public class UserLogsStore {
     private Map<String, String> logsTime;
     private String userLogsID;
     private int userLogsStatsCode;
+    private User userHistory;
 
     public UserLogsStore() {
     }
 
-    public UserLogsStore(Map<String, String> logsTime, String userLogsID, int userLogsStatsCode) {
+    public UserLogsStore(Map<String, String> logsTime, String userLogsID, int userLogsStatsCode, User userHistory) {
         this.logsTime = logsTime;
         this.userLogsID = userLogsID;
         this.userLogsStatsCode = userLogsStatsCode;
+        this.userHistory = userHistory;
     }
 
     @Override
@@ -22,6 +24,7 @@ public class UserLogsStore {
                 "logsTime=" + logsTime +
                 ", userLogsID='" + userLogsID + '\'' +
                 ", userLogsStatsCode=" + userLogsStatsCode +
+                ", userHistory=" + userHistory +
                 '}';
     }
 
@@ -47,5 +50,13 @@ public class UserLogsStore {
 
     public void setUserLogsStatsCode(int userLogsStatsCode) {
         this.userLogsStatsCode = userLogsStatsCode;
+    }
+
+    public User getUserHistory() {
+        return userHistory;
+    }
+
+    public void setUserHistory(User userHistory) {
+        this.userHistory = userHistory;
     }
 }

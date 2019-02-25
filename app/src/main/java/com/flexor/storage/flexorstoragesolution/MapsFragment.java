@@ -75,8 +75,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private ImageView screenMarkOne;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    //Var
-    private static final String TAG = "MapsFragment";
     //    private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;

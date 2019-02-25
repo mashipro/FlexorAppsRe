@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.flexor.storage.flexorstoragesolution.Models.User;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +35,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private Uri photoURI;
 
     private String imageStorageUri;
+    private UserManager userManager;
 
     private CircleImageView pUserAvatar;
     private TextView pUserName, pUser_name, pUserAddress, pUserGender, pUserIDCNumber,pUserEmail, pUserCity, pUserPhoneNumber,pUserTimeStamp, pUserUID, pUserAuthCode, pUserBalance, pUser_balance;
@@ -44,6 +46,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onStart();
 
         User user = ((UserClient) getApplicationContext()).getUser();
+        User user1 = userManager.getUser();
+        User userNew = new User();
+
+        userManager.updateUserData(userNew);
+
+
 //        pUser_name.setText(user.getUserName());
         pUserName.setText(user.getUserName());
         pUserUID.setText(user.getUserID());
