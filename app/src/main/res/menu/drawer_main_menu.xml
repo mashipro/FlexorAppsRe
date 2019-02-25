@@ -34,6 +34,10 @@
             android:id="@+id/nav_vendor_signin"
             android:icon="@mipmap/ic_vendor_signin_white"
             android:title="@string/nav_vendor_signin" />
+        <item
+            android:id="@+id/admin_page"
+            android:icon="@drawable/com_facebook_send_button_icon"
+            android:title="@string/admin_page" />
     </group>
     <group android:checkableBehavior="single">
         <item

@@ -14,6 +14,7 @@
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_activities">MainActivities</string>
+    <string name="list_empty">No Application List</string>
 
     ////NAV
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -31,6 +32,10 @@
     <string name="nav_vendor_activeStorage">Active Storage</string>
     <string name="nav_vendor_upgradeStorage">Upgrade Vendor</string>
     <string name="nav_customerService">Contacts CS</string>
+    <string name="nav_vendor_application_list">Vendor App List</string>
+    <string name="nav_vendor_list">Vendor List</string>
+    <string name="nav_vendor_settings">Settings</string>
+    <string name="admin_page">Admin Page</string>
 
     <string name="login">Login</string>
     <string name="submit">Submit</string>
@@ -45,7 +50,7 @@
     <string name="accept">Accept</string>
     <string name="name">Name</string>
     <string name="Address">Address</string>
-    <string name="identityCardNumber">No KTP</string>
+    <string name="identityCardNumber">ID Card Number</string>
     <string name="NPWP">No NPWP*</string>
     <string name="company">Perusahaan*</string>
     <string name="textRules">*optional</string>
@@ -146,6 +151,13 @@
         <item>14 day</item>
         <item>30 day</item>
     </string-array>
+
+    <!--Biodata-->
+    <string name="gender">Gender</string>
+    <string name="city">City</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone Number</string>
+    <string name="userID">UID</string>
 
 
 </resources>

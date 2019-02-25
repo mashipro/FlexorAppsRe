@@ -234,7 +234,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             .setPersistenceEnabled(true)
                             .setTimestampsInSnapshotsEnabled(true)
                             .build();
-                    mFirestore.setFirestoreSettings(settings);
+//                    mFirestore.setFirestoreSettings(settings);
                     DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
                     final UserVendor userVendor = new UserVendor();
                     userVendor.setVendorOwner(user.getUserID());
@@ -250,31 +250,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     userVendor.setVendorID(newVendorReference.getId());
                     StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
                     uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);
-//                    userVendor.setVendorIDImgPath(imageStorageUri);
 
-//                    newVendorReference.set(userVendor).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            if (task.isSuccessful()){
-//                                User user = ((UserClient)(getApplicationContext())).getUser();
-//                                Log.d(TAG, "onComplete: userVendor Data uploaded Succesfully");
-//                                Log.d(TAG, "userVendorData: user: "+user.getUserName());
-//                                Log.d(TAG, "userVendorData: vendorName: "+userVendor.getVendorName());
-//                                Log.d(TAG, "userVendorData: vendorAddress: "+userVendor.getVendorAddress());
-//                                Log.d(TAG, "userVendorData: IDnumber: "+userVendor.getVendorIDNumber());
-//                                Log.d(TAG, "userVendorData: NPWP: "+userVendor.getVendorNPWP());
-//                                Log.d(TAG, "userVendorData: company: "+userVendor.getVendorCompany());
-//                                Log.d(TAG, "userVendorData: storageName: "+userVendor.getVendorStorageName());
-//                                Log.d(TAG, "userVendorData: storageLocation: "+userVendor.getVendorStorageLocation());
-//                                Log.d(TAG, "userVendorData: vendorIDImage: "+userVendor.getVendorIDImgPath());
-//                                Log.d(TAG, "userVendorData: vendorID: "+userVendor.getVendorName());
-//                                startActivity(new Intent(VendorRegistrationActivity.this,MainActivity.class));
-//                                finish();
-//                            }else{
-//                                Log.d(TAG, "onComplete: Error Check LOG");
-//                            }
-//                        }
-//                    });
 
                 }else{
                     Log.d(TAG, "checkFormCompletion: User is NULL!");

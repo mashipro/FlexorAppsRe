@@ -18,7 +18,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".LoginCheckerActivity"
+            android:theme = "@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".AdminVendorPhotoActivity" />
         <activity android:name=".BoxItemListActivity" />
 
         <meta-data
@@ -63,6 +66,8 @@
         <activity android:name=".VendorActivity" />
         <activity android:name=".VendorRegistrationActivity" />
         <activity android:name=".BoxDetailsActivity" />
+        <activity android:name=".SuperAdminActivity" />
+        <activity android:name=".MapsAdminActivity" />
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />
 
@@ -74,6 +79,8 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorNativeLightBlue" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".BiodataActivity" />
     </application>
 
 </manifest>

@@ -40,6 +40,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -69,10 +70,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MapsFragment";
     //Components
     private Context context;
+//    private MapView mapView;
     private MapView mMapView;
     private ImageView screenMarkOne;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    //Var
+    private static final String TAG = "MapsFragment";
+    //    private static final int ERROR_DIALOG_REQUEST = 9001;
+    private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
+    //    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionGranted = false;
     private static final int DEFAULT_ZOOM = 15;
 
@@ -213,8 +221,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-
     }
+
 
     private void searchNearestBox(View v) {
         mMap.getCameraPosition();
