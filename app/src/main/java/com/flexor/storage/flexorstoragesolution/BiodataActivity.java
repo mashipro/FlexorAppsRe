@@ -107,41 +107,10 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             }
         };
 
-
-//        DocumentReference docRef = firebaseFirestore.collection("Users").document(firebaseUser.getUid());
-//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()){
-//                    user = task.getResult().toObject(User.class);
-//                    Log.d(TAG, "onComplete: user bos" + user);
-//                    ((UserClient)(getApplicationContext())).setUser(user);
-//                    if (isExist()){
-//                        startActivity(new Intent(BiodataActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//                        finish();
-//                        Log.d(TAG, "onComplete: masuk mainactivity");
-//                    }else{
-//
-//                    }
-//                }
-//            }
-//        });
-
         userSubmit.setOnClickListener(this);
         userAvatar.setOnClickListener(this);
 
 
-    }
-
-    private void checkerBiodata(){
-        if (user.getUserAddress() != null){
-            startActivity(new Intent(BiodataActivity.this, MainActivity.class));
-            finish();
-        }
-    }
-
-    private boolean isExist(){
-        return this.user.getUserAddress() != null;
     }
 
     private void storeUserInfo() {
@@ -172,25 +141,10 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             StorageReference imagePath = storageReference.child("Images").child("UserImages").child(newUserDocuments.getId()).child("cropped_" + System.currentTimeMillis() + ".jpg");
             uploadImageandData(photoURI, imagePath, biodataUser, newUserDocuments);
             Log.d(TAG, "storeUserInfo: users UID: " + user.getUid());
-            newUserDocuments.set(biodataUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUid());
-                        Toast.makeText(BiodataActivity.this, "Biodata Updated!", Toast.LENGTH_SHORT).show();
-                        mAuth.signOut();
-                        startActivity(new Intent(BiodataActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                        Toast.makeText(BiodataActivity.this, "Please Re-Login", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onComplete: biodata update" + biodataUser.getUserAddress());
-                    } else {
-                        Log.d(TAG, "StoreUserInfoIncomplete: CHECK LOG!");
-                    }
-                }
-            });
         }
     }
 
-    private void uploadImageandData(Uri uri, final StorageReference storageReference, final User biodataUser, final DocumentReference newVendorReference) {
+    private void uploadImageandData(Uri uri, final StorageReference storageReference,final User biodataUser, final DocumentReference newUserDocuments) {
         Log.d(TAG, "uploadImage: Attempting upload image");
         Log.d(TAG, "uploadImage: Details> Uri: " + uri.toString());
         Log.d(TAG, "uploadImage: Details> Refference: " + storageReference);
@@ -200,13 +154,14 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "onComplete: Image Uploaded!!!");
+                    Toast.makeText(BiodataActivity.this, "uploadImageandData", Toast.LENGTH_SHORT).show();
                     storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             Uri downloadUrl = uri;
                             imageStorageUri = downloadUrl.getLastPathSegment();
                             biodataUser.setUserAvatar(imageStorageUri);
-                            uploadData(newVendorReference, biodataUser);
+                            uploadData(newUserDocuments, biodataUser);
                             Log.d(TAG, "onComplete: Image Uploaded to path: " + imageStorageUri);
                         }
                     });
@@ -217,12 +172,18 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void uploadData(DocumentReference newVendorReference, final User biodataUser) {
-        newVendorReference.set(biodataUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+    private void uploadData(DocumentReference newUserDocuments, final User biodataUser) {
+        newUserDocuments.set(biodataUser).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     User user = ((UserClient) (getApplicationContext())).getUser();
+                    Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUserID());
+                    Toast.makeText(BiodataActivity.this, "Biodata Updated!", Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
+                    startActivity(new Intent(BiodataActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    Toast.makeText(BiodataActivity.this, "Please Re-Login", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onComplete: biodata update" + biodataUser.getUserAddress());
                     Log.d(TAG, "onComplete: firebaseUser Biodata uploaded Succesfully");
                     Log.d(TAG, "userBiodata: firebaseUser: " + user.getUserName());
 //                    Log.d(TAG, "userVendorData: vendorName: "+userVendor.getVendorName());

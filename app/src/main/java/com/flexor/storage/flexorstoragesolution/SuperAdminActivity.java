@@ -99,8 +99,8 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
                     Log.d(TAG, "onComplete: User data retrieved");
                     User currentUser = task.getResult().toObject(User.class);
                     ((UserClient)(getApplicationContext())).setUser(currentUser);
-                    User sembarang = new User();
-                    sembarang = ((UserClient)(getApplicationContext())).getUser();
+
+                    User sembarang = ((UserClient)(getApplicationContext())).getUser();
                     Log.d(TAG, "onComplete: userUID: "+sembarang.getUserID());
 
                     String userID = sembarang.getUserID();
@@ -112,19 +112,6 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
                     Glide.with(SuperAdminActivity.this)
                             .load(storRef)
                             .into(showUserProfilePicture);
-
-
-//                    storageReference.child(sembarang.getUserAvatar()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                        @Override
-//                        public void onSuccess(Uri uri) {
-//
-//                            Glide.with(MainActivity.this).load(uri).into(showUserProfilePicture);
-//
-//                        }
-//                    });
-
-
-
 
                 }
             }

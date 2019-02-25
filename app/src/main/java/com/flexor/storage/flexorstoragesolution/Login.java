@@ -363,9 +363,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
 //                            checkIfEmailIsVerified();
 //                                startActivity(new Intent(Login.this, MainActivity.class));
-                            startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//                            startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             checkIfEmailIsVerified();
-                            finish();
+//                            finish();
                             Log.d("TAG", "SignIn with email: Success");
                         } else {
                             Log.d("TAG", "SignIn with email: failed");
@@ -504,8 +504,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         if (user != null) {
             if (user.isEmailVerified()){
                 startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                finish();
-                Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
+//                finish();
+                Toast.makeText(this, "Email is Verified!", Toast.LENGTH_SHORT).show();
             }
             else {
                 sendEmailVerification();

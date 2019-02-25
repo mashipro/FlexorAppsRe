@@ -16,8 +16,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -36,6 +38,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -64,11 +67,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CollectionReference collectionReference;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
     private User user;
+    private MenuItem item1;
 
     private boolean mLocationPermissionGranted = false;
 
     CircleImageView circleImageView, showUserProfilePicture;
-
+    TextView usernameHeader, userCredits;
 
 
     @Override
@@ -87,6 +91,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         storageReference = mStorage.getReference();
         firebaseUser = mAuth.getCurrentUser();
         mFirestore = FirebaseFirestore.getInstance();
+        user = ((UserClient) getApplicationContext()).getUser();
+        item1 = findViewById(R.id.admin_page);
+
+
+
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -95,7 +104,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 if (authUser == null) {
                     startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                }else {
+                }
+                else {
+                    user = ((UserClient) getApplicationContext()).getUser();
                     getUserDetails();
                 }
             }
@@ -109,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         NavigationView navigationView = findViewById(R.id.nav_view_main);
         navigationView.setNavigationItemSelectedListener(this);
+        authCode();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -120,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (checkMapServices()){
             if (mLocationPermissionGranted){
                 getMapsFragment();
-                getUserDetails();
+//                getUserDetails();
             }else {
                 getLocationPermission();
             }
@@ -129,19 +141,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (savedInstanceState == null) {
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
-        showUserProfilePicture  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
+        circleImageView  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
+        usernameHeader = navigationView.getHeaderView(0).findViewById(R.id.userNameHeader);
+        userCredits = navigationView.getHeaderView(0).findViewById(R.id.userCredits);
 
     }
 
     private void getUserDetails() {
         Log.d(TAG, "getUserDetails: getting User Details from: "+firebaseUser.getUid());
-        String userUID = firebaseUser.getUid();
+        user = ((UserClient) getApplicationContext()).getUser();
+//        String userUID = firebaseUser.getUid();
+        String userUID = user.getUserID();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-//                .setTimestampsInSnapshotsEnabled(true)
-//                .setPersistenceEnabled(true)
-//                .build();
-//        db.setFirestoreSettings(settings);
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
 
         DocumentReference userRef = db.collection("Users").document(userUID);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -152,18 +168,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     User currentUser = task.getResult().toObject(User.class);
                     Log.d(TAG, "onComplete: User Is: "+ currentUser.toString());
                     ((UserClient)getApplicationContext()).setUser(currentUser);
-//                    User sembarang = new User();
-//                    User sembarang = ((UserClient)getApplicationContext()).getUser();
-//                    if (currentUser.getUserAvatar() == null){
-//                        startActivity(new Intent(MainActivity.this, BiodataActivity.class));
-//                        finish();
-//                    }else{
-                        String userID = currentUser.getUserID();
+                    User userr = ((UserClient)(getApplicationContext())).getUser();
+                    String userID = userr.getUserID();
 
-                        StorageReference storRef = storageReference.child("Images").child("UserImages").child(currentUser.getUserID());
+                        StorageReference storRef = storageReference.child(userr.getUserAvatar());
                         Glide.with(MainActivity.this)
                                 .load(storRef)
-                                .into(showUserProfilePicture);
+                                .into(circleImageView);
+                    Log.d(TAG, "onComplete: NAMA SAYA ADALAH "+currentUser.getUserName());
+
+                        String userName = currentUser.getUserName();
+                        usernameHeader.setText(userName);
+                        Integer userBalance = currentUser.getUserBalance();
+                        userCredits.setText("IDR"+ Integer.toString(userBalance));
+
+
                         Log.d(TAG, "onComplete: avatar uri"+currentUser.getUserAvatar());
                     Log.d(TAG, "onComplete: userUID: "+currentUser.getUserID());
 
@@ -327,12 +346,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
                 afterclick();
                 break;
+            case R.id.admin_page:
+                startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                afterclick();
+                break;
             case R.id.nav_logout:
                 logout();
                 afterclick();
                 break;
         }
         return true;
+    }
+
+    private boolean adminCode() {
+        user = ((UserClient) getApplicationContext()).getUser();
+        return this.user.getUserAuthCode() != 199;
+    }
+
+    private void authCode(){
+        user = ((UserClient) getApplicationContext()).getUser();
+        if (user.getUserAuthCode()!= 199) {
+            navigationView = (NavigationView) findViewById(R.id.nav_view_main);
+            Menu nav_menu = navigationView.getMenu();
+            nav_menu.findItem(R.id.admin_page).setVisible(false);
+        }
     }
 
     private void logout() {

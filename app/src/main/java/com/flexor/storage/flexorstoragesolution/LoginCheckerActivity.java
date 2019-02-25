@@ -1,5 +1,6 @@
 package com.flexor.storage.flexorstoragesolution;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -20,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class LoginCheckerActivity extends AppCompatActivity {
+public class LoginCheckerActivity extends Activity {
     private static final String TAG = "LoginCheckerActivity";
 
     private FirebaseAuth mAuth;
@@ -80,7 +81,6 @@ public class LoginCheckerActivity extends AppCompatActivity {
 
             }
         };
-
     }
 
     private boolean checkBiodata() {
@@ -99,6 +99,10 @@ public class LoginCheckerActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginCheckerActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         finish();
                         Log.d(TAG, "onComplete: masuk mainactivity");
+                    }else{
+                        Log.d(TAG, "onAuthStateChanged: login passed, go to biodata, checkbiodata passed");
+                        startActivity(new Intent(LoginCheckerActivity.this, BiodataActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        finish();
                     }
                 }
             }
@@ -118,7 +122,7 @@ public class LoginCheckerActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             if (user.isEmailVerified()){
-                finish();
+//                finish();
                 Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
             }
         }
