@@ -1,18 +1,16 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
-import java.util.Map;
-
 public class Notification {
     private String notificationID;
-    private Integer notificationStatsCode;
+    private Long notificationStatsCode;
     private String notificationReference;
     private Boolean notificationIsActive;
-    private Map<String, String> notificationTime;
+    private Long notificationTime;
 
     public Notification() {
     }
 
-    public Notification(String notificationID, Integer notificationStatsCode, String notificationReference, Boolean notificationIsActive, Map<String, String> notificationTime) {
+    public Notification(String notificationID, Long notificationStatsCode, String notificationReference, Boolean notificationIsActive, Long notificationTime) {
         this.notificationID = notificationID;
         this.notificationStatsCode = notificationStatsCode;
         this.notificationReference = notificationReference;
@@ -39,11 +37,11 @@ public class Notification {
         this.notificationID = notificationID;
     }
 
-    public Integer getNotificationStatsCode() {
+    public Long getNotificationStatsCode() {
         return notificationStatsCode;
     }
 
-    public void setNotificationStatsCode(Integer notificationStatsCode) {
+    public void setNotificationStatsCode(Long notificationStatsCode) {
         this.notificationStatsCode = notificationStatsCode;
     }
 
@@ -63,11 +61,11 @@ public class Notification {
         this.notificationIsActive = notificationIsActive;
     }
 
-    public Map<String, String> getNotificationTime() {
+    public Long getNotificationTime() {
         return notificationTime;
     }
 
-    public void setNotificationTime(Map<String, String> notificationTime) {
+    public void setNotificationTime(Long notificationTime) {
         this.notificationTime = notificationTime;
     }
 }

@@ -70,6 +70,15 @@
         <activity android:name=".MapsAdminActivity" />
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />
+
+        <service android:name=".Utility.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorNativeLightBlue" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".BiodataActivity" />
     </application>

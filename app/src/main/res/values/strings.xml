@@ -116,6 +116,33 @@
     <string name="saving_items_please_wait">Saving your items.... Please Wait :D</string>
     <string name="box_stat_wait_empty">Empty - Processed</string>
     <string name="box_stat_wait_full">Full - Processed</string>
+    <string name="default_notification_channel_id">DEFAULT</string>
+    <string name="notification_access_box_req_title">User Request for Box Access!</string>
+    <string name="notification_access_box_req_body">One of your tenants need your approval to access box. Click for details.</string>
+    <string name="decline">Decline</string>
+    <string name="contact_tenant">Contact Tenant</string>
+    <string name="notification_access_box_req_cancel_title">Box Access Canceled!</string>
+    <string name="notification_access_box_req_cancel_body">The access request has been cancelled. Click for details.</string>
+    <string name="alert_accept_item">Item Accept Confirmation</string>
+    <string name="alert_accept_item_message">Are you sure to accept this item?</string>
+    <string name="notification_access_box_req_accepted_title">Your Box Acces Request Accepted</string>
+    <string name="notification_access_box_req_accepted_body">Your request has been accepted by vendor. Click for details.</string>
+    <string name="notification_access_box_req_declined_title">Your Box Access Request Denied.</string>
+    <string name="notification_access_box_req_declined_body">Your request has been denied by vendor. Click for details.</string>
+    <string name="alert_boxaccess_denied">Deny User Request</string>
+    <string name="alert_boxaccess_denied_message">User request will be denied. Please accept to proceed.</string>
+    <string name="box_view_item">Check Item</string>
+    <string name="alert_request_access">Acces Box</string>
+    <string name="alert_request_access_message">You will request to retrieve your item in this box. Please accept to proceed.</string>
+    <string name="alert_access_accept">Accept Request</string>
+    <string name="alert_access_accept_message">Accepting user request to access box. Accept to proceed.</string>
+    <string name="alert_request_cancel">Cancel Access</string>
+    <string name="alert_request_cancel_message">Box access will be cancelled. Accept to proceed.</string>
+    <string name="check_available_box">Check Vendor Box</string>
+    <string name="alert_rent_confirmation">Rent Confirmation</string>
+    <string name="alert_rent_confirmation_message">Are you sure to rent this box?</string>
+    <string name="box_stat_disabled">Disabled</string>
+    <string name="access">Access</string>
 
 
     <string-array name="day_rate_options">

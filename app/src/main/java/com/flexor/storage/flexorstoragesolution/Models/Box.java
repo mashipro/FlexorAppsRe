@@ -11,11 +11,11 @@ public class Box implements Parcelable {
     private String userVendorOwner;
     private @ServerTimestamp Date boxCreatedDate;
     private @ServerTimestamp Date boxLastChange;
-    private Double boxStatCode;
+    private Integer boxStatCode;
     private String boxName;
     private String boxTenant;
-    private Long boxRentTimestamp;
-    private Double boxRentDuration;
+    private @ServerTimestamp Date boxRentTimestamp;
+    private Integer boxRentDuration;
     private String boxAccessCode;
     private String boxID;
     private Boolean boxProcess;
@@ -23,38 +23,19 @@ public class Box implements Parcelable {
     public Box() {
     }
 
-    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Double boxStatCode, String boxName, String boxTenant, Long boxRentTimestamp, Double boxRentDuration, String boxAccessCode, String boxID, Boolean boxProcess) {
-        this.userVendorOwner = userVendorOwner;
-        this.boxCreatedDate = boxCreatedDate;
-        this.boxLastChange = boxLastChange;
-        this.boxStatCode = boxStatCode;
-        this.boxName = boxName;
-        this.boxTenant = boxTenant;
-        this.boxRentTimestamp = boxRentTimestamp;
-        this.boxRentDuration = boxRentDuration;
-        this.boxAccessCode = boxAccessCode;
-        this.boxID = boxID;
-        this.boxProcess = boxProcess;
-    }
-
     protected Box(Parcel in) {
         userVendorOwner = in.readString();
         if (in.readByte() == 0) {
             boxStatCode = null;
         } else {
-            boxStatCode = in.readDouble();
+            boxStatCode = in.readInt();
         }
         boxName = in.readString();
         boxTenant = in.readString();
         if (in.readByte() == 0) {
-            boxRentTimestamp = null;
-        } else {
-            boxRentTimestamp = in.readLong();
-        }
-        if (in.readByte() == 0) {
             boxRentDuration = null;
         } else {
-            boxRentDuration = in.readDouble();
+            boxRentDuration = in.readInt();
         }
         boxAccessCode = in.readString();
         boxID = in.readString();
@@ -69,21 +50,15 @@ public class Box implements Parcelable {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
-            dest.writeDouble(boxStatCode);
+            dest.writeInt(boxStatCode);
         }
         dest.writeString(boxName);
         dest.writeString(boxTenant);
-        if (boxRentTimestamp == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeLong(boxRentTimestamp);
-        }
         if (boxRentDuration == null) {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
-            dest.writeDouble(boxRentDuration);
+            dest.writeInt(boxRentDuration);
         }
         dest.writeString(boxAccessCode);
         dest.writeString(boxID);
@@ -124,6 +99,20 @@ public class Box implements Parcelable {
                 '}';
     }
 
+    public Box(String userVendorOwner, Date boxCreatedDate, Date boxLastChange, Integer boxStatCode, String boxName, String boxTenant, Date boxRentTimestamp, Integer boxRentDuration, String boxAccessCode, String boxID, Boolean boxProcess) {
+        this.userVendorOwner = userVendorOwner;
+        this.boxCreatedDate = boxCreatedDate;
+        this.boxLastChange = boxLastChange;
+        this.boxStatCode = boxStatCode;
+        this.boxName = boxName;
+        this.boxTenant = boxTenant;
+        this.boxRentTimestamp = boxRentTimestamp;
+        this.boxRentDuration = boxRentDuration;
+        this.boxAccessCode = boxAccessCode;
+        this.boxID = boxID;
+        this.boxProcess = boxProcess;
+    }
+
     public String getUserVendorOwner() {
         return userVendorOwner;
     }
@@ -148,11 +137,11 @@ public class Box implements Parcelable {
         this.boxLastChange = boxLastChange;
     }
 
-    public Double getBoxStatCode() {
+    public Integer getBoxStatCode() {
         return boxStatCode;
     }
 
-    public void setBoxStatCode(Double boxStatCode) {
+    public void setBoxStatCode(Integer boxStatCode) {
         this.boxStatCode = boxStatCode;
     }
 
@@ -172,19 +161,19 @@ public class Box implements Parcelable {
         this.boxTenant = boxTenant;
     }
 
-    public Long getBoxRentTimestamp() {
+    public Date getBoxRentTimestamp() {
         return boxRentTimestamp;
     }
 
-    public void setBoxRentTimestamp(Long boxRentTimestamp) {
+    public void setBoxRentTimestamp(Date boxRentTimestamp) {
         this.boxRentTimestamp = boxRentTimestamp;
     }
 
-    public Double getBoxRentDuration() {
+    public Integer getBoxRentDuration() {
         return boxRentDuration;
     }
 
-    public void setBoxRentDuration(Double boxRentDuration) {
+    public void setBoxRentDuration(Integer boxRentDuration) {
         this.boxRentDuration = boxRentDuration;
     }
 

@@ -13,9 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:fontFamily="@font/roboto_black"
         android:text="@string/tShirt"
         android:textColor="@color/colorNativeWhite"
@@ -29,9 +27,7 @@
         android:id="@+id/item_type2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:fontFamily="@font/roboto_black"
         android:text="X"
         android:textColor="@color/colorNativeWhite"
@@ -44,30 +40,53 @@
         android:id="@+id/item_ammo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto_black"
         android:text="99"
         android:textColor="@color/colorNativeWhite"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/item_delete"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.571" />
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout9"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/item_delete"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginTop="8dp"
+    <LinearLayout
+        android:id="@+id/linearLayout9"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@mipmap/ic_cross"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:rotation="45"/>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/item_accept"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@mipmap/ic_check_circle_green"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/item_delete"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@mipmap/ic_cross"
+            android:rotation="45"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+
 
 
 

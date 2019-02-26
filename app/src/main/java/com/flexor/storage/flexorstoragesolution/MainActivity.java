@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -19,14 +21,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterInside;
+import com.flexor.storage.flexorstoragesolution.Models.Notification;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
+import com.flexor.storage.flexorstoragesolution.Utility.NotificationListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,7 +53,9 @@ import com.google.firebase.storage.StorageReference;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -63,16 +73,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
     private DocumentReference docReference;
-    NavigationView navigationView;
+    private NavigationView navigationView;
     private CollectionReference collectionReference;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
     private User user;
     private MenuItem item1;
 
     private boolean mLocationPermissionGranted = false;
+    private CustomNotificationManager customNotificationManager;
+    private TextView notifCount;
 
-    CircleImageView circleImageView, showUserProfilePicture;
-    TextView usernameHeader, userCredits;
+    private CircleImageView circleImageView, showUserProfilePicture;
+    private TextView usernameHeader, userCredits;
 
 
     @Override
@@ -112,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
+        /**Init Notification listener*/
+
 
         drawerLayout = findViewById(R.id.drawer_layout_main);
 
@@ -126,9 +140,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-
-//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-//        getMapsFragment();
         if (checkMapServices()){
             if (mLocationPermissionGranted){
                 getMapsFragment();
@@ -139,12 +150,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_Maps);
         }
         circleImageView  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
         usernameHeader = navigationView.getHeaderView(0).findViewById(R.id.userNameHeader);
         userCredits = navigationView.getHeaderView(0).findViewById(R.id.userCredits);
 
+        notifCount = (TextView) navigationView.getMenu().findItem(R.id.nav_main_notification).getActionView();
+
+        customNotificationManager = new CustomNotificationManager();
+        customNotificationManager.notificationListener(new NotificationListener() {
+            @Override
+            public void onNewNotificationReceived(Notification notification, ArrayList<Notification> activeNotificationArray, int activeNotificationCount) {
+                Log.d(TAG, "onNewNotificationReceived: "+ notification);
+                Log.d(TAG, "onNewNotificationReceived: "+ activeNotificationCount);
+                Log.d(TAG, "onNewNotificationReceived: "+ activeNotificationArray);
+                notifCount.setText(activeNotificationCount>0?String.valueOf(activeNotificationCount): null);
+            }
+
+        });
     }
 
     private void getUserDetails() {
@@ -187,13 +212,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "onComplete: userUID: "+currentUser.getUserID());
 
 
+                    ((UserClient)(getApplicationContext())).setUser(currentUser);
+                    if (currentUser.getUserAuthCode()==Constants.STATSCODE_USER_VENDOR){
+                        DocumentReference vendorRef = mFirestore.collection("Vendor").document(currentUser.getUserID());
+                        vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if (task.isSuccessful()){
+                                    UserVendor userVendor = task.getResult().toObject(UserVendor.class);
+                                    ((UserClient)(getApplicationContext())).setUserVendor(userVendor);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         });
     }
 
     private void getMapsFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).addToBackStack(null).commit();
     }
 
     private boolean checkMapServices(){
@@ -213,8 +251,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-                        isMapsEnabled();
-                        dialog.cancel();
+                        checkMapServices();
+                        dialog.dismiss();
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -232,7 +270,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "isMapsEnabled: GPS Enabled");
             return true;
         }
-        
     }
 
     private void getLocationPermission() {
@@ -311,15 +348,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_Maps:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MapsFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_myStorageList:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MystoragelistFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_main_notification:
-
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new NotificationFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.nav_main_message:
@@ -338,12 +375,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_main_customerService:
-//                startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class));
-                startActivity(new Intent(getApplicationContext(), ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
                 afterclick();
                 break;
             case R.id.nav_main_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).addToBackStack(null).commit();
                 afterclick();
                 break;
             case R.id.admin_page:
@@ -355,6 +391,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
         }
+//        int id = item.getItemId();
+
+//        if (id == R.id.nav_logout) {
+//            mAuth.signOut();
+//            Log.d("TAG", "Logout!!");
+//        }
+
         return true;
     }
 
@@ -388,7 +431,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (getFragmentManager().getBackStackEntryCount() >0){
+                getFragmentManager().popBackStackImmediate();
+            }else {
+                super.onBackPressed();
+            }
         }
 
     }
