@@ -31,12 +31,12 @@ public class ManPaymentManager {
         return getUserBalance()>= bill;
     }
 
-    public void makeTransaction(String userID, String targetUserID, final int bill, final TransactionManager transactionManager){
+    public void makeTransaction(final String userID, String targetUserID, final int bill, final TransactionManager transactionManager){
         if (transactionEligible(bill)){
             User user = userManager.getUser();
             int userBalanceFinal = user.getUserBalance()-bill;
             user.setUserBalance(userBalanceFinal);
-            userManager.updateUserData(user);
+            userManager.updateUserData(user,Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION,targetUserID);
 
             collectionReference.document(targetUserID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -45,7 +45,7 @@ public class ManPaymentManager {
                         User targetUser = task.getResult().toObject(User.class);
                         int targetUserFinalBalance = targetUser.getUserBalance()+bill;
                         targetUser.setUserBalance(targetUserFinalBalance);
-                        userManager.updateUserData(targetUser);
+                        userManager.updateUserData(targetUser,Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION,userID);
                         transactionManager.onTransactionSuccess(true);
                     }else if (task.isCanceled()){
                         transactionManager.onTransactionSuccess(false);

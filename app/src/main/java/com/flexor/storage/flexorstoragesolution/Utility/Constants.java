@@ -38,5 +38,6 @@ public class Constants {
     public static final int STATSCODE_BOX_DISABLED = 300;
     public static final int STATSCODE_BOX_AVAILABLE = 301;
     public static final int STATSCODE_USERDATA_UPDATE= 401;
+    public static final int STATSCODE_USERDATA_UPDATE_TRANSACTION= 402;
 
 }
