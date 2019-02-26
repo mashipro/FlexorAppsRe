@@ -1,7 +1,6 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 
@@ -23,6 +22,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import javax.annotation.Nullable;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -83,9 +84,10 @@ public class UserManager {
         return ((UserClient)(getApplicationContext())).getUser();
     }
     
-    public void updateUserData(final User newUserData){
+    public void updateUserData(final User newUserData, final Integer statCode, final String referenceID){
+
         Log.d(TAG, "updateUserData: updating user data client!!!");
-        User userHistories = ((UserClient)(getApplicationContext())).getUser();
+        final User userHistories = ((UserClient)(getApplicationContext())).getUser();
         checkDifferences(userHistories, newUserData);
         ((UserClient)(getApplicationContext())).setUser(newUserData);
         Log.d(TAG, "updateUserData: updating user data in firebase !!!");
@@ -93,10 +95,11 @@ public class UserManager {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: update data success!!!");
-                generateUserLogs(newUserData.getUserID(), Constants.STATSCODE_USERDATA_UPDATE);
+                generateUserLogs(userHistories,newUserData.getUserID(),statCode, referenceID);
             }
         });
     }
+
 
     private void checkDifferences(User userHistories, User newUserData) {
         if (!userHistories.getUserAuthCode().equals(newUserData.getUserAuthCode())){
@@ -129,12 +132,14 @@ public class UserManager {
         }
     }
 
-    private void generateUserLogs(final String newUserData, int logsStat) {
+    private void generateUserLogs(User userHistories, final String newUserData, int logsStat, String referenceID) {
         Log.d(TAG, "generateUserLogs: ID: "+newUserData);
         UserLogsStore userLogsStore = new UserLogsStore();
         userLogsStore.setLogsTime(ServerValue.TIMESTAMP);
         userLogsStore.setUserLogsID(newUserData);
         userLogsStore.setUserLogsStatsCode(logsStat);
+        userLogsStore.setUserHistory(userHistories);
+        userLogsStore.setReferenceID(referenceID);
         final DatabaseReference dataref=userLogsRef.child("UsersData").child(newUserData).child("UserLogs");
         dataref.push().setValue(userLogsStore).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -143,4 +148,5 @@ public class UserManager {
             }
         });
     }
+
 }

@@ -46,7 +46,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firestore.v1beta1.DocumentTransform;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -6,14 +6,18 @@ public class UserLogsStore {
     private Map<String, String> logsTime;
     private String userLogsID;
     private int userLogsStatsCode;
+    private String referenceID;
+    private User userHistory;
 
     public UserLogsStore() {
     }
 
-    public UserLogsStore(Map<String, String> logsTime, String userLogsID, int userLogsStatsCode) {
+    public UserLogsStore(Map<String, String> logsTime, String userLogsID, int userLogsStatsCode, String referenceID, User userHistory) {
         this.logsTime = logsTime;
         this.userLogsID = userLogsID;
         this.userLogsStatsCode = userLogsStatsCode;
+        this.referenceID = referenceID;
+        this.userHistory = userHistory;
     }
 
     @Override
@@ -22,6 +26,8 @@ public class UserLogsStore {
                 "logsTime=" + logsTime +
                 ", userLogsID='" + userLogsID + '\'' +
                 ", userLogsStatsCode=" + userLogsStatsCode +
+                ", referenceID='" + referenceID + '\'' +
+                ", userHistory=" + userHistory +
                 '}';
     }
 
@@ -47,5 +53,21 @@ public class UserLogsStore {
 
     public void setUserLogsStatsCode(int userLogsStatsCode) {
         this.userLogsStatsCode = userLogsStatsCode;
+    }
+
+    public String getReferenceID() {
+        return referenceID;
+    }
+
+    public void setReferenceID(String referenceID) {
+        this.referenceID = referenceID;
+    }
+
+    public User getUserHistory() {
+        return userHistory;
+    }
+
+    public void setUserHistory(User userHistory) {
+        this.userHistory = userHistory;
     }
 }
