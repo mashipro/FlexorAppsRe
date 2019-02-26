@@ -9,8 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.flexor.storage.flexorstoragesolution.Models.User;
@@ -36,9 +40,12 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private static final String TAG = "BiodataActivity";
-    EditText userName, userAddress, userGender, userCity;
+    EditText userName, userAddress, userPhone;
     Button userSubmit;
     CircleImageView userAvatar;
+    Spinner userCity;
+    RadioGroup radioGroup;
+    RadioButton userGender;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -86,12 +93,25 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
         storageReference = firebaseStorage.getReference();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        userName = (EditText) findViewById(R.id.biodata_name);
-        userAddress = (EditText) findViewById(R.id.biodata_address);
-        userGender = (EditText) findViewById(R.id.biodata_gender);
-        userCity = (EditText) findViewById(R.id.biodata_city);
-        userSubmit = (Button) findViewById(R.id.button_submit);
-        userAvatar = (CircleImageView) findViewById(R.id.user_avatar);
+        //EditText
+        userName = findViewById(R.id.biodata_name);
+        userAddress = findViewById(R.id.biodata_address);
+        userPhone = findViewById(R.id.biodata_phoneNumber);
+        //Button
+        userSubmit = findViewById(R.id.button_submit);
+        //CircleImageView
+        userAvatar = findViewById(R.id.user_avatar);
+        //RadioButton
+        radioGroup = findViewById(R.id.radio_gender);
+        //Spinner
+        userCity = findViewById(R.id.city_spinner);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.daftar_kota_vendor, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        userCity.setAdapter(adapter);
 
         user = ((UserClient) getApplicationContext()).getUser();
         final FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -128,16 +148,24 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             String userEmail = user.getEmail();
             String userNameString = userName.getText().toString().trim();
             String userAddressString = userAddress.getText().toString().trim();
+            String userPhoneString = userPhone.getText().toString().trim();
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+            userGender = findViewById(selectedId);
             String userGenderString = userGender.getText().toString().trim();
-            String userCityString = userCity.getText().toString().trim();
+            String userCityString = userCity.getSelectedItem().toString().trim();
+            Integer userBalance = 0;
+            Integer userAuthcode = 101;
+
             final User biodataUser = new User();
             biodataUser.setUserID(userID);
             biodataUser.setUserEmail(userEmail);
             biodataUser.setUserName(userNameString);
             biodataUser.setUserAddress(userAddressString);
+            biodataUser.setUserPhone(userPhoneString);
             biodataUser.setUserGender(userGenderString);
             biodataUser.setUserCity(userCityString);
-            biodataUser.setUserAuthCode(101);
+            biodataUser.setUserAuthCode(userAuthcode);
+            biodataUser.setUserBalance(userBalance);
             StorageReference imagePath = storageReference.child("Images").child("UserImages").child(newUserDocuments.getId()).child("cropped_" + System.currentTimeMillis() + ".jpg");
             uploadImageandData(photoURI, imagePath, biodataUser, newUserDocuments);
             Log.d(TAG, "storeUserInfo: users UID: " + user.getUid());
@@ -177,19 +205,13 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    User user = ((UserClient) (getApplicationContext())).getUser();
+                    startActivity(new Intent(BiodataActivity.this, LoginCheckerActivity.class));
                     Log.d(TAG, "StoreUserInfoComplete: Users data stored: Firestore. ID: " + user.getUserID());
                     Toast.makeText(BiodataActivity.this, "Biodata Updated!", Toast.LENGTH_SHORT).show();
-                    mAuth.signOut();
-                    startActivity(new Intent(BiodataActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                     Toast.makeText(BiodataActivity.this, "Please Re-Login", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onComplete: biodata update" + biodataUser.getUserAddress());
                     Log.d(TAG, "onComplete: firebaseUser Biodata uploaded Succesfully");
                     Log.d(TAG, "userBiodata: firebaseUser: " + user.getUserName());
-//                    Log.d(TAG, "userVendorData: vendorName: "+userVendor.getVendorName());
-//                    Log.d(TAG, "userVendorData: vendorAddress: "+userVendor.getVendorAddress());
-//                    Log.d(TAG, "userVendorData: storageName: "+userVendor.getVendorStorageName());
-//                    Log.d(TAG, "userVendorData: storageLocation: "+userVendor.getVendorStorageLocation());
                 } else {
                     Log.d(TAG, "onComplete: Error Check LOG");
                 }
@@ -202,8 +224,7 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
 
         String userNameString = userName.getText().toString().trim();
         String userAddressString = userAddress.getText().toString().trim();
-        String userGenderString = userGender.getText().toString().trim();
-        String userCityString = userCity.getText().toString().trim();
+        String userPhoneString = userPhone.getText().toString().trim();
 
 
         if (userNameString.isEmpty()){
@@ -218,15 +239,9 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             return;
         }
 
-        if (userGenderString.isEmpty()){
-            userGender.setError("Please fill all empty spaces");
-            userGender.requestFocus();
-            return;
-        }
-
-        if (userCityString.isEmpty()){
-            userCity.setError("Please fill all empty spaces");
-            userCity.requestFocus();
+        if (userPhoneString.isEmpty()){
+            userPhone.setError("please fill all empty spaces");
+            userPhone.requestFocus();
             return;
         }
 
@@ -234,6 +249,7 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             Toast.makeText(getApplicationContext(), R.string.error_form_photo, Toast.LENGTH_SHORT).show();
         }else{
             storeUserInfo();
+
         }
 
     }
@@ -257,6 +273,26 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_pria:
+                if (checked)
+                    // Pirates are the best
+                    break;
+            case R.id.radio_wanita:
+                if (checked)
+                    // Ninjas rule
+                    break;
+        }
+    }
+
 }
 
+// TODO: 2/26/2019 setting code for each said city
+// TODO: 2/26/2019 why always relogin when app closed
+// TODO: 2/26/2019 changing gender into boolean 
 

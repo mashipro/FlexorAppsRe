@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else {
                     user = ((UserClient) getApplicationContext()).getUser();
                     getUserDetails();
+                    authCode();
                 }
             }
         };
@@ -134,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         NavigationView navigationView = findViewById(R.id.nav_view_main);
         navigationView.setNavigationItemSelectedListener(this);
-        authCode();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -399,11 +399,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 
         return true;
-    }
-
-    private boolean adminCode() {
-        user = ((UserClient) getApplicationContext()).getUser();
-        return this.user.getUserAuthCode() != 199;
     }
 
     private void authCode(){
