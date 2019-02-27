@@ -293,6 +293,4 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
 }
 
 // TODO: 2/26/2019 setting code for each said city
-// TODO: 2/26/2019 why always relogin when app closed
-// TODO: 2/26/2019 changing gender into boolean 
 

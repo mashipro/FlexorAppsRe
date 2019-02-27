@@ -146,3 +146,5 @@ public class LoginCheckerActivity extends Activity {
     }
 
 }
+
+// TODO: 2/27/2019 implementing interface usermanager.getinstance

@@ -87,7 +87,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private Query mQuery;
     private FirestoreRecyclerAdapter<SingleBox,BoxesViewHolder> mFirestoreRecyclerAdapter;
     private RecyclerView.Adapter<BoxGlobalViewHolder> boxGlobalViewHolderAdapter;
-    
+
     private ManPaymentManager manPaymentManager;
     private UserManager userManager;
     private User user;
@@ -112,7 +112,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
         vendorName = findViewById(R.id.vendor_name);
         vendorLocation = findViewById(R.id.vendor_location);
         recyclerViewVendorDetails = findViewById(R.id.recyclerViewVendorDetails);
-        
+
         //GettingUserData
         userManager = new UserManager();
         userManager.getInstance();
@@ -238,15 +238,19 @@ public class StorageDetailsActivity extends AppCompatActivity {
         if (rad3.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(3)));
             duration=3;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad7.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(7)));
             duration=7;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad14.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(14)));
             duration=14;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad30.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(30)));
             duration=30;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }
         daySelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

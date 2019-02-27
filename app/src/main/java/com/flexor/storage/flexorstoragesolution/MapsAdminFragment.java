@@ -94,7 +94,8 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mReference;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore firebaseFirestore;
+    private DocumentReference documentReference;
     private FirebaseUser authUser;
     private FirebaseAuth mAuth;
     private FirebaseStorage firebaseStorage;
@@ -109,13 +110,12 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
 
     private LatLng latLngYo;
 
-    private Uri photoURI;
-    private String imageStorageUri;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps_admin, container, false);
+
+        firebaseFirestore = FirebaseFirestore.getInstance();
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mReference = mFirebaseDatabase.getReference();
@@ -249,7 +249,6 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         Query query = db
                                 .collection("Vendor");
 
-
                         FirestoreRecyclerOptions<UserVendor> options = new FirestoreRecyclerOptions.Builder<UserVendor>()
                                 .setQuery(query, UserVendor.class)
                                 .build();
@@ -257,6 +256,10 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         double latt = latLngYo.latitude;
                         double longg = latLngYo.longitude;
                         Log.d(TAG, "writeGeo: "+latt + ", " + longg);
+
+                        GeoPoint latLong = new GeoPoint((int)(latt*1E6), (int)(longg*1E6));
+
+                        userVendor.setVendorGeoLocation(latLong);
 
                         mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
                         mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Longitude").setValue(longg);

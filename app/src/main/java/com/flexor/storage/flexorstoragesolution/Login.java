@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -116,10 +117,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if (firebaseAuth.getCurrentUser() != null) {
-//                        startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//                        finish();
-                }else{
-
+                        startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             }
         };
@@ -516,5 +514,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
 
     }
+
+    @Override
+    public void onBackPressed() {
+                Intent a = new Intent(Intent.ACTION_MAIN);
+                a.addCategory(Intent.CATEGORY_HOME);
+                a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(a);
+//                super.onBackPressed();
+            }
 }
 
