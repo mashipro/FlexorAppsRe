@@ -27,9 +27,13 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomSpanCount;
+import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
+import com.flexor.storage.flexorstoragesolution.Utility.TransactionManager;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
 import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -83,6 +87,10 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private Query mQuery;
     private FirestoreRecyclerAdapter<SingleBox,BoxesViewHolder> mFirestoreRecyclerAdapter;
     private RecyclerView.Adapter<BoxGlobalViewHolder> boxGlobalViewHolderAdapter;
+    
+    private ManPaymentManager manPaymentManager;
+    private UserManager userManager;
+    private User user;
 
     private int duration;
 
@@ -104,7 +112,9 @@ public class StorageDetailsActivity extends AppCompatActivity {
         vendorName = findViewById(R.id.vendor_name);
         vendorLocation = findViewById(R.id.vendor_location);
         recyclerViewVendorDetails = findViewById(R.id.recyclerViewVendorDetails);
-
+        
+        //GettingUserData
+        user = userManager.getUser();
 
         //Getting Vendor
         userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
@@ -118,8 +128,8 @@ public class StorageDetailsActivity extends AppCompatActivity {
         boxesRef = mFirestore.collection("Boxes");
         userBoxRef = mFirestore.collection("Users").document(mUser.getUid()).collection("MyRentedBox");
 
-        //Getting Vendor Box Info
         getBoxData();
+
     }
 
     private void getBoxData() {
@@ -225,19 +235,15 @@ public class StorageDetailsActivity extends AppCompatActivity {
         if (rad3.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(3)));
             duration=3;
-            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad7.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(7)));
             duration=7;
-            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad14.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(14)));
             duration=14;
-            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad30.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(30)));
             duration=30;
-            Log.d(TAG, "rentConfirmation: "+duration);
         }
         daySelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -263,6 +269,25 @@ public class StorageDetailsActivity extends AppCompatActivity {
                 builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        manPaymentManager.makeTransaction(
+                                user.getUserID(),
+                                userVendor.getVendorID(),
+                                getTotal(duration),
+                                Constants.TRANSACTION__BOX_RENT,
+                                thisBoxBinding.getBoxID(),
+                                Constants.TRANSACTION__REFSTAT_FINISHED,
+                                new TransactionManager() {
+                                    @Override
+                                    public void onTransactionSuccess(Boolean success, String transactionID) {
+                                        Log.d(TAG, "onTransactionSuccess: "+success+" transactionID: "+ transactionID);
+                                    }
+
+                                    @Override
+                                    public void onTransactionFailure(Boolean failure, String transactionID, String e) {
+                                        Log.d(TAG, "onTransactionFailure: "+failure+" transactionID: "+ transactionID+ " error: "+e);
+                                    }
+                                }
+                        );
                         updateBox(thisBoxBinding, duration);
                         saveUserBox(thisBoxBinding);
                         popupWindow.dismiss();

@@ -239,7 +239,11 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
 
             @Override
             public int getItemCount() {
-                return userVendorBoxArray.size();
+                if (userVendorBoxArray.size() == 0){
+                    return 0;
+                }else {
+                    return userVendorBoxArray.size();
+                }
             }
         };
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 3);
@@ -289,8 +293,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanNumber);
         recyclerViewBoxDetails.setHasFixedSize(false);
         recyclerViewBoxDetails.setItemViewCacheSize(20);
-        recyclerViewBoxDetails.setDrawingCacheEnabled(true);
-        recyclerViewBoxDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerViewBoxDetails.setLayoutManager(mLayoutManager);
         recyclerViewBoxDetails.setAdapter(mFirestoreRecyclerAdapter);
         if (recyclerViewBoxDetails.getChildCount() > 0){
@@ -348,7 +350,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         }
     }
     private boolean boxIsLimit(){
-        if (boxGlobalViewHolderAdapter.getItemCount() >= getBoxLimit()){
+        if (userVendorBoxArray.size() >= getBoxLimit()){
             Log.d(TAG, "boxIsLimit: true");
             return true;
         }else{

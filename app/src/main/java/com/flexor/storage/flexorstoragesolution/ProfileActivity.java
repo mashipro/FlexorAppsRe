@@ -46,8 +46,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onStart();
 
         User user = ((UserClient) getApplicationContext()).getUser();
-
-//        pUser_name.setText(user.getUserName());
         pUserName.setText(user.getUserName());
         pUserUID.setText(user.getUserID());
         pUserEmail.setText(user.getUserEmail());
