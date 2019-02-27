@@ -114,7 +114,10 @@ public class StorageDetailsActivity extends AppCompatActivity {
         recyclerViewVendorDetails = findViewById(R.id.recyclerViewVendorDetails);
         
         //GettingUserData
+        userManager = new UserManager();
+        userManager.getInstance();
         user = userManager.getUser();
+        manPaymentManager=new ManPaymentManager();
 
         //Getting Vendor
         userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
@@ -280,17 +283,21 @@ public class StorageDetailsActivity extends AppCompatActivity {
                                     @Override
                                     public void onTransactionSuccess(Boolean success, String transactionID) {
                                         Log.d(TAG, "onTransactionSuccess: "+success+" transactionID: "+ transactionID);
+                                        updateBox(thisBoxBinding, duration);
+                                        saveUserBox(thisBoxBinding);
+                                        popupWindow.dismiss();
                                     }
 
                                     @Override
                                     public void onTransactionFailure(Boolean failure, String transactionID, String e) {
                                         Log.d(TAG, "onTransactionFailure: "+failure+" transactionID: "+ transactionID+ " error: "+e);
+                                        popupWindow.dismiss();
                                     }
                                 }
                         );
-                        updateBox(thisBoxBinding, duration);
-                        saveUserBox(thisBoxBinding);
-                        popupWindow.dismiss();
+//                        updateBox(thisBoxBinding, duration);
+//                        saveUserBox(thisBoxBinding);
+//                        popupWindow.dismiss();
                     }
                 });
                 builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

@@ -42,6 +42,8 @@ public class ManPaymentManager {
         collectionReference = firestore.collection("Users");
         database = FirebaseDatabase.getInstance();
         databaseReference=database.getReference();
+        userManager=new UserManager();
+        userManager.getInstance();
     }
 
     public int getUserBalance(){
