@@ -339,7 +339,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         final Button vendorAccess = popupView.findViewById(R.id.access_vendor);
         Button vendorContact = popupView.findViewById(R.id.contact_vendor);
 
-        vendorRate.setText(mUserVendor.getVendorBoxPrice().toString());
+        vendorRate.setText(String.valueOf(mUserVendor.getVendorBoxPrice()));
         vendorName.setText(mUserVendor.getVendorStorageName());
         vendorLocation.setText(mUserVendor.getVendorStorageLocation());
 
