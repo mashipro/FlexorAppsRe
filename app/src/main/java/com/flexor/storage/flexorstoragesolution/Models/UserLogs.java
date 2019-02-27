@@ -1,28 +1,23 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
 import java.util.Map;
 
-public class UserLogsStore {
-    private Map<String, String> logsTime;
+public class UserLogs {
+    private @ServerTimestamp Date logsTime;
     private String userLogsID;
     private int userLogsStatsCode;
     private String referenceID;
     private User userHistory;
 
-    public UserLogsStore() {
-    }
-
-    public UserLogsStore(Map<String, String> logsTime, String userLogsID, int userLogsStatsCode, String referenceID, User userHistory) {
-        this.logsTime = logsTime;
-        this.userLogsID = userLogsID;
-        this.userLogsStatsCode = userLogsStatsCode;
-        this.referenceID = referenceID;
-        this.userHistory = userHistory;
+    public UserLogs() {
     }
 
     @Override
     public String toString() {
-        return "UserLogsStore{" +
+        return "UserLogs{" +
                 "logsTime=" + logsTime +
                 ", userLogsID='" + userLogsID + '\'' +
                 ", userLogsStatsCode=" + userLogsStatsCode +
@@ -31,11 +26,19 @@ public class UserLogsStore {
                 '}';
     }
 
-    public Map<String, String> getLogsTime() {
+    public UserLogs(Date logsTime, String userLogsID, int userLogsStatsCode, String referenceID, User userHistory) {
+        this.logsTime = logsTime;
+        this.userLogsID = userLogsID;
+        this.userLogsStatsCode = userLogsStatsCode;
+        this.referenceID = referenceID;
+        this.userHistory = userHistory;
+    }
+
+    public Date getLogsTime() {
         return logsTime;
     }
 
-    public void setLogsTime(Map<String, String> logsTime) {
+    public void setLogsTime(Date logsTime) {
         this.logsTime = logsTime;
     }
 

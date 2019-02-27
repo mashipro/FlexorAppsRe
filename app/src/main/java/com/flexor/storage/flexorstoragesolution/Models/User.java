@@ -20,13 +20,12 @@ public class User implements Parcelable {
     private Integer userAuthCode;
     private String userGender;
     private String userAddress;
-    private SingleBox MyRentedBox;
     private @ServerTimestamp Date userRegistrationTimestamp;
 
     public User() {
     }
 
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Integer userBalance, Integer userAuthCode, String userGender, String userAddress, SingleBox myRentedBox, Date userRegistrationTimestamp) {
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Integer userBalance, Integer userAuthCode, String userGender, String userAddress, Date userRegistrationTimestamp) {
         this.userEmail = userEmail;
         this.userID = userID;
         this.userName = userName;
@@ -37,7 +36,6 @@ public class User implements Parcelable {
         this.userAuthCode = userAuthCode;
         this.userGender = userGender;
         this.userAddress = userAddress;
-        MyRentedBox = myRentedBox;
         this.userRegistrationTimestamp = userRegistrationTimestamp;
     }
 
@@ -60,7 +58,6 @@ public class User implements Parcelable {
         }
         userGender = in.readString();
         userAddress = in.readString();
-        MyRentedBox = in.readParcelable(SingleBox.class.getClassLoader());
     }
 
     @Override
@@ -85,7 +82,6 @@ public class User implements Parcelable {
         }
         dest.writeString(userGender);
         dest.writeString(userAddress);
-        dest.writeParcelable(MyRentedBox, flags);
     }
 
     @Override
@@ -118,7 +114,6 @@ public class User implements Parcelable {
                 ", userAuthCode=" + userAuthCode +
                 ", userGender='" + userGender + '\'' +
                 ", userAddress='" + userAddress + '\'' +
-                ", MyRentedBox=" + MyRentedBox +
                 ", userRegistrationTimestamp=" + userRegistrationTimestamp +
                 '}';
     }
@@ -201,14 +196,6 @@ public class User implements Parcelable {
 
     public void setUserAddress(String userAddress) {
         this.userAddress = userAddress;
-    }
-
-    public SingleBox getMyRentedBox() {
-        return MyRentedBox;
-    }
-
-    public void setMyRentedBox(SingleBox myRentedBox) {
-        MyRentedBox = myRentedBox;
     }
 
     public Date getUserRegistrationTimestamp() {

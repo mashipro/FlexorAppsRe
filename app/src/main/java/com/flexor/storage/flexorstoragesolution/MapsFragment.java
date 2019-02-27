@@ -266,7 +266,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private void addMapMarkers(){
         for (final UserVendor userVendor: vendorArrayList){
-            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_ACCEPTED){
+            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
                 final UserVendor thisVendor = userVendor;
                 Log.d(TAG, "onMapReady: pin"+ thisVendor.getVendorGeoLocation().toString());
                 final MarkerOptions markerNormal = new MarkerOptions()

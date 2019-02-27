@@ -1,8 +1,11 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
 import java.util.Map;
 
-public class TransactionLogStore {
+public class Transaction {
     private String transactionID;
     private String sourceID;
     private String targetID;
@@ -10,15 +13,15 @@ public class TransactionLogStore {
     private int transactionRefStats;
     private String transactionRef;
     private int transactionValue;
-    private Map<String, String> transactionStartTime;
-    private Map<String, String> transactionChangeTime;
+    private @ServerTimestamp Date transactionStartTime;
+    private @ServerTimestamp Date transactionChangeTime;
 
-    public TransactionLogStore() {
+    public Transaction() {
     }
 
     @Override
     public String toString() {
-        return "TransactionLogStore{" +
+        return "Transaction{" +
                 "transactionID='" + transactionID + '\'' +
                 ", sourceID='" + sourceID + '\'' +
                 ", targetID='" + targetID + '\'' +
@@ -31,7 +34,7 @@ public class TransactionLogStore {
                 '}';
     }
 
-    public TransactionLogStore(String transactionID, String sourceID, String targetID, int transactionStats, int transactionRefStats, String transactionRef, int transactionValue, Map<String, String> transactionStartTime, Map<String, String> transactionChangeTime) {
+    public Transaction(String transactionID, String sourceID, String targetID, int transactionStats, int transactionRefStats, String transactionRef, int transactionValue, Date transactionStartTime, Date transactionChangeTime) {
         this.transactionID = transactionID;
         this.sourceID = sourceID;
         this.targetID = targetID;
@@ -99,19 +102,19 @@ public class TransactionLogStore {
         this.transactionValue = transactionValue;
     }
 
-    public Map<String, String> getTransactionStartTime() {
+    public Date getTransactionStartTime() {
         return transactionStartTime;
     }
 
-    public void setTransactionStartTime(Map<String, String> transactionStartTime) {
+    public void setTransactionStartTime(Date transactionStartTime) {
         this.transactionStartTime = transactionStartTime;
     }
 
-    public Map<String, String> getTransactionChangeTime() {
+    public Date getTransactionChangeTime() {
         return transactionChangeTime;
     }
 
-    public void setTransactionChangeTime(Map<String, String> transactionChangeTime) {
+    public void setTransactionChangeTime(Date transactionChangeTime) {
         this.transactionChangeTime = transactionChangeTime;
     }
 }

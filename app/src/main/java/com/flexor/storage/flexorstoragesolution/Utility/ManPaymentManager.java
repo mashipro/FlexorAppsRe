@@ -1,29 +1,21 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.flexor.storage.flexorstoragesolution.Models.TransactionLogStore;
+import com.flexor.storage.flexorstoragesolution.Models.Transaction;
+import com.flexor.storage.flexorstoragesolution.Models.TransactionMiniUsers;
 import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.R;
-import com.flexor.storage.flexorstoragesolution.UserClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.security.cert.TrustAnchor;
-import java.util.Random;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -31,7 +23,7 @@ public class ManPaymentManager {
     private static final String TAG = "ManPaymentManager";
     private UserManager userManager;
     private FirebaseFirestore firestore;
-    private CollectionReference collectionReference;
+    private CollectionReference collectionReference,userRef,transactionReference,logRef;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
 
@@ -40,6 +32,8 @@ public class ManPaymentManager {
     public ManPaymentManager() {
         firestore = FirebaseFirestore.getInstance();
         collectionReference = firestore.collection("Users");
+        userRef=firestore.collection("Users");
+        transactionReference = firestore.collection("Transactions");
         database = FirebaseDatabase.getInstance();
         databaseReference=database.getReference();
         userManager=new UserManager();
@@ -96,21 +90,37 @@ public class ManPaymentManager {
         return getApplicationContext().getString(R.string.transaction_eligible_not);
     }
 
-    public void postTransactionLog(final String transactionID, String sourceID, String targetID, int transactionStat, String transactionRef, int transactionRefStat, int value){
-        TransactionLogStore transactionLogStore = new TransactionLogStore();
+    public void postTransactionLog(final String transactionID, final String sourceID, final String targetID, int transactionStat, String transactionRef, int transactionRefStat, int value){
+        Log.d(TAG, "postTransactionLog: id: "+transactionID+" sourceID: "+sourceID+" targetID: "+targetID+" transaction value: "+value);
+        Transaction transactionLogStore = new Transaction();
         transactionLogStore.setTransactionID(transactionID);
         transactionLogStore.setSourceID(sourceID);
         transactionLogStore.setTargetID(targetID);
         transactionLogStore.setTransactionValue(value);
-        transactionLogStore.setTransactionChangeTime(ServerValue.TIMESTAMP);
-        transactionLogStore.setTransactionStartTime(ServerValue.TIMESTAMP);
+        transactionLogStore.setTransactionChangeTime(null);
+        transactionLogStore.setTransactionStartTime(null);
         transactionLogStore.setTransactionRef(transactionRef);
         transactionLogStore.setTransactionStats(transactionStat);
         transactionLogStore.setTransactionRefStats(transactionRefStat);
-        databaseReference.child("transactionList").push().setValue(transactionLogStore).addOnSuccessListener(new OnSuccessListener<Void>() {
+        transactionReference.document(transactionID).set(transactionLogStore).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: Log id: "+transactionID);
+                Log.d(TAG, "onComplete: transaction complete..." );
+                postTransactionLogtoUser(sourceID, transactionID);
+                postTransactionLogtoUser(targetID, transactionID);
+            }
+        });
+    }
+
+    private void postTransactionLogtoUser(String userID, String transactionID) {
+        Log.d(TAG, "postTransactionLogtoUser: posting log to userID: "+userID+ " with transactionID: "+transactionID);
+        TransactionMiniUsers transactionMiniUsers = new TransactionMiniUsers();
+        transactionMiniUsers.setTransactionID(transactionID);
+        transactionMiniUsers.setTransactionDate(null);
+        userRef.document(userID).collection("MyTransaction").document(transactionID).set(transactionMiniUsers).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: task success!!!!");
             }
         });
     }
