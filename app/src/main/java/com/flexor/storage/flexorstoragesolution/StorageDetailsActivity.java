@@ -27,9 +27,13 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
+import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomSpanCount;
+import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
+import com.flexor.storage.flexorstoragesolution.Utility.TransactionManager;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
 import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -83,6 +87,10 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private Query mQuery;
     private FirestoreRecyclerAdapter<SingleBox,BoxesViewHolder> mFirestoreRecyclerAdapter;
     private RecyclerView.Adapter<BoxGlobalViewHolder> boxGlobalViewHolderAdapter;
+    
+    private ManPaymentManager manPaymentManager;
+    private UserManager userManager;
+    private User user;
 
     private int duration;
 
@@ -104,7 +112,9 @@ public class StorageDetailsActivity extends AppCompatActivity {
         vendorName = findViewById(R.id.vendor_name);
         vendorLocation = findViewById(R.id.vendor_location);
         recyclerViewVendorDetails = findViewById(R.id.recyclerViewVendorDetails);
-
+        
+        //GettingUserData
+        user = userManager.getUser();
 
         //Getting Vendor
         userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
@@ -118,36 +128,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
         boxesRef = mFirestore.collection("Boxes");
         userBoxRef = mFirestore.collection("Users").document(mUser.getUid()).collection("MyRentedBox");
 
-        //Getting Vendor Box Info
         getBoxData();
-
-
-//        mQuery = vendorBoxRef.orderBy("boxID",Query.Direction.ASCENDING);
-//        FirestoreRecyclerOptions<SingleBox> recyclerOptions = new FirestoreRecyclerOptions.Builder<SingleBox>()
-//                .setQuery(mQuery,SingleBox.class)
-//                .build();
-//        mFirestoreRecyclerAdapter = new FirestoreRecyclerAdapter<SingleBox, BoxesViewHolder>(recyclerOptions) {
-//            @Override
-//            protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull SingleBox model) {
-//                holder.bindBox(model);
-//                Log.d(TAG, "onBindViewHolder: binding " +model);
-//            }
-//
-//            @NonNull
-//            @Override
-//            public BoxesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-//                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_box, viewGroup,false);
-//                return new BoxesViewHolder(view);
-//            }
-//        };
-//        int spanNumber = CustomSpanCount.calculateNoOfColumns(this,Constants.SINGLEBOX_SPAN_WIDTH);
-//        GridLayoutManager mLayoutManager = new GridLayoutManager(this,spanNumber);
-//        recyclerViewVendorDetails.setHasFixedSize(false);
-//        recyclerViewVendorDetails.setItemViewCacheSize(20);
-//        recyclerViewVendorDetails.setDrawingCacheEnabled(true);
-//        recyclerViewVendorDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-//        recyclerViewVendorDetails.setAdapter(mFirestoreRecyclerAdapter);
-//        recyclerViewVendorDetails.setLayoutManager(mLayoutManager);
 
     }
 
@@ -288,6 +269,25 @@ public class StorageDetailsActivity extends AppCompatActivity {
                 builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        manPaymentManager.makeTransaction(
+                                user.getUserID(),
+                                userVendor.getVendorID(),
+                                getTotal(duration),
+                                Constants.TRANSACTION__BOX_RENT,
+                                thisBoxBinding.getBoxID(),
+                                Constants.TRANSACTION__REFSTAT_FINISHED,
+                                new TransactionManager() {
+                                    @Override
+                                    public void onTransactionSuccess(Boolean success, String transactionID) {
+                                        Log.d(TAG, "onTransactionSuccess: "+success+" transactionID: "+ transactionID);
+                                    }
+
+                                    @Override
+                                    public void onTransactionFailure(Boolean failure, String transactionID, String e) {
+                                        Log.d(TAG, "onTransactionFailure: "+failure+" transactionID: "+ transactionID+ " error: "+e);
+                                    }
+                                }
+                        );
                         updateBox(thisBoxBinding, duration);
                         saveUserBox(thisBoxBinding);
                         popupWindow.dismiss();

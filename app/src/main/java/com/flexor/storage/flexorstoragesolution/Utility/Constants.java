@@ -39,5 +39,11 @@ public class Constants {
     public static final int STATSCODE_BOX_AVAILABLE = 301;
     public static final int STATSCODE_USERDATA_UPDATE= 401;
     public static final int STATSCODE_USERDATA_UPDATE_TRANSACTION= 402;
-
+    public static final int TRANSACTION__BOX_RENT = 501;
+    public static final int TRANSACTION__BALANCE_RECHARGE = 511;
+    public static final int TRANSACTION__BALANCE_WITHDRAW = 512;
+    public static final int TRANSACTION__VENDOR_REGIST = 521;
+    public static final int TRANSACTION__REFSTAT_PENDING = 590;
+    public static final int TRANSACTION__REFSTAT_FINISHED = 591;
+    public static final int TRANSACTION__REFSTAT_CANCLED = 599;
 }

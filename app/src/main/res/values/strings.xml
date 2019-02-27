@@ -169,6 +169,7 @@
     <string name="userID">UID</string>
     <string name="pria">Pria</string>
     <string name="wanita">Wanita</string>
+    <string name="transaction_eligible_not">You have insufficient balance. Please recharge.</string>
 
 
 </resources>
