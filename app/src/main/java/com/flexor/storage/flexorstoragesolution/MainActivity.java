@@ -114,13 +114,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser authUser = firebaseAuth.getCurrentUser();
-                if (authUser == null) {
-                    startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                }
-                else {
+                if (authUser != null) {
                     user = ((UserClient) getApplicationContext()).getUser();
                     getUserDetails();
                     authCode();
+                }
+                else {
+                    startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             }
         };
@@ -429,10 +429,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (getFragmentManager().getBackStackEntryCount() >0){
                 getFragmentManager().popBackStackImmediate();
             }else {
-                super.onBackPressed();
+                Intent a = new Intent(Intent.ACTION_MAIN);
+                a.addCategory(Intent.CATEGORY_HOME);
+                a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(a);
+//                super.onBackPressed();
             }
         }
-
     }
 
     @Override

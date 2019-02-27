@@ -120,35 +120,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
 
         //Getting Vendor Box Info
         getBoxData();
-
-
-//        mQuery = vendorBoxRef.orderBy("boxID",Query.Direction.ASCENDING);
-//        FirestoreRecyclerOptions<SingleBox> recyclerOptions = new FirestoreRecyclerOptions.Builder<SingleBox>()
-//                .setQuery(mQuery,SingleBox.class)
-//                .build();
-//        mFirestoreRecyclerAdapter = new FirestoreRecyclerAdapter<SingleBox, BoxesViewHolder>(recyclerOptions) {
-//            @Override
-//            protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull SingleBox model) {
-//                holder.bindBox(model);
-//                Log.d(TAG, "onBindViewHolder: binding " +model);
-//            }
-//
-//            @NonNull
-//            @Override
-//            public BoxesViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-//                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_box, viewGroup,false);
-//                return new BoxesViewHolder(view);
-//            }
-//        };
-//        int spanNumber = CustomSpanCount.calculateNoOfColumns(this,Constants.SINGLEBOX_SPAN_WIDTH);
-//        GridLayoutManager mLayoutManager = new GridLayoutManager(this,spanNumber);
-//        recyclerViewVendorDetails.setHasFixedSize(false);
-//        recyclerViewVendorDetails.setItemViewCacheSize(20);
-//        recyclerViewVendorDetails.setDrawingCacheEnabled(true);
-//        recyclerViewVendorDetails.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-//        recyclerViewVendorDetails.setAdapter(mFirestoreRecyclerAdapter);
-//        recyclerViewVendorDetails.setLayoutManager(mLayoutManager);
-
     }
 
     private void getBoxData() {
@@ -254,15 +225,19 @@ public class StorageDetailsActivity extends AppCompatActivity {
         if (rad3.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(3)));
             duration=3;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad7.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(7)));
             duration=7;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad14.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(14)));
             duration=14;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }else if (rad30.isChecked()){
             boxTotal.setText(String.valueOf(getTotal(30)));
             duration=30;
+            Log.d(TAG, "rentConfirmation: "+duration);
         }
         daySelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
