@@ -1,11 +1,10 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 
 import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.flexor.storage.flexorstoragesolution.Models.UserLogsStore;
+import com.flexor.storage.flexorstoragesolution.Models.UserLogs;
 import com.flexor.storage.flexorstoragesolution.UserClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -15,15 +14,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import javax.annotation.Nullable;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -132,19 +128,18 @@ public class UserManager {
         }
     }
 
-    private void generateUserLogs(User userHistories, final String newUserData, int logsStat, String referenceID) {
-        Log.d(TAG, "generateUserLogs: ID: "+newUserData);
-        UserLogsStore userLogsStore = new UserLogsStore();
-        userLogsStore.setLogsTime(ServerValue.TIMESTAMP);
-        userLogsStore.setUserLogsID(newUserData);
+    private void generateUserLogs(User userHistories, final String userID, int logsStat, String referenceID) {
+        Log.d(TAG, "generateUserLogs: ID: "+userID);
+        UserLogs userLogsStore = new UserLogs();
+        userLogsStore.setLogsTime(null);
+        userLogsStore.setUserLogsID(userID);
         userLogsStore.setUserLogsStatsCode(logsStat);
         userLogsStore.setUserHistory(userHistories);
         userLogsStore.setReferenceID(referenceID);
-        final DatabaseReference dataref=userLogsRef.child("UsersData").child(newUserData).child("UserLogs");
-        dataref.push().setValue(userLogsStore).addOnSuccessListener(new OnSuccessListener<Void>() {
+        userRef.document(userHistories.getUserID()).collection("MyUserHistories").document().set(userLogsStore).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: user logs generated for id: "+ newUserData+" with logs id: "+dataref.getKey()+" atLocaltime: "+ System.currentTimeMillis());
+                Log.d(TAG, "onSuccess: user logs store success!");
             }
         });
     }

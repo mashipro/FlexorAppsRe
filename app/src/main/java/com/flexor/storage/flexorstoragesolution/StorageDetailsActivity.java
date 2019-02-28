@@ -87,7 +87,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private Query mQuery;
     private FirestoreRecyclerAdapter<SingleBox,BoxesViewHolder> mFirestoreRecyclerAdapter;
     private RecyclerView.Adapter<BoxGlobalViewHolder> boxGlobalViewHolderAdapter;
-    
+
     private ManPaymentManager manPaymentManager;
     private UserManager userManager;
     private User user;
@@ -112,7 +112,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
         vendorName = findViewById(R.id.vendor_name);
         vendorLocation = findViewById(R.id.vendor_location);
         recyclerViewVendorDetails = findViewById(R.id.recyclerViewVendorDetails);
-        
+
         //GettingUserData
         userManager = new UserManager();
         userManager.getInstance();

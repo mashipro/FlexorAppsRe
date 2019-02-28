@@ -394,7 +394,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         singleBox.setBoxID(id);
         singleBox.setBoxVendor(userVendorOwner);
         userVendorBoxRef.set(singleBox);
-        getBoxData();
+        initRecyclerView();
     }
 
     @Override
