@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -46,6 +47,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseFirestore mFirestore;
     private FirebaseDatabase mDatabase;
+    private DatabaseReference mReference;
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
     private FirebaseUser authUser;
@@ -64,6 +66,8 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
     private Uri photoURI;
     private String imageStorageUri;
 
+    private UserVendor userVendor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +77,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         mAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+        mReference = mDatabase.getReference();
         mStorage = FirebaseStorage.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -249,6 +254,8 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     userVendor.setVendorStatsCode((double) 211);
                     userVendor.setVendorID(newVendorReference.getId());
                     StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
+                    mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Name").setValue(vendorName);
+                    mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Name").setValue(vendorAddress);
                     uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);
 
 
@@ -260,6 +267,33 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         }
     }
 
+    private void uploadImageandData(Uri uri, final StorageReference storageReference, final UserVendor userVendor, final DocumentReference newVendorReference){
+        Log.d(TAG, "uploadImage: Attempting upload image");
+        Log.d(TAG, "uploadImage: Details> Uri: "+uri.toString());
+        Log.d(TAG, "uploadImage: Details> Refference: "+storageReference);
+        final UploadTask uploadTask = storageReference.putFile(uri);
+        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: Image Uploaded!!!");
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Uri downloadUrl = uri;
+                            imageStorageUri = downloadUrl.getLastPathSegment();
+                            userVendor.setVendorIDImgPath(imageStorageUri);
+                            mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Name").setValue(imageStorageUri);
+                            uploadData(newVendorReference, userVendor);
+                            Log.d(TAG, "onComplete: Image Uploaded to path: "+imageStorageUri);
+                        }
+                    });
+                }else{
+                    Log.d(TAG, "onComplete: Image upload error");
+                }
+            }
+        });
+    }
     private void uploadData(DocumentReference newVendorReference, final UserVendor userVendor) {
         newVendorReference.set(userVendor).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -285,32 +319,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
             }
         });
 
-    }
-    private void uploadImageandData(Uri uri, final StorageReference storageReference, final UserVendor userVendor, final DocumentReference newVendorReference){
-        Log.d(TAG, "uploadImage: Attempting upload image");
-        Log.d(TAG, "uploadImage: Details> Uri: "+uri.toString());
-        Log.d(TAG, "uploadImage: Details> Refference: "+storageReference);
-        final UploadTask uploadTask = storageReference.putFile(uri);
-        uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if (task.isSuccessful()){
-                    Log.d(TAG, "onComplete: Image Uploaded!!!");
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Uri downloadUrl = uri;
-                            imageStorageUri = downloadUrl.getLastPathSegment();
-                            userVendor.setVendorIDImgPath(imageStorageUri);
-                            uploadData(newVendorReference, userVendor);
-                            Log.d(TAG, "onComplete: Image Uploaded to path: "+imageStorageUri);
-                        }
-                    });
-                }else{
-                    Log.d(TAG, "onComplete: Image upload error");
-                }
-            }
-        });
     }
 
     private void getUserDetails(FirebaseUser user) {

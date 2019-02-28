@@ -137,7 +137,8 @@ public class AdminVendorPhotoActivity extends AppCompatActivity implements View.
                                     }
                                 });
                         uploadImageandData(photoURI, imagePath, userVendor);
-                        startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class));
+                        startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        finish();
 
                         break;
 

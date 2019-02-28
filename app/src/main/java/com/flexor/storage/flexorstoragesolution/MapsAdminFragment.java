@@ -263,7 +263,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
 
                         mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
                         mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Longitude").setValue(longg);
-                        startActivity(new Intent(getApplicationContext(), AdminVendorPhotoActivity.class));
+                        startActivity(new Intent(getApplicationContext(), AdminVendorPhotoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
