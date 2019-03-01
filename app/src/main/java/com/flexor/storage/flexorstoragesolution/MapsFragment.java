@@ -1,9 +1,7 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
@@ -21,19 +19,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.flexor.storage.flexorstoragesolution.Models.Box;
-import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
-import com.flexor.storage.flexorstoragesolution.Models.VendorDatabaseReceive;
-import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
+import com.flexor.storage.flexorstoragesolution.Models.VendorDatabase;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomMapInfo;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
@@ -44,21 +37,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.LogDescriptor;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -67,7 +56,6 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +78,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private static final int DEFAULT_ZOOM = 15;
     private UserManager userManager;
     private User user;
-    private VendorDatabaseReceive vendorDatabaseReceive;
+    private VendorDatabase vendorDatabase;
 
     //View
     private CircleImageView center, left, right;
@@ -105,7 +93,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
     private ArrayList<SingleBox> userBoxArrayList = new ArrayList<>();
     private ArrayList<SingleBox> vendorBoxArrayList = new ArrayList<>();
-    private ArrayList<VendorDatabaseReceive> vendorDBArray = new ArrayList<>();
+    private ArrayList<VendorDatabase> vendorDBArray = new ArrayList<>();
 
 
     @Nullable
@@ -172,7 +160,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         });
         getVendorList(new VendorDBUtilities() {
             @Override
-            public void onDataReceived(ArrayList<VendorDatabaseReceive> vendorDBArray) {
+            public void onDataReceived(ArrayList<VendorDatabase> vendorDBArray) {
                 addMapMarkers(vendorDBArray);
             }
         });
@@ -197,9 +185,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         vendorDBRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                vendorDatabaseReceive = dataSnapshot.getValue(VendorDatabaseReceive.class);
-                Log.d(TAG, "onChildAdded: this vendor:"+ vendorDatabaseReceive);
-                vendorDBArray.add(vendorDatabaseReceive);
+                vendorDatabase = dataSnapshot.getValue(VendorDatabase.class);
+                Log.d(TAG, "onChildAdded: this vendor:"+ vendorDatabase);
+                vendorDBArray.add(vendorDatabase);
                 Log.d(TAG, "onChildAdded: this array: "+ vendorDBArray);
                 Log.d(TAG, "onChildAdded: array size: "+vendorDBArray.size());
                 vendorDBUtilities.onDataReceived(vendorDBArray);
@@ -310,53 +298,88 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom),2000,null);
     }
 
-    private void addMapMarkers(ArrayList<VendorDatabaseReceive> vendorDBArray){
-        for (VendorDatabaseReceive thisVendor: vendorDBArray){
-        }
-        for (final UserVendor userVendor: vendorArrayList){
-            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
-                Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
-                MarkerOptions markerNormal = new MarkerOptions()
-                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
-                        .title(userVendor.getVendorStorageName())
-                        .snippet(userVendor.getVendorID())
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
-                MarkerOptions markerRentedBox = new MarkerOptions()
-                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
-                        .title(userVendor.getVendorStorageName())
-                        .snippet(userVendor.getVendorID())
+    private void addMapMarkers(ArrayList<VendorDatabase> vendorDBArray){
+        for (VendorDatabase thisVendor: vendorDBArray){
+            if (boxRented(thisVendor.getVendorID())){
+                MarkerOptions markerRented = new MarkerOptions()
+                        .position(new LatLng(thisVendor.getLatitude(),thisVendor.getLongitude()))
+                        .title(thisVendor.getVendorName())
+                        .snippet(thisVendor.getVendorID())
                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_rented));
-                Marker marker;
-                if (boxRented(userVendor.getVendorID())){
-                    marker= mMap.addMarker(markerRentedBox);
-                }else {
-                    marker = mMap.addMarker(markerNormal);
-                }
-                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
-                mMap.setInfoWindowAdapter(customMapInfo);
-                marker.setTag(userVendor);
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
-                        marker.showInfoWindow();
-                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
-                        return true;
-                    }
-                });
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        getVendorData(marker.getSnippet());
-
-//                        Log.d(TAG, "onInfoWindowClick: markerID: "+marker.getId());
-////                        popupShow(getView());
-//                        openPopup(mMapView, getVendorData(marker.getSnippet()));
-//                        Log.d(TAG, "onInfoWindowClick: showing popup window");
-                    }
-                });
+                mapMarker = mMap.addMarker(markerRented);
+            }else {
+                MarkerOptions markerNormal = new MarkerOptions()
+                        .position(new LatLng(thisVendor.getLatitude(),thisVendor.getLongitude()))
+                        .title(thisVendor.getVendorName())
+                        .snippet(thisVendor.getVendorID())
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
+                mapMarker = mMap.addMarker(markerNormal);
             }
+            CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+            mMap.setInfoWindowAdapter(customMapInfo);
+            mapMarker.setTag(thisVendor);
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+                    marker.showInfoWindow();
+                    moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
+                    return true;
+                }
+            });
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    VendorDatabase thisVendorDBData = (VendorDatabase) marker.getTag();
+                    getVendorData(thisVendorDBData.getVendorID());
+                }
+            });
+
         }
+//        for (final UserVendor userVendor: vendorArrayList){
+//            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
+//                Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
+//                MarkerOptions markerNormal = new MarkerOptions()
+//                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
+//                        .title(userVendor.getVendorStorageName())
+//                        .snippet(userVendor.getVendorID())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
+//                MarkerOptions markerRentedBox = new MarkerOptions()
+//                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
+//                        .title(userVendor.getVendorStorageName())
+//                        .snippet(userVendor.getVendorID())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_rented));
+//                Marker marker;
+//                if (boxRented(userVendor.getVendorID())){
+//                    marker= mMap.addMarker(markerRentedBox);
+//                }else {
+//                    marker = mMap.addMarker(markerNormal);
+//                }
+//                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+//                mMap.setInfoWindowAdapter(customMapInfo);
+//                marker.setTag(userVendor);
+//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//                    @Override
+//                    public boolean onMarkerClick(Marker marker) {
+//                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+//                        marker.showInfoWindow();
+//                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
+//                        return true;
+//                    }
+//                });
+//                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+//                    @Override
+//                    public void onInfoWindowClick(Marker marker) {
+//                        getVendorData(marker.getSnippet());
+//
+////                        Log.d(TAG, "onInfoWindowClick: markerID: "+marker.getId());
+//////                        popupShow(getView());
+////                        openPopup(mMapView, getVendorData(marker.getSnippet()));
+////                        Log.d(TAG, "onInfoWindowClick: showing popup window");
+//                    }
+//                });
+//            }
+//        }
     }
 
     private void getVendorData(String vendorID) {
