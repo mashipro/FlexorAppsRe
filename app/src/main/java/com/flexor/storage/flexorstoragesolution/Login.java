@@ -117,6 +117,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if (firebaseAuth.getCurrentUser() != null) {
+//                    checkIfEmailIsVerified();
                         startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
             }
@@ -500,16 +501,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            if (user.isEmailVerified()){
-                startActivity(new Intent(Login.this, LoginCheckerActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//                finish();
-                Toast.makeText(this, "Email is Verified!", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            if (!user.isEmailVerified()){
                 sendEmailVerification();
                 mAuth.signOut();
                 Toast.makeText(this, "Please Verify your Email first", Toast.LENGTH_SHORT).show();
-
             }
         }
 

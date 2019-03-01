@@ -71,7 +71,7 @@ public class LoginCheckerActivity extends Activity {
                     Log.d(TAG, "onAuthStateChanged: logout, email verified");
                     startActivity(new Intent(LoginCheckerActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
-                else{
+                else if (firebaseAuth.getCurrentUser() != null && !checkIfEmailIsVerified()){
                     sendEmailVerification();
                     Log.d(TAG, "onAuthStateChanged: login failed, go back to Login");
                     mAuth.signOut();
