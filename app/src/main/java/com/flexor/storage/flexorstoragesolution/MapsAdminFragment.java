@@ -108,8 +108,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     private Handler handler;
     private GoogleMap.OnCameraIdleListener onCameraIdleListener;
     private UserVendor userVendor;
-    private VendorDatabase vendorDatabase;
-
+    private VendorDatabase vendorDatabases;
     private LatLng latLngYo;
 
     @Nullable
@@ -133,6 +132,8 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
 
         geoPoint = view.findViewById(R.id.tv_mapAdmin);
         savegeoButton = view.findViewById(R.id.button_saveGeo);
+
+
 
         // Read from the database
         mReference.addValueEventListener(new ValueEventListener() {
@@ -244,6 +245,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "onClick: wew"+userVendor.getVendorID());
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
                         //Yes button clicked
@@ -255,14 +257,14 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                                 .setQuery(query, UserVendor.class)
                                 .build();
 
-                        double latt = latLngYo.latitude;
-                        double longg = latLngYo.longitude;
+                        final double latt = latLngYo.latitude;
+                        final double longg = latLngYo.longitude;
                         Log.d(TAG, "writeGeo: "+latt + ", " + longg);
 
                         GeoPoint latLong = new GeoPoint((latt),(longg));
 
                         userVendor.setVendorGeoLocation(latLong);
-                        final DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userVendor.getVendorID());
+
 
                         Geocoder geocoder = new Geocoder(getContext());
 
@@ -277,14 +279,21 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         final String locality = addressList.get(0).getAddressLine(0);
                         final String country = addressList.get(0).getCountryName();
 //                        }
-                        final VendorDatabase vendorDatabase = new VendorDatabase();
-                        vendorDatabase.setLattitude(latt);
-                        vendorDatabase.setLongitude(longg);
-                        vendorDatabase.setVendorCity(locality);
+                        userVendor = ((UserClient) getApplicationContext()).getUserVendor();
+                        String userID = userVendor.getVendorID();
+                        DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userID);
+                        Log.d(TAG, "onClick: wew"+userVendor.getVendorID());
 
-                        uploadDatabase(dbVendorReference, vendorDatabase);
-//                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
-//                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Longitude").setValue(longg);
+                        vendorDatabases = new VendorDatabase();
+                        vendorDatabases.setVendorID(userVendor.getVendorID());
+                        vendorDatabases.setVendorName(userVendor.getVendorName());
+                        vendorDatabases.setVendorAddress(userVendor.getVendorAddress());
+                        vendorDatabases.setVendorImage(userVendor.getVendorIDImgPath());
+                        vendorDatabases.setLattitude(latt);
+                        vendorDatabases.setLongitude(longg);
+                        vendorDatabases.setVendorCity(locality);
+
+                        uploadDatabase(dbVendorReference, vendorDatabases);
                         startActivity(new Intent(getApplicationContext(), AdminVendorPhotoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         break;
 
@@ -296,7 +305,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage("Anda yakin dengan koordinat berikut?\n" + "Lattitude: " + latLng.latitude + "\nLongitude: " + latLng.longitude).setPositiveButton("Setuju", dialogClickListener)
+        builder.setMessage("Anda yakin dengan koordinat berikut?\n"+ "Lattitude: " + latLng.latitude + "\nLongitude: " + latLng.longitude).setPositiveButton("Setuju", dialogClickListener)
                 .setNegativeButton("Tidak", dialogClickListener).show();
     }
 

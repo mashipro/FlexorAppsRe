@@ -228,10 +228,13 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     userVendor.setVendorStatsCode((double) 211);
                     userVendor.setVendorID(newVendorReference.getId());
                     StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
-                    final DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userVendor.getVendorID());
-                    vendorDatabase.setVendorName(vendorName);
-                    vendorDatabase.setVendorAddress(vendorAddress);
-                    uploadImageandData(photoURI, imagePath, userVendor, newVendorReference, vendorDatabase, dbVendorReference);
+//                    final DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userVendor.getVendorID());
+//                    vendorDatabase.setVendorName(vendorName);
+//                    vendorDatabase.setVendorAddress(vendorAddress);
+//                    vendorDatabase.setLattitude((double)1);
+//                    vendorDatabase.setLongitude((double)2);
+//                    vendorDatabase.setVendorCity("");
+                    uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);
 
 
                 }else{
@@ -242,7 +245,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         }
     }
 
-    private void uploadImageandData(Uri uri, final StorageReference storageReference, final UserVendor userVendor, final DocumentReference newVendorReference, final VendorDatabase vendorDatabase, final DatabaseReference dbVendorReference){
+    private void uploadImageandData(Uri uri, final StorageReference storageReference, final UserVendor userVendor, final DocumentReference newVendorReference){
         Log.d(TAG, "uploadImage: Attempting upload image");
         Log.d(TAG, "uploadImage: Details> Uri: "+uri.toString());
         Log.d(TAG, "uploadImage: Details> Refference: "+storageReference);
@@ -258,10 +261,8 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             Uri downloadUrl = uri;
                             imageStorageUri = downloadUrl.getLastPathSegment();
                             userVendor.setVendorIDImgPath(imageStorageUri);
-                            vendorDatabase.setVendorImage(imageStorageUri);
                             mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Photo").setValue(imageStorageUri);
                             uploadData(newVendorReference, userVendor);
-                            uploadDatabase(dbVendorReference, vendorDatabase);
                             Log.d(TAG, "onComplete: Image Uploaded to path: "+imageStorageUri);
                         }
                     });
@@ -296,17 +297,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
             }
         });
 
-    }
-
-    private void uploadDatabase (DatabaseReference dbVendorReference, final VendorDatabase vendorDatabase){
-        dbVendorReference.setValue(vendorDatabase).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    Log.d(TAG, "onComplete: database uploaded");
-                }
-            }
-        });
     }
 
     private void getUserDetails(FirebaseUser user) {
