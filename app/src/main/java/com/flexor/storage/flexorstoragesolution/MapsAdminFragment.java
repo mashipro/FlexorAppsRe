@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Models.VendorDatabase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -107,6 +108,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
     private Handler handler;
     private GoogleMap.OnCameraIdleListener onCameraIdleListener;
     private UserVendor userVendor;
+    private VendorDatabase vendorDatabase;
 
     private LatLng latLngYo;
 
@@ -260,9 +262,29 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         GeoPoint latLong = new GeoPoint((latt),(longg));
 
                         userVendor.setVendorGeoLocation(latLong);
+                        final DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userVendor.getVendorID());
 
-                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
-                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Longitude").setValue(longg);
+                        Geocoder geocoder = new Geocoder(getContext());
+
+                        List<Address> addressList = null;
+                        try {
+                            addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+//                        if (addressList != null && addressList.size() > 0) {
+                        final String locality = addressList.get(0).getAddressLine(0);
+                        final String country = addressList.get(0).getCountryName();
+//                        }
+                        final VendorDatabase vendorDatabase = new VendorDatabase();
+                        vendorDatabase.setLattitude(latt);
+                        vendorDatabase.setLongitude(longg);
+                        vendorDatabase.setVendorCity(locality);
+
+                        uploadDatabase(dbVendorReference, vendorDatabase);
+//                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Lattitude").setValue(latt);
+//                        mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Longitude").setValue(longg);
                         startActivity(new Intent(getApplicationContext(), AdminVendorPhotoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         break;
 
@@ -276,6 +298,17 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Anda yakin dengan koordinat berikut?\n" + "Lattitude: " + latLng.latitude + "\nLongitude: " + latLng.longitude).setPositiveButton("Setuju", dialogClickListener)
                 .setNegativeButton("Tidak", dialogClickListener).show();
+    }
+
+    private void uploadDatabase(DatabaseReference dbVendorReference, final VendorDatabase vendorDatabase){
+        dbVendorReference.setValue(vendorDatabase).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: latlng database updated");
+                }
+            }
+        });
     }
 
     @Override
@@ -430,28 +463,4 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
         super.onLowMemory();
         mMapAdminView.onLowMemory();
     }
-
-//    @Override
-//    public void onLocationChanged(Location location) {
-//
-//        double lattitude = location.getLatitude();
-//        double longitude = location.getLongitude();
-//
-//        //Place current location marker
-//        LatLng latLng = new LatLng(lattitude, longitude);
-//
-//
-//        if(mCurrLocationMarker!=null){
-//            mCurrLocationMarker.setPosition(latLng);
-//        }else{
-//            mCurrLocationMarker = mMapAdmin.addMarker(new MarkerOptions()
-//                    .position(latLng)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-//                    .title("I am here"));
-//        }
-//
-//        textView.append("Lattitude: " + lattitude + "  Longitude: " + longitude);
-//        mMapAdmin.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-//
-//    }
 }
