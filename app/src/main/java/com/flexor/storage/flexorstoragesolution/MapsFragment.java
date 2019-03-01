@@ -32,10 +32,12 @@ import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Models.VendorDatabaseReceive;
 import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomMapInfo;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
+import com.flexor.storage.flexorstoragesolution.Utility.VendorDBUtilities;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -51,6 +53,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.LogDescriptor;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -77,10 +85,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private MapView mMapView;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Marker mapMarker;
     private Boolean mLocationPermissionGranted = false;
     private static final int DEFAULT_ZOOM = 15;
     private UserManager userManager;
     private User user;
+    private VendorDatabaseReceive vendorDatabaseReceive;
 
     //View
     private CircleImageView center, left, right;
@@ -88,11 +98,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private FirebaseFirestore mFirestore;
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
+    private FirebaseDatabase firebaseDatabase;
     private CollectionReference collectionReference, userBoxRef, vendorRef;
     private DocumentReference boxesDocRef;
+    private DatabaseReference vendorDBRef;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
     private ArrayList<SingleBox> userBoxArrayList = new ArrayList<>();
     private ArrayList<SingleBox> vendorBoxArrayList = new ArrayList<>();
+    private ArrayList<VendorDatabaseReceive> vendorDBArray = new ArrayList<>();
 
 
     @Nullable
@@ -135,7 +148,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mFirestore = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance();
-
+        firebaseDatabase = FirebaseDatabase.getInstance();
         /**
          * Getting User from userClient
          */
@@ -145,6 +158,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         userBoxRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
         vendorRef = mFirestore.collection("Vendor");
+        vendorDBRef = firebaseDatabase.getReference().child("AcceptedVendor");
 
         userBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -156,22 +170,59 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
-        getVendorList();
+        getVendorList(new VendorDBUtilities() {
+            @Override
+            public void onDataReceived(ArrayList<VendorDatabaseReceive> vendorDBArray) {
+                addMapMarkers(vendorDBArray);
+            }
+        });
     }
 
-    private void getVendorList() {
+    private void getVendorList(final VendorDBUtilities vendorDBUtilities) {
+        vendorDBArray.clear();
         // TODO: 31/01/2019 change to rdb vendor prepared from admin
-        collectionReference = mFirestore.collection("Vendor");
-        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//        collectionReference = mFirestore.collection("Vendor");
+//        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    Log.d(TAG, "onComplete: getting vendor info completed");
+//                    List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
+//                    vendorArrayList.addAll(userVendorList);
+//                    Log.d(TAG, "onComplete: vendor list: " + vendorArrayList);
+//                    addMapMarkers();
+//                }
+//            }
+//        });
+        vendorDBRef.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "onComplete: getting vendor info completed");
-                    List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
-                    vendorArrayList.addAll(userVendorList);
-                    Log.d(TAG, "onComplete: vendor list: " + vendorArrayList);
-                    addMapMarkers();
-                }
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                vendorDatabaseReceive = dataSnapshot.getValue(VendorDatabaseReceive.class);
+                Log.d(TAG, "onChildAdded: this vendor:"+ vendorDatabaseReceive);
+                vendorDBArray.add(vendorDatabaseReceive);
+                Log.d(TAG, "onChildAdded: this array: "+ vendorDBArray);
+                Log.d(TAG, "onChildAdded: array size: "+vendorDBArray.size());
+                vendorDBUtilities.onDataReceived(vendorDBArray);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }
@@ -259,7 +310,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mMap.getProjection().fromScreenLocation(mapPoint),zoom),2000,null);
     }
 
-    private void addMapMarkers(){
+    private void addMapMarkers(ArrayList<VendorDatabaseReceive> vendorDBArray){
+        for (VendorDatabaseReceive thisVendor: vendorDBArray){
+        }
         for (final UserVendor userVendor: vendorArrayList){
             if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
                 Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
