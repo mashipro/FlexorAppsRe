@@ -103,6 +103,9 @@ public class VendorApplistFragment extends Fragment {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     //Yes button clicked
                                     ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
+                                    UserVendor userVendor1 = ((UserClient)(getApplicationContext())).getUserVendor();
+                                    String vendorID = userVendor1.getVendorID();
+                                    userVendor1.setVendorID(vendorID);
                                     startActivity(new Intent(getActivity(), MapsAdminActivity.class));
 //                                    userVendor.setVendorStatsCode((double) 201);
 ////                                db.update("vendorStatsCode", (double)201)  //not used

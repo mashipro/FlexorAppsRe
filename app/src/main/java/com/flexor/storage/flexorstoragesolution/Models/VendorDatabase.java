@@ -1,6 +1,9 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
-public class VendorDatabase {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class VendorDatabase implements Parcelable {
     private Double Latitude;
     private Double Longitude;
     private String vendorName;
@@ -21,6 +24,62 @@ public class VendorDatabase {
         this.vendorID = vendorID;
         this.vendorCity = vendorCity;
     }
+
+    protected VendorDatabase(Parcel in) {
+        if (in.readByte() == 0) {
+            Latitude = null;
+        } else {
+            Latitude = in.readDouble();
+        }
+        if (in.readByte() == 0) {
+            Longitude = null;
+        } else {
+            Longitude = in.readDouble();
+        }
+        vendorName = in.readString();
+        vendorAddress = in.readString();
+        vendorImage = in.readString();
+        vendorID = in.readString();
+        vendorCity = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (Latitude == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(Latitude);
+        }
+        if (Longitude == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(Longitude);
+        }
+        dest.writeString(vendorName);
+        dest.writeString(vendorAddress);
+        dest.writeString(vendorImage);
+        dest.writeString(vendorID);
+        dest.writeString(vendorCity);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<VendorDatabase> CREATOR = new Creator<VendorDatabase>() {
+        @Override
+        public VendorDatabase createFromParcel(Parcel in) {
+            return new VendorDatabase(in);
+        }
+
+        @Override
+        public VendorDatabase[] newArray(int size) {
+            return new VendorDatabase[size];
+        }
+    };
 
     public Double getLattitude() {
         return Latitude;
