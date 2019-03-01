@@ -458,3 +458,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 }
+
+// TODO: 2/27/2019 penambahan nama alamat foto pada database
