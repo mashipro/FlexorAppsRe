@@ -2,6 +2,7 @@ package com.flexor.storage.flexorstoragesolution;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Models.VendorDatabaseSend;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -242,6 +244,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
 //                    mFirestore.setFirestoreSettings(settings);
                     DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
                     final UserVendor userVendor = new UserVendor();
+                    final VendorDatabaseSend vendorDatabaseSend = new VendorDatabaseSend();
                     userVendor.setVendorOwner(user.getUserID());
                     userVendor.setVendorName(vendorName);
                     userVendor.setVendorAddress(vendorAddress);
@@ -254,9 +257,10 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     userVendor.setVendorStatsCode((double) 211);
                     userVendor.setVendorID(newVendorReference.getId());
                     StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
-                    mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Name").setValue(vendorName);
-                    mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Name").setValue(vendorAddress);
-                    uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);
+                    final DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userVendor.getVendorID());
+                    vendorDatabaseSend.setVendorName(vendorName);
+                    vendorDatabaseSend.setVendorAddress(vendorAddress);
+                    uploadImageandData(photoURI, imagePath, userVendor, newVendorReference, vendorDatabaseSend, dbVendorReference);
 
 
                 }else{
@@ -267,7 +271,7 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         }
     }
 
-    private void uploadImageandData(Uri uri, final StorageReference storageReference, final UserVendor userVendor, final DocumentReference newVendorReference){
+    private void uploadImageandData(Uri uri, final StorageReference storageReference, final UserVendor userVendor, final DocumentReference newVendorReference, final VendorDatabaseSend vendorDatabaseSend, final DatabaseReference dbVendorReference){
         Log.d(TAG, "uploadImage: Attempting upload image");
         Log.d(TAG, "uploadImage: Details> Uri: "+uri.toString());
         Log.d(TAG, "uploadImage: Details> Refference: "+storageReference);
@@ -283,8 +287,10 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             Uri downloadUrl = uri;
                             imageStorageUri = downloadUrl.getLastPathSegment();
                             userVendor.setVendorIDImgPath(imageStorageUri);
-                            mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Name").setValue(imageStorageUri);
+                            vendorDatabaseSend.setVendorImage(imageStorageUri);
+                            mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Photo").setValue(imageStorageUri);
                             uploadData(newVendorReference, userVendor);
+                            uploadDatabase(dbVendorReference, vendorDatabaseSend);
                             Log.d(TAG, "onComplete: Image Uploaded to path: "+imageStorageUri);
                         }
                     });
@@ -319,6 +325,17 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
             }
         });
 
+    }
+
+    private void uploadDatabase (DatabaseReference dbVendorReference, final VendorDatabaseSend vendorDatabaseSend){
+        dbVendorReference.setValue(vendorDatabaseSend).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: database uploaded");
+                }
+            }
+        });
     }
 
     private void getUserDetails(FirebaseUser user) {
