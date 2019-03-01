@@ -25,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.ClusterMarker;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
@@ -34,6 +35,7 @@ import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.ClusterManagerRenderer;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomMapInfo;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,6 +57,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
@@ -70,25 +74,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MapsFragment";
     //Components
     private Context context;
-//    private MapView mapView;
     private MapView mMapView;
-    private ImageView screenMarkOne;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    //    private static final int ERROR_DIALOG_REQUEST = 9001;
-    private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
-    //    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionGranted = false;
     private static final int DEFAULT_ZOOM = 15;
+    private UserManager userManager;
+    private User user;
 
     //View
     private CircleImageView center, left, right;
 
-    private ClusterManagerRenderer clusterManagerRenderer;
-    private ClusterManager<ClusterMarker> clusterManager;
     private FirebaseFirestore mFirestore;
-    private CollectionReference collectionReference, userBoxRef;
+    private FirebaseStorage mStorage;
+    private StorageReference storageReference;
+    private CollectionReference collectionReference, userBoxRef, vendorRef;
     private DocumentReference boxesDocRef;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
     private ArrayList<SingleBox> userBoxArrayList = new ArrayList<>();
@@ -101,7 +101,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
         context = view.getContext();
         mMapView = view.findViewById(R.id.map);
-        screenMarkOne = view.findViewById(R.id.screen_mark_one);
         center = view.findViewById(R.id.center_button);
         center.isClickable();
         left = view.findViewById(R.id.search_button);
@@ -133,25 +132,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-
         mFirestore = FirebaseFirestore.getInstance();
+        mStorage = FirebaseStorage.getInstance();
 
         /**
          * Getting User from userClient
          */
+        userManager = new UserManager();
+        userManager.getInstance();
+        user = userManager.getUser();
 
-        User currentUser = ((UserClient)(getApplicationContext())).getUser();
-        String UIDS;
-        if (currentUser != null){
-            UIDS = currentUser.getUserID();
-        } else {
-            Log.d(TAG, "onViewCreated: user Not Found from UserClient");
-            String firebaseUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            UIDS = firebaseUser;
-        }
-        userBoxRef = mFirestore.collection("Users").document(UIDS).collection("MyRentedBox");
+        userBoxRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
+        vendorRef = mFirestore.collection("Vendor");
+
         userBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -223,6 +217,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
 
     private void searchNearestBox(View v) {
+        // TODO: 01/03/2019 refix this search!!!
         mMap.getCameraPosition();
         Log.d(TAG, "searchNearestBox: camera Position: "+mMap.getCameraPosition());
         for (UserVendor vendorList: vendorArrayList){
@@ -267,27 +262,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private void addMapMarkers(){
         for (final UserVendor userVendor: vendorArrayList){
             if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
-                final UserVendor thisVendor = userVendor;
-                Log.d(TAG, "onMapReady: pin"+ thisVendor.getVendorGeoLocation().toString());
-                final MarkerOptions markerNormal = new MarkerOptions()
-                        .position(new LatLng(thisVendor.getVendorGeoLocation().getLatitude(),thisVendor.getVendorGeoLocation().getLongitude()))
-                        .title(thisVendor.getVendorStorageName())
-                        .snippet(thisVendor.getVendorAddress())
+                Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
+                MarkerOptions markerNormal = new MarkerOptions()
+                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
+                        .title(userVendor.getVendorStorageName())
+                        .snippet(userVendor.getVendorID())
                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
                 MarkerOptions markerRentedBox = new MarkerOptions()
-                        .position(new LatLng(thisVendor.getVendorGeoLocation().getLatitude(),thisVendor.getVendorGeoLocation().getLongitude()))
-                        .title(thisVendor.getVendorStorageName())
-                        .snippet(thisVendor.getVendorAddress())
+                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
+                        .title(userVendor.getVendorStorageName())
+                        .snippet(userVendor.getVendorID())
                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_rented));
                 Marker marker;
-                if (boxRented(thisVendor.getVendorID())){
+                if (boxRented(userVendor.getVendorID())){
                     marker= mMap.addMarker(markerRentedBox);
                 }else {
                     marker = mMap.addMarker(markerNormal);
                 }
                 CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
                 mMap.setInfoWindowAdapter(customMapInfo);
-                marker.setTag(thisVendor);
+                marker.setTag(userVendor);
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -300,32 +294,36 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-//                        popupShow(getView());
-                        getVendorBox(thisVendor);
-                        Log.d(TAG, "onInfoWindowClick: showing popup window");
+                        getVendorData(marker.getSnippet());
+
+//                        Log.d(TAG, "onInfoWindowClick: markerID: "+marker.getId());
+////                        popupShow(getView());
+//                        openPopup(mMapView, getVendorData(marker.getSnippet()));
+//                        Log.d(TAG, "onInfoWindowClick: showing popup window");
                     }
                 });
             }
         }
     }
-    private void getVendorBox(final UserVendor vendor){
-        vendorBoxArrayList.clear();
-        CollectionReference vendorBoxRef = mFirestore.collection("Vendor").document(vendor.getVendorID()).collection("MyBox");
-        vendorBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+    private void getVendorData(String vendorID) {
+        vendorRef.document(vendorID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()){
-                    List<SingleBox> vendorBoxList = task.getResult().toObjects(SingleBox.class);
-                    vendorBoxArrayList.addAll(vendorBoxList);
-                    Log.d(TAG, "onComplete: vendorBoxList id: "+vendorBoxArrayList);
-                    openPopup(mMapView, vendor);
+                    final UserVendor thisVendor = task.getResult().toObject(UserVendor.class);
+                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                        @Override
+                        public void onInfoWindowClick(Marker marker) {
+                            openPopup(mMapView, thisVendor);
+                        }
+                    });
                 }
             }
         });
     }
 
     private void openPopup(View view, final UserVendor mUserVendor) {
-        //Todo: update vendor detail image
         //Todo: getting vendor availability, capacity and other details
 
         final View popupView = getLayoutInflater().inflate(R.layout.popup_user_vendor_facade, null);
@@ -342,6 +340,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         vendorRate.setText(String.valueOf(mUserVendor.getVendorBoxPrice()));
         vendorName.setText(mUserVendor.getVendorStorageName());
         vendorLocation.setText(mUserVendor.getVendorStorageLocation());
+        storageReference = mStorage.getReference().child(mUserVendor.getVendorIDImgPath());
+        Glide.with(getApplicationContext())
+                .load(storageReference)
+                .into(vendorImage);
 
         cancelAction.setOnClickListener(new View.OnClickListener() {
             @Override

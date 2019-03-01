@@ -74,6 +74,11 @@ public class UserManager {
             Log.d(TAG, "getInstance: user data found!!! user ID: "+userFromUserClient.getUserID());
         }
     }
+    public Boolean refreshUserData(){
+        ((UserClient)(getApplicationContext())).setUser(null);
+        getInstance();
+        return true;
+    }
     
     public User getUser(){
         Log.d(TAG, "getUser: ID: "+((UserClient)(getApplicationContext())).getUser().getUserID());
