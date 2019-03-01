@@ -285,6 +285,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         Log.d(TAG, "onClick: wew"+userVendor.getVendorID());
 
                         vendorDatabases = new VendorDatabase();
+                        vendorDatabases.setVendorID(userVendor.getVendorID());
                         vendorDatabases.setVendorName(userVendor.getVendorName());
                         vendorDatabases.setVendorAddress(userVendor.getVendorAddress());
                         vendorDatabases.setVendorImage(userVendor.getVendorIDImgPath());
