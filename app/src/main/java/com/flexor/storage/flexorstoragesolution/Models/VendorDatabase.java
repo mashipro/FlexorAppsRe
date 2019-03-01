@@ -1,7 +1,7 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
 public class VendorDatabase {
-    private Double Latitude;
+    private Double Lattitude;
     private Double Longitude;
     private String vendorName;
     private String vendorAddress;
@@ -12,8 +12,8 @@ public class VendorDatabase {
     public VendorDatabase() {
     }
 
-    public VendorDatabase(Double latitude, Double longitude, String vendorName, String vendorAddress, String vendorImage, String vendorID, String vendorCity) {
-        Latitude = latitude;
+    public VendorDatabase(Double lattitude, Double longitude, String vendorName, String vendorAddress, String vendorImage, String vendorID, String vendorCity) {
+        Lattitude = lattitude;
         Longitude = longitude;
         this.vendorName = vendorName;
         this.vendorAddress = vendorAddress;
@@ -22,12 +22,12 @@ public class VendorDatabase {
         this.vendorCity = vendorCity;
     }
 
-    public Double getLatitude() {
-        return Latitude;
+    public Double getLattitude() {
+        return Lattitude;
     }
 
-    public void setLatitude(Double latitude) {
-        Latitude = latitude;
+    public void setLattitude(Double lattitude) {
+        Lattitude = lattitude;
     }
 
     public Double getLongitude() {
