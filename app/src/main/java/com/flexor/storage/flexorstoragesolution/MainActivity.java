@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String userID = userr.getUserID();
 
                         StorageReference storRef = storageReference.child(userr.getUserAvatar());
-                        Glide.with(MainActivity.this)
+                        Glide.with(getApplicationContext())
                                 .load(storRef)
                                 .into(circleImageView);
                     Log.d(TAG, "onComplete: NAMA SAYA ADALAH "+currentUser.getUserName());

@@ -160,6 +160,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
     private void getBoxData() {
         // TODO: 18/02/2019 Sort data in arraylist using comparator!!! 
         userVendorBoxArray.clear();
+        vendorSingleBoxArray.clear();
         userVendorBoxesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -394,7 +395,7 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         singleBox.setBoxID(id);
         singleBox.setBoxVendor(userVendorOwner);
         userVendorBoxRef.set(singleBox);
-        initRecyclerView();
+        getBoxData();
     }
 
     @Override

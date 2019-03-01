@@ -1,9 +1,7 @@
 package com.flexor.storage.flexorstoragesolution;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -24,24 +22,20 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
-import com.flexor.storage.flexorstoragesolution.Utility.CustomSpanCount;
 import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
 import com.flexor.storage.flexorstoragesolution.Utility.TransactionManager;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
-import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.CollectionReference;
@@ -52,11 +46,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class StorageDetailsActivity extends AppCompatActivity {
     private static final String TAG = "StorageDetailsActivity";
@@ -92,7 +82,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private UserManager userManager;
     private User user;
 
-    private int duration;
+    private int duration=3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,33 +225,65 @@ public class StorageDetailsActivity extends AppCompatActivity {
         Log.d(TAG, "rentConfirmation: "+ userVendor.getVendorBoxPrice());
         boxRate.setText(String.valueOf(userVendor.getVendorBoxPrice()));
         daySelection.check(R.id.checkbox3day);
-        if (rad3.isChecked()){
-            boxTotal.setText(String.valueOf(getTotal(3)));
-            duration=3;
-        }else if (rad7.isChecked()){
-            boxTotal.setText(String.valueOf(getTotal(7)));
-            duration=7;
-        }else if (rad14.isChecked()){
-            boxTotal.setText(String.valueOf(getTotal(14)));
-            duration=14;
-        }else if (rad30.isChecked()){
-            boxTotal.setText(String.valueOf(getTotal(30)));
-            duration=30;
-        }
+        postLog(boxTotal);
+
         daySelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.checkbox3day){
-                    boxTotal.setText(String.valueOf(getTotal(3)));
-                }else if (checkedId == R.id.checkbox7day){
-                    boxTotal.setText(String.valueOf(getTotal(7)));
-                }else if (checkedId == R.id.checkbox14day){
-                    boxTotal.setText(String.valueOf(getTotal(14)));
-                }else if (checkedId == R.id.checkbox30day){
-                    boxTotal.setText(String.valueOf(getTotal(30)));
+                switch (checkedId){
+                    case R.id.checkbox3day:
+                        duration = 3;
+                        postLog(boxTotal);
+                        break;
+                    case R.id.checkbox7day:
+                        duration = 7;
+                        postLog(boxTotal);
+                        break;
+                    case R.id.checkbox14day:
+                        duration = 14;
+                        postLog(boxTotal);
+                        break;
+                    case R.id.checkbox30day:
+                        duration = 30;
+                        postLog(boxTotal);
+                        break;
                 }
             }
         });
+
+
+
+//        if (rad3.isChecked()){
+//            boxTotal.setText(String.valueOf(getTotal(3)));
+//            duration=3;
+//            Log.d(TAG, "rentConfirmation: "+duration);
+//        }else if (rad7.isChecked()){
+//            boxTotal.setText(String.valueOf(getTotal(7)));
+//            duration=7;
+//            Log.d(TAG, "rentConfirmation: "+duration);
+//        }else if (rad14.isChecked()){
+//            boxTotal.setText(String.valueOf(getTotal(14)));
+//            duration=14;
+//            Log.d(TAG, "rentConfirmation: "+duration);
+//        }else if (rad30.isChecked()){
+//            boxTotal.setText(String.valueOf(getTotal(30)));
+//            duration=30;
+//            Log.d(TAG, "rentConfirmation: "+duration);
+//        }
+//        daySelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId == R.id.checkbox3day){
+//                    boxTotal.setText(String.valueOf(getTotal(3)));
+//                }else if (checkedId == R.id.checkbox7day){
+//                    boxTotal.setText(String.valueOf(getTotal(7)));
+//                }else if (checkedId == R.id.checkbox14day){
+//                    boxTotal.setText(String.valueOf(getTotal(14)));
+//                }else if (checkedId == R.id.checkbox30day){
+//                    boxTotal.setText(String.valueOf(getTotal(30)));
+//                }
+//            }
+//        });
 
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,6 +340,11 @@ public class StorageDetailsActivity extends AppCompatActivity {
         });
         popupWindow.showAtLocation(popupView, Gravity.CENTER,0,0);
 
+    }
+
+    private void postLog(TextView boxTotal) {
+        boxTotal.setText(String.valueOf(getTotal(duration)));
+        Log.d(TAG, "postLog: DURATION: "+duration);
     }
 
     private void updateBox(Box thisBoxBinding, int i) {
