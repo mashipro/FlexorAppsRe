@@ -257,7 +257,7 @@ public class MapsAdminFragment extends Fragment implements OnMapReadyCallback, G
                         double longg = latLngYo.longitude;
                         Log.d(TAG, "writeGeo: "+latt + ", " + longg);
 
-                        GeoPoint latLong = new GeoPoint((int)(latt*1E6), (int)(longg*1E6));
+                        GeoPoint latLong = new GeoPoint((latt),(longg));
 
                         userVendor.setVendorGeoLocation(latLong);
 
