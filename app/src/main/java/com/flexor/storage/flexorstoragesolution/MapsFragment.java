@@ -22,6 +22,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
@@ -146,7 +148,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         userBoxRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
         vendorRef = mFirestore.collection("Vendor");
-        vendorDBRef = firebaseDatabase.getReference().child("AcceptedVendor");
+        vendorDBRef = firebaseDatabase.getReference().child("Accepted Vendor");
 
         userBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -161,7 +163,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         getVendorList(new VendorDBUtilities() {
             @Override
             public void onDataReceived(ArrayList<VendorDatabase> vendorDBArray) {
-                addMapMarkers(vendorDBArray);
+//                addMapMarkers(vendorDBArray);
             }
         });
     }
@@ -191,6 +193,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 Log.d(TAG, "onChildAdded: this array: "+ vendorDBArray);
                 Log.d(TAG, "onChildAdded: array size: "+vendorDBArray.size());
                 vendorDBUtilities.onDataReceived(vendorDBArray);
+                addMapMarkers(vendorDBArray);
             }
 
             @Override
@@ -210,7 +213,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d(TAG, "onCancelled: error cause: "+databaseError);
+                return;
             }
         });
     }
@@ -299,52 +303,88 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void addMapMarkers(ArrayList<VendorDatabase> vendorDBArray){
+        Log.d(TAG, "addMapMarkers: add markers to: "+vendorDBArray);
         for (VendorDatabase thisVendor: vendorDBArray){
-        }
-        for (final UserVendor userVendor: vendorArrayList){
-            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
-                Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
-                MarkerOptions markerNormal = new MarkerOptions()
-                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
-                        .title(userVendor.getVendorStorageName())
-                        .snippet(userVendor.getVendorID())
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
-                MarkerOptions markerRentedBox = new MarkerOptions()
-                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
-                        .title(userVendor.getVendorStorageName())
-                        .snippet(userVendor.getVendorID())
+            if (boxRented(thisVendor.getVendorID())){
+                MarkerOptions markerRented = new MarkerOptions()
+                        .position(new LatLng(thisVendor.getLattitude(),thisVendor.getLongitude()))
+                        .title(thisVendor.getVendorName())
+                        .snippet(thisVendor.getVendorID())
                         .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_rented));
-                Marker marker;
-                if (boxRented(userVendor.getVendorID())){
-                    marker= mMap.addMarker(markerRentedBox);
-                }else {
-                    marker = mMap.addMarker(markerNormal);
-                }
-                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
-                mMap.setInfoWindowAdapter(customMapInfo);
-                marker.setTag(userVendor);
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
-                        marker.showInfoWindow();
-                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
-                        return true;
-                    }
-                });
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        getVendorData(marker.getSnippet());
-
-//                        Log.d(TAG, "onInfoWindowClick: markerID: "+marker.getId());
-////                        popupShow(getView());
-//                        openPopup(mMapView, getVendorData(marker.getSnippet()));
-//                        Log.d(TAG, "onInfoWindowClick: showing popup window");
-                    }
-                });
+                mapMarker = mMap.addMarker(markerRented);
+            }else {
+                MarkerOptions markerNormal = new MarkerOptions()
+                        .position(new LatLng(thisVendor.getLattitude(),thisVendor.getLongitude()))
+                        .title(thisVendor.getVendorName())
+                        .snippet(thisVendor.getVendorID())
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
+                mapMarker = mMap.addMarker(markerNormal);
             }
+            CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+            mMap.setInfoWindowAdapter(customMapInfo);
+            mapMarker.setTag(thisVendor.getVendorID());
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+                    marker.showInfoWindow();
+                    moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
+                    Log.d(TAG, "onMarkerClick: marker tag: "+ marker.getTag());
+                    return true;
+                }
+            });
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    getVendorData(marker.getSnippet());
+                }
+            });
+
         }
+//        for (final UserVendor userVendor: vendorArrayList){
+//            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
+//                Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
+//                MarkerOptions markerNormal = new MarkerOptions()
+//                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
+//                        .title(userVendor.getVendorStorageName())
+//                        .snippet(userVendor.getVendorID())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
+//                MarkerOptions markerRentedBox = new MarkerOptions()
+//                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
+//                        .title(userVendor.getVendorStorageName())
+//                        .snippet(userVendor.getVendorID())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_rented));
+//                Marker marker;
+//                if (boxRented(userVendor.getVendorID())){
+//                    marker= mMap.addMarker(markerRentedBox);
+//                }else {
+//                    marker = mMap.addMarker(markerNormal);
+//                }
+//                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
+//                mMap.setInfoWindowAdapter(customMapInfo);
+//                marker.setTag(userVendor);
+//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//                    @Override
+//                    public boolean onMarkerClick(Marker marker) {
+//                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
+//                        marker.showInfoWindow();
+//                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
+//                        return true;
+//                    }
+//                });
+//                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+//                    @Override
+//                    public void onInfoWindowClick(Marker marker) {
+//                        getVendorData(marker.getSnippet());
+//
+////                        Log.d(TAG, "onInfoWindowClick: markerID: "+marker.getId());
+//////                        popupShow(getView());
+////                        openPopup(mMapView, getVendorData(marker.getSnippet()));
+////                        Log.d(TAG, "onInfoWindowClick: showing popup window");
+//                    }
+//                });
+//            }
+//        }
     }
 
     private void getVendorData(String vendorID) {
@@ -352,13 +392,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()){
-                    final UserVendor thisVendor = task.getResult().toObject(UserVendor.class);
-                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                        @Override
-                        public void onInfoWindowClick(Marker marker) {
-                            openPopup(mMapView, thisVendor);
-                        }
-                    });
+                    UserVendor thisVendor = task.getResult().toObject(UserVendor.class);
+                    openPopup(mMapView, thisVendor);
+                }else{
+                    Log.d(TAG, "onComplete: error: "+task.getException());
                 }
             }
         });
