@@ -21,6 +21,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
@@ -115,6 +116,10 @@ public class StorageDetailsActivity extends AppCompatActivity {
         //Updating UI
         vendorName.setText(userVendor.getVendorStorageName());
         vendorLocation.setText(userVendor.getVendorStorageLocation());
+        storageReference = mStorage.getReference().child(userVendor.getVendorIDImgPath());
+        Glide.with(getApplicationContext())
+                .load(storageReference)
+                .into(headerVendorImage);
         //Todo: Updating Vendor Image
 
         vendorBoxRef = mFirestore.collection("Vendor").document(userVendor.getVendorID()).collection("MyBox");

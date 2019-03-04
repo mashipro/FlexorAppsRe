@@ -44,7 +44,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseFirestore mFirestore;
     private FirebaseDatabase mDatabase;
-    private DatabaseReference mReference;
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
     private FirebaseUser authUser;
@@ -74,7 +73,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         mAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        mReference = mDatabase.getReference();
         mStorage = FirebaseStorage.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -261,7 +259,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             Uri downloadUrl = uri;
                             imageStorageUri = downloadUrl.getLastPathSegment();
                             userVendor.setVendorIDImgPath(imageStorageUri);
-                            mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Photo").setValue(imageStorageUri);
                             uploadData(newVendorReference, userVendor);
                             Log.d(TAG, "onComplete: Image Uploaded to path: "+imageStorageUri);
                         }
