@@ -10,6 +10,8 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -82,12 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private UserVendor userVendor;
     private MenuItem item1;
     private UserManager userManager;
+    private FragmentManager fragmentManager;
 
     private boolean mLocationPermissionGranted = false;
     private CustomNotificationManager customNotificationManager;
     private TextView notifCount;
 
-    private CircleImageView circleImageView, showUserProfilePicture;
+    private CircleImageView circleImageView;
     private TextView usernameHeader, userCredits;
 
 
@@ -102,13 +105,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-        circleImageView = findViewById(R.id.showUserProfilePicture);
         mStorage = FirebaseStorage.getInstance();
         storageReference = mStorage.getReference();
         firebaseUser = mAuth.getCurrentUser();
         mFirestore = FirebaseFirestore.getInstance();
-        user = ((UserClient) getApplicationContext()).getUser();
         item1 = findViewById(R.id.admin_page);
+        fragmentManager = getSupportFragmentManager();
 
         userManager = new UserManager();
         userManager.getInstance();
@@ -118,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 if (authUser != null) {
-                    user = ((UserClient) getApplicationContext()).getUser();
 //                    getUserDetails();
                     getUserData();
 //                    authCode();
@@ -181,11 +182,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "getUserData: load user data...");
         user = userManager.getUser();
         Log.d(TAG, "getUserData: id: "+user.getUserID());
+        Log.d(TAG, "getUserData: name: "+user.getUserName());
 
         StorageReference storRef = storageReference.child(user.getUserAvatar());
         Glide.with(getApplicationContext())
                 .load(storRef)
                 .into(circleImageView);
+
+        usernameHeader.setText(user.getUserName());
+        userCredits.setText(String.valueOf(user.getUserBalance()));
         if (userIsVendor()){
             getVendorData();
         }
@@ -473,8 +478,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            if (getFragmentManager().getBackStackEntryCount() >0){
-                getFragmentManager().popBackStackImmediate();
+            if (fragmentManager.getBackStackEntryCount() >1){
+                fragmentManager.popBackStackImmediate();
             }else {
                 Intent a = new Intent(Intent.ACTION_MAIN);
                 a.addCategory(Intent.CATEGORY_HOME);
@@ -505,5 +510,3 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 }
-
-// TODO: 2/27/2019 penambahan nama alamat foto pada database
