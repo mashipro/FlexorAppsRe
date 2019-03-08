@@ -30,7 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class AdminVendorPhotoActivity extends AppCompatActivity implements View.OnClickListener{
-    private static final String TAG = "AdminVendorPhotoActivity";
+    private static final String TAG = "AdminVendorPhoto";
 
 //    private CircleImageView uploadImage;
     private Button submitImage;

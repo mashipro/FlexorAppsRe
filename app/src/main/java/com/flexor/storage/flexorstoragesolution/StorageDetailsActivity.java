@@ -300,6 +300,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         manPaymentManager.makeTransaction(
+                                StorageDetailsActivity.this,
                                 user.getUserID(),
                                 userVendor.getVendorID(),
                                 getTotal(duration),
@@ -312,12 +313,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
                                         Log.d(TAG, "onTransactionSuccess: "+success+" transactionID: "+ transactionID);
                                         updateBox(thisBoxBinding, duration);
                                         saveUserBox(thisBoxBinding);
-                                        popupWindow.dismiss();
-                                    }
-
-                                    @Override
-                                    public void onTransactionFailure(Boolean failure, String transactionID, String e) {
-                                        Log.d(TAG, "onTransactionFailure: "+failure+" transactionID: "+ transactionID+ " error: "+e);
                                         popupWindow.dismiss();
                                     }
                                 }
