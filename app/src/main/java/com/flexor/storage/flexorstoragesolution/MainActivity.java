@@ -6,12 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -21,13 +19,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterInside;
 import com.flexor.storage.flexorstoragesolution.Models.Notification;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
@@ -53,9 +48,7 @@ import com.google.firebase.storage.StorageReference;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -367,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(getApplicationContext(),VendorRegistrationActivity.class));
                 afterclick();
                 break;
-            case R.id.nav_vendor_signin:
+            case R.id.nav_vendor_dashboard:
                 TransitionalStatCode transitionalStatCode = new TransitionalStatCode();
                 transitionalStatCode.setDerivedPaging(Constants.TRANSITIONAL_STATS_CODE_IS_VENDOR);
                 ((UserClient)(getApplicationContext())).setTransitionalStatCode(transitionalStatCode);
@@ -407,6 +400,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             navigationView = (NavigationView) findViewById(R.id.nav_view_main);
             Menu nav_menu = navigationView.getMenu();
             nav_menu.findItem(R.id.admin_page).setVisible(false);
+        }
+        if (user.getUserAuthCode() != 201) {
+            navigationView = (NavigationView) findViewById(R.id.nav_view_main);
+            Menu nav_menu = navigationView.getMenu();
+            nav_menu.findItem(R.id.nav_vendor_dashboard).setVisible(false);
         }
     }
 
