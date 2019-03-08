@@ -143,6 +143,10 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
                 afterclick();
                 break;
+            case R.id.nav_vendorBack:
+                startActivity(new Intent(SuperAdminActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                afterclick();
+                break;
         }
         return true;
     }

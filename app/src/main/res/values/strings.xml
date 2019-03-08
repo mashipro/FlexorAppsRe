@@ -36,6 +36,7 @@
     <string name="nav_vendor_application_list">Vendor App List</string>
     <string name="nav_vendor_list">Vendor List</string>
     <string name="nav_vendor_settings">Settings</string>
+    <string name="back_to_main">Back to Main Menu</string>
     <string name="admin_page">Admin Page</string>
 
     <string name="login">Login</string>
