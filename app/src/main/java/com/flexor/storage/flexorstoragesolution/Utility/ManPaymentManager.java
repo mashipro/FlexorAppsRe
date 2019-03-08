@@ -1,5 +1,8 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -50,7 +53,8 @@ public class ManPaymentManager {
         return getUserBalance()>= bill;
     }
 
-    public void makeTransaction(final String userID,
+    public void makeTransaction(final Context context,
+                                final String userID,
                                 final String targetUserID,
                                 final int bill,
                                 final int transactionStat,
@@ -80,14 +84,26 @@ public class ManPaymentManager {
                 }
             });
         }else {
-            transactionManager.onTransactionFailure(true, transactionID, getError());
-            Log.d(TAG, "makeTransaction: not eligible... cancling transaction");
-            Toast.makeText(getApplicationContext(), R.string.transaction_eligible_not, Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "makeTransaction: not elligible. ask user to recharge!");
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(R.string.alert_payment_error_elligible)
+                    .setMessage(R.string.alert_payment_error_elligible_message)
+                    .setPositiveButton(R.string.recharge, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO: 08/03/2019 connect to recharge page
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
-    }
-
-    private String getError() {
-        return getApplicationContext().getString(R.string.transaction_eligible_not);
     }
 
     public void postTransactionLog(final String transactionID, final String sourceID, final String targetID, int transactionStat, String transactionRef, int transactionRefStat, int value){

@@ -18,6 +18,10 @@ import android.widget.Toast;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Models.VendorDatabase;
+import com.flexor.storage.flexorstoragesolution.Utility.Constants;
+import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
+import com.flexor.storage.flexorstoragesolution.Utility.TransactionManager;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -44,10 +48,11 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseFirestore mFirestore;
     private FirebaseDatabase mDatabase;
-    private DatabaseReference mReference;
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
-    private FirebaseUser authUser;
+    private UserManager userManager;
+    private ManPaymentManager manPaymentManager;
+    private User user;
 
     ///view///
     private ConstraintLayout eula, form;
@@ -74,7 +79,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         mAuth = FirebaseAuth.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        mReference = mDatabase.getReference();
         mStorage = FirebaseStorage.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -87,11 +91,14 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                     startActivity(new Intent(VendorRegistrationActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }else {
                     Log.d(TAG, "onAuthStateChanged: getting User Details");
-                    getUserDetails(authUser);
                 }
             }
         };
-        authUser = mAuth.getCurrentUser();
+        userManager = new UserManager();
+        userManager.getInstance();
+        user = userManager.getUser();
+
+        manPaymentManager = new ManPaymentManager();
 
         //View Init//
         eula = findViewById(R.id.eula);
@@ -121,8 +128,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         eula.setVisibility(View.VISIBLE);
         form.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
-
-
 
 
         //Eula Accept Button
@@ -194,53 +199,46 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         if (vendorName.isEmpty() && vendorAddress.isEmpty() && vendorIDnumber.isEmpty() && vendorStorageName.isEmpty() && vendorStorageLocation.isEmpty()){
             Toast.makeText(this, R.string.error_form_input, Toast.LENGTH_SHORT).show();
             Log.d(TAG, "checkFormCompletion: Error data not complete!!!!!");
-            return;
         }else {
             Log.d(TAG, "checkFormCompletion: data Complete!");
             if (photoURI == null){
                 Toast.makeText(this, R.string.error_form_photo, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "checkFormCompletion: Error photo not selected!!!!");
-                return;
             }else {
-                Log.d(TAG, "checkFormCompletion: data complete! try to store all data to singleton!");
-                User user = ((UserClient)(getApplicationContext())).getUser();
-                if (user != null){
-                    progressBar.setVisibility(View.VISIBLE);
+                Log.d(TAG, "checkFormCompletion: complete, make transaction before save data");
+                manPaymentManager.makeTransaction(
+                        VendorRegistrationActivity.this,
+                        user.getUserID(),
+                        Constants.SUPERADMINID_FOR_TRANSACTIONPURPOSE,
+                        Constants.VENDOR_REGIST_FEE,
+                        Constants.TRANSACTION__VENDOR_REGIST,
+                        user.getUserID(),
+                        Constants.TRANSACTION__REFSTAT_FINISHED,
+                        new TransactionManager() {
+                            @Override
+                            public void onTransactionSuccess(Boolean success, String transactionID) {
+                                Log.d(TAG, "onTransactionSuccess: transaction success "+success+" with TransactionID: "+ transactionID);
+                                Log.d(TAG, "onTransactionSuccess: data complete! try to store all data to singleton!");
+                                progressBar.setVisibility(View.VISIBLE);
+                                FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
+                                DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
+                                UserVendor userVendor = new UserVendor();
+                                userVendor.setVendorOwner(user.getUserID());
+                                userVendor.setVendorName(vendorName);
+                                userVendor.setVendorAddress(vendorAddress);
+                                userVendor.setVendorIDNumber(vendorIDnumber);
+                                userVendor.setVendorNPWP(vendorNPWP);
+                                userVendor.setVendorCompany(vendorCompany);
+                                userVendor.setVendorStorageName(vendorStorageName);
+                                userVendor.setVendorStorageLocation(vendorStorageLocation);
+                                userVendor.setVendorAccepted(Boolean.FALSE);
+                                userVendor.setVendorStatsCode((double) 211);
+                                userVendor.setVendorID(newVendorReference.getId());
+                                StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
+                                uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);
+                            }
+                        });
 
-                    FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
-                    FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                            .setPersistenceEnabled(true)
-                            .setTimestampsInSnapshotsEnabled(true)
-                            .build();
-//                    mFirestore.setFirestoreSettings(settings);
-                    DocumentReference newVendorReference = mFirestore.collection("Vendor").document(user.getUserID());
-                    final UserVendor userVendor = new UserVendor();
-                    final VendorDatabase vendorDatabase = new VendorDatabase();
-                    userVendor.setVendorOwner(user.getUserID());
-                    userVendor.setVendorName(vendorName);
-                    userVendor.setVendorAddress(vendorAddress);
-                    userVendor.setVendorIDNumber(vendorIDnumber);
-                    userVendor.setVendorNPWP(vendorNPWP);
-                    userVendor.setVendorCompany(vendorCompany);
-                    userVendor.setVendorStorageName(vendorStorageName);
-                    userVendor.setVendorStorageLocation(vendorStorageLocation);
-                    userVendor.setVendorAccepted(Boolean.FALSE);
-                    userVendor.setVendorStatsCode((double) 211);
-                    userVendor.setVendorID(newVendorReference.getId());
-                    StorageReference imagePath = storageReference.child("Images").child("VendorImages").child(newVendorReference.getId()).child("cropped_"+System.currentTimeMillis()+".jpg");
-//                    final DatabaseReference dbVendorReference = mReference.child("Accepted Vendor").child(userVendor.getVendorID());
-//                    vendorDatabase.setVendorName(vendorName);
-//                    vendorDatabase.setVendorAddress(vendorAddress);
-//                    vendorDatabase.setLattitude((double)1);
-//                    vendorDatabase.setLongitude((double)2);
-//                    vendorDatabase.setVendorCity("");
-                    uploadImageandData(photoURI, imagePath, userVendor, newVendorReference);
-
-
-                }else{
-                    Log.d(TAG, "checkFormCompletion: User is NULL!");
-                    getUserDetails(authUser);
-                }
             }
         }
     }
@@ -261,7 +259,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                             Uri downloadUrl = uri;
                             imageStorageUri = downloadUrl.getLastPathSegment();
                             userVendor.setVendorIDImgPath(imageStorageUri);
-                            mReference.child("Accepted Vendor").child(userVendor.getVendorID()).child("Photo").setValue(imageStorageUri);
                             uploadData(newVendorReference, userVendor);
                             Log.d(TAG, "onComplete: Image Uploaded to path: "+imageStorageUri);
                         }
@@ -298,30 +295,4 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
         });
 
     }
-
-    private void getUserDetails(FirebaseUser user) {
-        String userUID = user.getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
-                .setPersistenceEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
-
-        DocumentReference userRef = db.collection("Users").document(userUID);
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    Log.d(TAG, "onComplete: User data retrieved");
-                    User currentUser = task.getResult().toObject(User.class);
-                    ((UserClient)(getApplicationContext())).setUser(currentUser);
-//                    registrationCheck(currentUser);
-                }
-            }
-        });
-    }
-
-
-
 }

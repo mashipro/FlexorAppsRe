@@ -20,23 +20,10 @@ public class User implements Parcelable {
     private Integer userAuthCode;
     private String userGender;
     private String userAddress;
-    private @ServerTimestamp Date userRegistrationTimestamp;
+    private @ServerTimestamp Date userRegistrationTime;
+    private Boolean userIsVendor;
 
     public User() {
-    }
-
-    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Integer userBalance, Integer userAuthCode, String userGender, String userAddress, Date userRegistrationTimestamp) {
-        this.userEmail = userEmail;
-        this.userID = userID;
-        this.userName = userName;
-        this.userAvatar = userAvatar;
-        this.userCity = userCity;
-        this.userPhone = userPhone;
-        this.userBalance = userBalance;
-        this.userAuthCode = userAuthCode;
-        this.userGender = userGender;
-        this.userAddress = userAddress;
-        this.userRegistrationTimestamp = userRegistrationTimestamp;
     }
 
     protected User(Parcel in) {
@@ -58,6 +45,8 @@ public class User implements Parcelable {
         }
         userGender = in.readString();
         userAddress = in.readString();
+        byte tmpUserIsVendor = in.readByte();
+        userIsVendor = tmpUserIsVendor == 0 ? null : tmpUserIsVendor == 1;
     }
 
     @Override
@@ -82,6 +71,7 @@ public class User implements Parcelable {
         }
         dest.writeString(userGender);
         dest.writeString(userAddress);
+        dest.writeByte((byte) (userIsVendor == null ? 0 : userIsVendor ? 1 : 2));
     }
 
     @Override
@@ -114,8 +104,24 @@ public class User implements Parcelable {
                 ", userAuthCode=" + userAuthCode +
                 ", userGender='" + userGender + '\'' +
                 ", userAddress='" + userAddress + '\'' +
-                ", userRegistrationTimestamp=" + userRegistrationTimestamp +
+                ", userRegistrationTime=" + userRegistrationTime +
+                ", userIsVendor=" + userIsVendor +
                 '}';
+    }
+
+    public User(String userEmail, String userID, String userName, String userAvatar, String userCity, String userPhone, Integer userBalance, Integer userAuthCode, String userGender, String userAddress, Date userRegistrationTime, Boolean userIsVendor) {
+        this.userEmail = userEmail;
+        this.userID = userID;
+        this.userName = userName;
+        this.userAvatar = userAvatar;
+        this.userCity = userCity;
+        this.userPhone = userPhone;
+        this.userBalance = userBalance;
+        this.userAuthCode = userAuthCode;
+        this.userGender = userGender;
+        this.userAddress = userAddress;
+        this.userRegistrationTime = userRegistrationTime;
+        this.userIsVendor = userIsVendor;
     }
 
     public String getUserEmail() {
@@ -198,11 +204,19 @@ public class User implements Parcelable {
         this.userAddress = userAddress;
     }
 
-    public Date getUserRegistrationTimestamp() {
-        return userRegistrationTimestamp;
+    public Date getUserRegistrationTime() {
+        return userRegistrationTime;
     }
 
-    public void setUserRegistrationTimestamp(Date userRegistrationTimestamp) {
-        this.userRegistrationTimestamp = userRegistrationTimestamp;
+    public void setUserRegistrationTime(Date userRegistrationTime) {
+        this.userRegistrationTime = userRegistrationTime;
+    }
+
+    public Boolean getUserIsVendor() {
+        return userIsVendor;
+    }
+
+    public void setUserIsVendor(Boolean userIsVendor) {
+        this.userIsVendor = userIsVendor;
     }
 }

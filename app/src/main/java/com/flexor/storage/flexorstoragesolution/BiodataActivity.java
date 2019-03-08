@@ -166,6 +166,7 @@ public class BiodataActivity extends AppCompatActivity implements View.OnClickLi
             biodataUser.setUserCity(userCityString);
             biodataUser.setUserAuthCode(userAuthcode);
             biodataUser.setUserBalance(userBalance);
+            biodataUser.setUserIsVendor(false);
             StorageReference imagePath = storageReference.child("Images").child("UserImages").child(newUserDocuments.getId()).child("cropped_" + System.currentTimeMillis() + ".jpg");
             uploadImageandData(photoURI, imagePath, biodataUser, newUserDocuments);
             Log.d(TAG, "storeUserInfo: users UID: " + user.getUid());

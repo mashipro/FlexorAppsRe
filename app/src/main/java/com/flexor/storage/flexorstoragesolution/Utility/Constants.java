@@ -10,12 +10,14 @@ public class Constants {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     public static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     public static final int SINGLEBOX_SPAN_WIDTH = 120;
+
     public static final int TRANSITIONAL_STATS_CODE_IS_USER = 101;
     public static final int TRANSITIONAL_STATS_CODE_IS_VENDOR = 102;
     public static final int TRANSITIONAL_STATS_CODE_IS_MASTER = 103;
     public static final int STATSCODE_USER_USER = 101;
     public static final int STATSCODE_USER_VENDOR = 102;
     public static final int STATSCODE_USER_MASTER = 103;
+
     public static final int STATSCODE_VENDOR_REGISTERED = 201;
     public static final int STATSCODE_VENDOR_VALIDATED = 202;
     public static final int STATSCODE_VENDOR_ACCEPTED = 203;
@@ -46,4 +48,6 @@ public class Constants {
     public static final int TRANSACTION__REFSTAT_PENDING = 590;
     public static final int TRANSACTION__REFSTAT_FINISHED = 591;
     public static final int TRANSACTION__REFSTAT_CANCLED = 599;
+    public static final String SUPERADMINID_FOR_TRANSACTIONPURPOSE = "rjtKwb3194WvKW6JXj0r1WtysWH2";
+    public static final int VENDOR_REGIST_FEE = 50000;
 }

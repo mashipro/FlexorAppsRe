@@ -268,42 +268,6 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
         getContext().startActivity(movePage);
     }
 
-    private void prepareRecycler() {
-        mQuery = userVendorBoxesRef.orderBy("boxID",Query.Direction.ASCENDING);
-        FirestoreRecyclerOptions<SingleBox> recyclerOptions = new FirestoreRecyclerOptions.Builder<SingleBox>()
-                .setQuery(mQuery,SingleBox.class)
-                .build();
-        mFirestoreRecyclerAdapter = new FirestoreRecyclerAdapter<SingleBox, BoxesViewHolder>(recyclerOptions) {
-            @Override
-            protected void onBindViewHolder(@NonNull BoxesViewHolder holder, int position, @NonNull SingleBox model) {
-                holder.bindBox(model);
-
-            }
-
-            @NonNull
-            @Override
-            public BoxesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_box, parent, false);
-
-                return new BoxesViewHolder(view);
-
-            }
-        };
-
-        int spanNumber = CustomSpanCount.calculateNoOfColumns(getApplicationContext(), Constants.SINGLEBOX_SPAN_WIDTH);
-        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanNumber);
-        recyclerViewBoxDetails.setHasFixedSize(false);
-        recyclerViewBoxDetails.setItemViewCacheSize(20);
-        recyclerViewBoxDetails.setLayoutManager(mLayoutManager);
-        recyclerViewBoxDetails.setAdapter(mFirestoreRecyclerAdapter);
-        if (recyclerViewBoxDetails.getChildCount() > 0){
-            textNoBox.setVisibility(View.VISIBLE);
-        } else {
-            textNoBox.setVisibility(View.GONE);
-        }
-
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()){

@@ -30,6 +30,7 @@ import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.Utility.NotificationListener;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -67,10 +68,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private StorageReference storageReference;
     private DocumentReference docReference;
     private NavigationView navigationView;
+    private Menu navMenu;
     private CollectionReference collectionReference;
     private ArrayList<UserVendor> vendorArrayList = new ArrayList<>();
     private User user;
+    private UserVendor userVendor;
     private MenuItem item1;
+    private UserManager userManager;
 
     private boolean mLocationPermissionGranted = false;
     private CustomNotificationManager customNotificationManager;
@@ -99,9 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         user = ((UserClient) getApplicationContext()).getUser();
         item1 = findViewById(R.id.admin_page);
 
-
-
-
+        userManager = new UserManager();
+        userManager.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -109,8 +112,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 if (authUser != null) {
                     user = ((UserClient) getApplicationContext()).getUser();
-                    getUserDetails();
-                    authCode();
+//                    getUserDetails();
+                    getUserData();
+//                    authCode();
+
                 }
                 else {
                     startActivity(new Intent(MainActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
-        /**Init Notification listener*/
+        /*Init Notification listener*/
 
 
         drawerLayout = findViewById(R.id.drawer_layout_main);
@@ -126,8 +131,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        NavigationView navigationView = findViewById(R.id.nav_view_main);
+        navigationView = findViewById(R.id.nav_view_main);
         navigationView.setNavigationItemSelectedListener(this);
+        navMenu = navigationView.getMenu();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -164,8 +170,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         });
     }
+    private void getUserData(){
+        Log.d(TAG, "getUserData: load user data...");
+        user = userManager.getUser();
+        Log.d(TAG, "getUserData: id: "+user.getUserID());
+
+        StorageReference storRef = storageReference.child(user.getUserAvatar());
+        Glide.with(getApplicationContext())
+                .load(storRef)
+                .into(circleImageView);
+        if (userIsVendor()){
+            getVendorData();
+        }
+        authCode();
+    }
+
+    private void getVendorData() {
+        Log.d(TAG, "getVendorData: id: "+ user.getUserID());
+        DocumentReference vendorRef = mFirestore.collection("Vendor").document(user.getUserID());
+        vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "getVendorData: SUCCESS");
+                    userVendor = task.getResult().toObject(UserVendor.class);
+                    ((UserClient)(getApplicationContext())).setUserVendor(userVendor);
+                    Log.d(TAG, "onComplete: "+ userVendor);
+                    authCodeVendor();
+                }
+            }
+        });
+    }
+
+    private boolean userIsVendor() {
+        return user.getUserIsVendor();
+    }
 
     private void getUserDetails() {
+
         Log.d(TAG, "getUserDetails: getting User Details from: "+firebaseUser.getUid());
         user = ((UserClient) getApplicationContext()).getUser();
 //        String userUID = firebaseUser.getUid();
@@ -237,8 +279,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("This application requires GPS to work properly, do you want to enable it?")
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("This application requires GPS to work properly, do you want to enable GPS?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -248,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         dialog.dismiss();
                     }
                 });
-        final AlertDialog alert = builder.create();
+        AlertDialog alert = builder.create();
         alert.show();
     }
 
@@ -384,28 +426,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
         }
-//        int id = item.getItemId();
-
-//        if (id == R.id.nav_logout) {
-//            mAuth.signOut();
-//            Log.d("TAG", "Logout!!");
-//        }
 
         return true;
     }
 
     private void authCode(){
-        user = ((UserClient) getApplicationContext()).getUser();
+        navMenu.findItem(R.id.nav_vendor_signin).setVisible(false);
         if (user.getUserAuthCode()!= 199) {
-            navigationView = (NavigationView) findViewById(R.id.nav_view_main);
-            Menu nav_menu = navigationView.getMenu();
-            nav_menu.findItem(R.id.admin_page).setVisible(false);
+            navMenu.findItem(R.id.admin_page).setVisible(false);
+        }
+    }
+    private void authCodeVendor(){
+        if (vendorIsAccepted()){
+            navMenu.findItem(R.id.nav_vendor_signin).setVisible(true);
+            navMenu.findItem(R.id.nav_vendor_register).setVisible(false);
+        }else {
+            navMenu.findItem(R.id.nav_vendor_signin).setVisible(false);
+            navMenu.findItem(R.id.nav_vendor_register).setVisible(false);
         }
         if (user.getUserAuthCode() != 201) {
             navigationView = (NavigationView) findViewById(R.id.nav_view_main);
             Menu nav_menu = navigationView.getMenu();
             nav_menu.findItem(R.id.nav_vendor_dashboard).setVisible(false);
         }
+    }
+
+    private boolean vendorIsAccepted() {
+        return userVendor.getVendorAccepted();
     }
 
     private void logout() {
