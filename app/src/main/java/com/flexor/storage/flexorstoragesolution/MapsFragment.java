@@ -157,33 +157,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     List<SingleBox> userRentedBoxList = task.getResult().toObjects(SingleBox.class);
                     userBoxArrayList.addAll(userRentedBoxList);
                     Log.d(TAG, "onComplete: user rented box: "+userBoxArrayList);
+                    getVendorList(new VendorDBUtilities() {
+                        @Override
+                        public void onDataReceived(ArrayList<VendorDatabase> vendorDBArray) {
+//                addMapMarkers(vendorDBArray);
+                        }
+                    });
                 }
             }
         });
-        getVendorList(new VendorDBUtilities() {
-            @Override
-            public void onDataReceived(ArrayList<VendorDatabase> vendorDBArray) {
-//                addMapMarkers(vendorDBArray);
-            }
-        });
+
     }
 
     private void getVendorList(final VendorDBUtilities vendorDBUtilities) {
         vendorDBArray.clear();
-        // TODO: 31/01/2019 change to rdb vendor prepared from admin
-//        collectionReference = mFirestore.collection("Vendor");
-//        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    Log.d(TAG, "onComplete: getting vendor info completed");
-//                    List<UserVendor> userVendorList = task.getResult().toObjects(UserVendor.class);
-//                    vendorArrayList.addAll(userVendorList);
-//                    Log.d(TAG, "onComplete: vendor list: " + vendorArrayList);
-//                    addMapMarkers();
-//                }
-//            }
-//        });
         vendorDBRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -341,50 +328,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             });
 
         }
-//        for (final UserVendor userVendor: vendorArrayList){
-//            if (userVendor.getVendorStatsCode() == Constants.STATSCODE_VENDOR_REGISTERED){
-//                Log.d(TAG, "onMapReady: pin"+ userVendor.getVendorGeoLocation().toString());
-//                MarkerOptions markerNormal = new MarkerOptions()
-//                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
-//                        .title(userVendor.getVendorStorageName())
-//                        .snippet(userVendor.getVendorID())
-//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_available));
-//                MarkerOptions markerRentedBox = new MarkerOptions()
-//                        .position(new LatLng(userVendor.getVendorGeoLocation().getLatitude(),userVendor.getVendorGeoLocation().getLongitude()))
-//                        .title(userVendor.getVendorStorageName())
-//                        .snippet(userVendor.getVendorID())
-//                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_vendor_rented));
-//                Marker marker;
-//                if (boxRented(userVendor.getVendorID())){
-//                    marker= mMap.addMarker(markerRentedBox);
-//                }else {
-//                    marker = mMap.addMarker(markerNormal);
-//                }
-//                CustomMapInfo customMapInfo = new CustomMapInfo(getActivity());
-//                mMap.setInfoWindowAdapter(customMapInfo);
-//                marker.setTag(userVendor);
-//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//                    @Override
-//                    public boolean onMarkerClick(Marker marker) {
-//                        Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
-//                        marker.showInfoWindow();
-//                        moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
-//                        return true;
-//                    }
-//                });
-//                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//                    @Override
-//                    public void onInfoWindowClick(Marker marker) {
-//                        getVendorData(marker.getSnippet());
-//
-////                        Log.d(TAG, "onInfoWindowClick: markerID: "+marker.getId());
-//////                        popupShow(getView());
-////                        openPopup(mMapView, getVendorData(marker.getSnippet()));
-////                        Log.d(TAG, "onInfoWindowClick: showing popup window");
-//                    }
-//                });
-//            }
-//        }
     }
 
     private void getVendorData(String vendorID) {
@@ -467,15 +410,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private boolean boxRented(String userVendorID) {
-        Log.d(TAG, "boxRented: comparing");
-        Log.d(TAG, "boxRented: checking user box list");
-        if (userBoxArrayList.size()>=1){
-            Log.d(TAG, "boxRented: user box exist!");
-            Log.d(TAG, "boxRented: user box: "+userBoxArrayList);
-        }else {
-            Log.d(TAG, "boxRented: user Box EMPTY!");
+        boolean boxRented = false;
+//        Log.d(TAG, "boxRented: comparing");
+//        Log.d(TAG, "boxRented: checking user box list");
+//        if (userBoxArrayList.size()>=1){
+//            Log.d(TAG, "boxRented: user box exist!");
+//            Log.d(TAG, "boxRented: user box: "+userBoxArrayList);
+//        }else {
+//            Log.d(TAG, "boxRented: user Box EMPTY!");
+//        }
+        Log.d(TAG, "boxRented: box array: "+ userBoxArrayList);
+        Log.d(TAG, "boxRented: compare with: "+userVendorID);
+        for (SingleBox thisboxes: userBoxArrayList){
+            if (thisboxes.getBoxVendor().equals(userVendorID)){
+                boxRented= true;
+            }
         }
-        return userBoxArrayList.contains(userVendorID);
+        return boxRented;
     }
 
     private void getLocationPermission() {

@@ -109,7 +109,7 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
                     Log.d(TAG, "onComplete: avatar uri"+sembarang.getUserAvatar());
 
                     //show photo
-                    Glide.with(SuperAdminActivity.this)
+                    Glide.with(getApplicationContext())
                             .load(storRef)
                             .into(showUserProfilePicture);
 

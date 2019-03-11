@@ -24,10 +24,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.flexor.storage.flexorstoragesolution.Models.Box;
+import com.flexor.storage.flexorstoragesolution.Models.Notification;
+import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
+import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
 import com.flexor.storage.flexorstoragesolution.Utility.TransactionManager;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
@@ -82,6 +85,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private ManPaymentManager manPaymentManager;
     private UserManager userManager;
     private User user;
+    private CustomNotificationManager notificationManager;
 
     private int duration=3;
 
@@ -109,6 +113,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
         userManager.getInstance();
         user = userManager.getUser();
         manPaymentManager=new ManPaymentManager();
+        notificationManager = new CustomNotificationManager();
 
         //Getting Vendor
         userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
@@ -218,10 +223,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
         
         popupWindow.setBackgroundDrawable(new ColorDrawable(R.drawable.bg_color_grey_translucent));
         RadioGroup daySelection = popupView.findViewById(R.id.radio_group);
-        RadioButton rad3 = popupView.findViewById(R.id.checkbox3day);
-        RadioButton rad7 = popupView.findViewById(R.id.checkbox7day);
-        RadioButton rad14 = popupView.findViewById(R.id.checkbox14day);
-        RadioButton rad30 = popupView.findViewById(R.id.checkbox30day);
         TextView boxRate = popupView.findViewById(R.id.box_rate);
         final TextView boxTotal = popupView.findViewById(R.id.bill_total);
         Button acceptButton = popupView.findViewById(R.id.accept_button);
@@ -256,40 +257,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
             }
         });
 
-
-
-//        if (rad3.isChecked()){
-//            boxTotal.setText(String.valueOf(getTotal(3)));
-//            duration=3;
-//            Log.d(TAG, "rentConfirmation: "+duration);
-//        }else if (rad7.isChecked()){
-//            boxTotal.setText(String.valueOf(getTotal(7)));
-//            duration=7;
-//            Log.d(TAG, "rentConfirmation: "+duration);
-//        }else if (rad14.isChecked()){
-//            boxTotal.setText(String.valueOf(getTotal(14)));
-//            duration=14;
-//            Log.d(TAG, "rentConfirmation: "+duration);
-//        }else if (rad30.isChecked()){
-//            boxTotal.setText(String.valueOf(getTotal(30)));
-//            duration=30;
-//            Log.d(TAG, "rentConfirmation: "+duration);
-//        }
-//        daySelection.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId == R.id.checkbox3day){
-//                    boxTotal.setText(String.valueOf(getTotal(3)));
-//                }else if (checkedId == R.id.checkbox7day){
-//                    boxTotal.setText(String.valueOf(getTotal(7)));
-//                }else if (checkedId == R.id.checkbox14day){
-//                    boxTotal.setText(String.valueOf(getTotal(14)));
-//                }else if (checkedId == R.id.checkbox30day){
-//                    boxTotal.setText(String.valueOf(getTotal(30)));
-//                }
-//            }
-//        });
-
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -301,7 +268,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         manPaymentManager.makeTransaction(
                                 StorageDetailsActivity.this,
-                                user.getUserID(),
                                 userVendor.getVendorID(),
                                 getTotal(duration),
                                 Constants.TRANSACTION__BOX_RENT,
@@ -374,16 +340,19 @@ public class StorageDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void saveUserBox(Box thisBoxBinding) {
+    private void saveUserBox(final Box thisBoxBinding) {
         SingleBox singleBox = new SingleBox();
         singleBox.setBoxID(thisBoxBinding.getBoxID());
         singleBox.setBoxVendor(thisBoxBinding.getUserVendorOwner());
         Log.d(TAG, "saveUserBox: "+ singleBox);
-        userBoxRef.add(singleBox).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+        userBoxRef.document(singleBox.getBoxID()).set(singleBox).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentReference> task) {
+            public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "onComplete: saving box success..!!!");
-                // TODO: 19/02/2019 add notif!
+                NotificationSend notification = new NotificationSend();
+                notification.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERRENTBOX);
+                notification.setNotificationReference(thisBoxBinding.getBoxID());
+                notificationManager.setNotification(userVendor.getVendorID(),notification);
             }
         });
     }

@@ -86,23 +86,46 @@ public class UserManager {
     }
     
     public void updateUserData(final User newUserData, final Integer statCode, final String referenceID){
-
         Log.d(TAG, "updateUserData: updating user data client!!!");
         final User userHistories = ((UserClient)(getApplicationContext())).getUser();
-        checkDifferences(userHistories, newUserData);
+        checkDifferences(userHistories.getUserID(), userHistories, newUserData);
         ((UserClient)(getApplicationContext())).setUser(newUserData);
         Log.d(TAG, "updateUserData: updating user data in firebase !!!");
         userRef.document(newUserData.getUserID()).set(newUserData).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: update data success!!!");
-                generateUserLogs(userHistories,newUserData.getUserID(),statCode, referenceID);
+                Log.d(TAG, "updateUserData: operation success!!!");
+                generateUserLogs(userHistories,statCode, referenceID);
             }
         });
     }
 
+    public void getUserDataByID(String userID, final GetUserData getUserData){
+        Log.d(TAG, "getUserDataByID: "+ userID);
+        userRef.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: "+ task.getResult().toObject(User.class));
+                    getUserData.onDataAcquired(task.getResult().toObject(User.class));
+                }
+            }
+        });
+    }
+    public void updateUserDataByID(User current, final User history, final int statCode, final String referenceID){
+        Log.d(TAG, "updateUserDataByID: updating data!!!");
+        checkDifferences(current.getUserID(), history, current);
+        userRef.document(current.getUserID()).set(current).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "updateUserDataByID: operation success!!!");
+                generateUserLogs(history, statCode, referenceID);
+            }
+        });
+    }
 
-    private void checkDifferences(User userHistories, User newUserData) {
+    private void checkDifferences(String userID, User userHistories, User newUserData) {
+        Log.d(TAG, "checkDifferences: for id: "+userID);
         if (!userHistories.getUserAuthCode().equals(newUserData.getUserAuthCode())){
             Log.d(TAG, "checkDifferences: userAuthCode changed from: "+ userHistories.getUserAuthCode()+
                     " to: "+newUserData.getUserAuthCode());
@@ -116,35 +139,37 @@ public class UserManager {
                     " to: "+ newUserData.getUserName());
         }
         if (!userHistories.getUserAvatar().equals(newUserData.getUserAvatar())){
-            Log.d(TAG, "checkDifferences: userName changed from: "+ userHistories.getUserAvatar()+
+            Log.d(TAG, "checkDifferences: userAvatar changed from: "+ userHistories.getUserAvatar()+
                     " to: "+ newUserData.getUserAvatar());
         }
         if (!userHistories.getUserCity().equals(newUserData.getUserCity())){
-            Log.d(TAG, "checkDifferences: userName changed from: "+ userHistories.getUserCity()+
+            Log.d(TAG, "checkDifferences: userCity changed from: "+ userHistories.getUserCity()+
                     " to: "+ newUserData.getUserCity());
         }
         if (!userHistories.getUserPhone().equals(newUserData.getUserPhone())){
-            Log.d(TAG, "checkDifferences: userName changed from: "+ userHistories.getUserPhone()+
+            Log.d(TAG, "checkDifferences: userPhone changed from: "+ userHistories.getUserPhone()+
                     " to: "+ newUserData.getUserPhone());
         }
         if (!userHistories.getUserBalance().equals(newUserData.getUserBalance())){
-            Log.d(TAG, "checkDifferences: userName changed from: "+ userHistories.getUserBalance()+
+            Log.d(TAG, "checkDifferences: userBalance changed from: "+ userHistories.getUserBalance()+
                     " to: "+ newUserData.getUserBalance());
         }
     }
 
-    private void generateUserLogs(User userHistories, final String userID, int logsStat, String referenceID) {
-        Log.d(TAG, "generateUserLogs: ID: "+userID);
+    private void generateUserLogs(User userHistories, int logsStat, String referenceID) {
+        final DocumentReference newRef= userRef.document(userHistories.getUserID()).collection("MyUserHistories").document();
+        
+        Log.d(TAG, "generateUserLogs: ID: "+userHistories.getUserID());
         UserLogs userLogsStore = new UserLogs();
         userLogsStore.setLogsTime(null);
-        userLogsStore.setUserLogsID(userID);
+        userLogsStore.setUserLogsID(newRef.getId());
         userLogsStore.setUserLogsStatsCode(logsStat);
         userLogsStore.setUserHistory(userHistories);
         userLogsStore.setReferenceID(referenceID);
-        userRef.document(userHistories.getUserID()).collection("MyUserHistories").document().set(userLogsStore).addOnSuccessListener(new OnSuccessListener<Void>() {
+        newRef.set(userLogsStore).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: user logs store success!");
+                Log.d(TAG, "generateUserLogs: upDB success with id: "+ newRef.getId());
             }
         });
     }

@@ -26,21 +26,19 @@ public class ManPaymentManager {
     private static final String TAG = "ManPaymentManager";
     private UserManager userManager;
     private FirebaseFirestore firestore;
-    private CollectionReference collectionReference,userRef,transactionReference,logRef;
-    private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
+    private CollectionReference collectionReference,userRef,transactionReference;
 
     private String transactionID;
+    private User user;
 
     public ManPaymentManager() {
         firestore = FirebaseFirestore.getInstance();
         collectionReference = firestore.collection("Users");
         userRef=firestore.collection("Users");
         transactionReference = firestore.collection("Transactions");
-        database = FirebaseDatabase.getInstance();
-        databaseReference=database.getReference();
         userManager=new UserManager();
         userManager.getInstance();
+        user = userManager.getUser();
     }
 
     public int getUserBalance(){
@@ -54,7 +52,6 @@ public class ManPaymentManager {
     }
 
     public void makeTransaction(final Context context,
-                                final String userID,
                                 final String targetUserID,
                                 final int bill,
                                 final int transactionStat,
@@ -64,27 +61,23 @@ public class ManPaymentManager {
         transactionID = getTransactionID(transactionStat);
         if (transactionEligible(bill)){
             Log.d(TAG, "makeTransaction: eligible.... making transaction");
-            User user = userManager.getUser();
             int userBalanceFinal = user.getUserBalance()-bill;
             user.setUserBalance(userBalanceFinal);
             userManager.updateUserData(user,Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION,targetUserID);
-            transactionID = getTransactionID(transactionStat);
-            collectionReference.document(targetUserID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            userManager.getUserDataByID(targetUserID, new GetUserData() {
                 @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()){
-                        User targetUser = task.getResult().toObject(User.class);
-                        int targetUserFinalBalance = targetUser.getUserBalance()+bill;
-                        targetUser.setUserBalance(targetUserFinalBalance);
-                        userManager.updateUserData(targetUser,Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION,userID);
-                        String transactionID = getTransactionID(transactionStat);
-                        postTransactionLog(transactionID,userID,targetUserID,transactionStat,transactionRef, transactionRefStat, bill);
-                        transactionManager.onTransactionSuccess(true, transactionID);
-                    }
+                public void onDataAcquired(User thisUser) {
+                    User targetUser = thisUser;
+                    int targetUserFinalBalance = targetUser.getUserBalance()+bill;
+                    targetUser.setUserBalance(targetUserFinalBalance);
+                    userManager.updateUserDataByID(targetUser, thisUser,Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION,user.getUserID());
+                    postTransactionLog(transactionID,user.getUserID(),targetUserID,transactionStat,transactionRef, transactionRefStat, bill);
+                    transactionManager.onTransactionSuccess(true, transactionID);
+
                 }
             });
         }else {
-            Log.d(TAG, "makeTransaction: not elligible. ask user to recharge!");
+            Log.d(TAG, "makeTransaction: not eligible. ask user to recharge!");
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(R.string.alert_payment_error_elligible)
                     .setMessage(R.string.alert_payment_error_elligible_message)

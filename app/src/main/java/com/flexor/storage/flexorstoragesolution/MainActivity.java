@@ -218,65 +218,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return user.getUserIsVendor();
     }
 
-    private void getUserDetails() {
-
-        Log.d(TAG, "getUserDetails: getting User Details from: "+firebaseUser.getUid());
-        user = ((UserClient) getApplicationContext()).getUser();
-//        String userUID = firebaseUser.getUid();
-        String userUID = user.getUserID();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
-                .setPersistenceEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
-
-        DocumentReference userRef = db.collection("Users").document(userUID);
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    Log.d(TAG, "onComplete: User data retrieved");
-                    User currentUser = task.getResult().toObject(User.class);
-                    Log.d(TAG, "onComplete: User Is: "+ currentUser.toString());
-                    ((UserClient)getApplicationContext()).setUser(currentUser);
-                    User userr = ((UserClient)(getApplicationContext())).getUser();
-                    String userID = userr.getUserID();
-
-                        StorageReference storRef = storageReference.child(userr.getUserAvatar());
-                        Glide.with(getApplicationContext())
-                                .load(storRef)
-                                .into(circleImageView);
-                    Log.d(TAG, "onComplete: NAMA SAYA ADALAH "+currentUser.getUserName());
-
-                        String userName = currentUser.getUserName();
-                        usernameHeader.setText(userName);
-                        Integer userBalance = currentUser.getUserBalance();
-                        userCredits.setText("IDR"+ Integer.toString(userBalance));
-
-
-                        Log.d(TAG, "onComplete: avatar uri"+currentUser.getUserAvatar());
-                    Log.d(TAG, "onComplete: userUID: "+currentUser.getUserID());
-
-
-                    ((UserClient)(getApplicationContext())).setUser(currentUser);
-                    if (currentUser.getUserAuthCode()==Constants.STATSCODE_USER_VENDOR){
-                        DocumentReference vendorRef = mFirestore.collection("Vendor").document(currentUser.getUserID());
-                        vendorRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()){
-                                    UserVendor userVendor = task.getResult().toObject(UserVendor.class);
-                                    ((UserClient)(getApplicationContext())).setUserVendor(userVendor);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        });
-    }
-
     private void getMapsFragment() {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).addToBackStack(null).commit();
     }

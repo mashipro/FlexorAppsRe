@@ -32,16 +32,8 @@ public class CustomNotificationManager {
     private static final String TAG = "CustomNotifManager";
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseFirestore mFirestore;
     private FirebaseDatabase mDatabase;
-    private FirebaseStorage mStorage;
     private FirebaseUser mUser;
-    private FirebaseApp mFirebase;
-
-    private StorageReference storageReference;
-    private DocumentReference documentReference;
-    private CollectionReference collectionReference;
     private DatabaseReference databaseReference;
     private Notification incomingNotification;
 
@@ -51,13 +43,12 @@ public class CustomNotificationManager {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
-        mFirebase = FirebaseApp.getInstance();
-        databaseReference = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("NotificationSend");
+        databaseReference = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("Notification");
     }
 
     public void setNotification (String targetUserID, NotificationSend notificationSend) {
         Log.d(TAG, "setNotification: new notification request with target id: ");
-        DatabaseReference notifRefTarget = mDatabase.getReference().child("UsersData").child(targetUserID).child("NotificationSend").push();
+        DatabaseReference notifRefTarget = mDatabase.getReference().child("UsersData").child(targetUserID).child("Notification").push();
         notificationSend.setNotificationID(notifRefTarget.getKey());
         notificationSend.setNotificationIsActive(checkNotifActive(notificationSend));
         notificationSend.setNotificationTime(ServerValue.TIMESTAMP);
@@ -96,15 +87,6 @@ public class CustomNotificationManager {
                     Log.d(TAG, "checkIfNotifIsActive: id: "+ incomingNotification.getNotificationID()+ " is active add to active array");
                     notificationListener.onNewNotificationReceived(incomingNotification,notificationArrayList, notificationArrayList.size());
                 }
-
-                //todo: do something when new notif appeared
-
-//                getNewNotification(new CustomNotificationReceived() {
-//                    @Override
-//                    public void onCallback(ArrayList<Notification> notificationsArray, int count) {
-//                        notificationListener.onNewNotificationReceived(incomingNotification,checkIfNotifIsActive(notificationArrayList), (long) count);
-//                    }
-//                });
             }
 
             @Override

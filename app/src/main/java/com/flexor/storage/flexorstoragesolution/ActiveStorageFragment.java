@@ -20,6 +20,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -134,6 +135,10 @@ public class ActiveStorageFragment extends Fragment implements View.OnClickListe
 
                     ////Work on Header////-
                     vendorNameTest.setText(userVendor.getVendorStorageName());
+                    storageReference=mStorage.getReference().child(userVendor.getVendorIDImgPath());
+                    Glide.with(getApplicationContext())
+                            .load(storageReference)
+                            .into(headerImage);
 
                 }
             });
