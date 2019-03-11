@@ -27,10 +27,8 @@ public class CustomMapInfo implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoContents(Marker marker) {
         View view = ((Activity)context).getLayoutInflater().inflate(R.layout.custom_map_info, null);
-        ImageView infoImage = view.findViewById(R.id.map_info_image);
         TextView infoText = view.findViewById(R.id.map_info_vendor_name);
         infoText.setText(marker.getTitle());
-        //Todo update vendor image info map here
         return view;
     }
 }
