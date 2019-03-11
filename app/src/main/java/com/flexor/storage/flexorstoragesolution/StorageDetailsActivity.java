@@ -50,6 +50,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class StorageDetailsActivity extends AppCompatActivity {
@@ -283,9 +285,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
                                     }
                                 }
                         );
-//                        updateBox(thisBoxBinding, duration);
-//                        saveUserBox(thisBoxBinding);
-//                        popupWindow.dismiss();
                     }
                 });
                 builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -332,12 +331,9 @@ public class StorageDetailsActivity extends AppCompatActivity {
                 if (task.isSuccessful()){
                     getBoxData();
                     Log.d(TAG, "onComplete: update box success..!!!");
-                    // TODO: 19/02/2019 add notif!
                 }
             }
         });
-        // TODO: 19/02/2019 balance transaction box rent!
-
     }
 
     private void saveUserBox(final Box thisBoxBinding) {

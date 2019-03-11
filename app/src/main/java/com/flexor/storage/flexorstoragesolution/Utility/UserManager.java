@@ -81,6 +81,7 @@ public class UserManager {
     }
     
     public User getUser(){
+        getInstance();
         Log.d(TAG, "getUser: ID: "+((UserClient)(getApplicationContext())).getUser().getUserID());
         return ((UserClient)(getApplicationContext())).getUser();
     }

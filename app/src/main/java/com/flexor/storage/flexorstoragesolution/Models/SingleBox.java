@@ -3,6 +3,8 @@ package com.flexor.storage.flexorstoragesolution.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Comparator;
+
 public class SingleBox implements Parcelable {
     private String boxID;
     private String boxVendor;
@@ -43,6 +45,8 @@ public class SingleBox implements Parcelable {
             return new SingleBox[size];
         }
     };
+
+
 
     @Override
     public String toString() {
