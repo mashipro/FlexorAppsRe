@@ -12,10 +12,13 @@ import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.BoxDataListener;
+import com.flexor.storage.flexorstoragesolution.Utility.BoxDataSeparatorListener;
 import com.flexor.storage.flexorstoragesolution.Utility.BoxManager;
 import com.flexor.storage.flexorstoragesolution.Utility.UserBoxListener;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -64,12 +67,31 @@ public class MessageFragment extends Fragment {
                     for(SingleBox thisSingleBox: userBoxes){
                         Log.d(TAG, "onBoxReceived: "+ thisSingleBox);
                     }
-                    boxManager.getBoxDataFromArray(userBoxes, new BoxDataListener() {
+//                    boxManager.getBoxDataFromArray(userBoxes, new BoxDataListener() {
+//                        @Override
+//                        public void onDataReceived(ArrayList<Box> boxes) {
+//                            Log.d(TAG, "onDataReceived: complete boxes of vendor");
+//                            for(Box thisBoxData: boxes){
+//                                Log.d(TAG, "onDataReceived: "+ thisBoxData);
+//                            }
+//                        }
+//                    });
+
+//
+                    boxManager.boxDataSeparator(userBoxes, new BoxDataSeparatorListener() {
                         @Override
-                        public void onDataReceived(ArrayList<Box> boxes) {
-                            Log.d(TAG, "onDataReceived: complete boxes of vendor");
-                            for(Box thisBoxData: boxes){
-                                Log.d(TAG, "onDataReceived: "+ thisBoxData);
+                        public void onDataSeparated(Map<String, Set<SingleBox>> thisMap) {
+                            Log.d(TAG, "onDataSeparated: received");
+                            Log.d(TAG, "onDataSeparated: "+ thisMap.keySet());
+                            for (String x:thisMap.keySet()){
+                                Log.d(TAG, "onDataSeparated: vendor: "+x);
+                            }
+                        }
+                        @Override
+                        public void onDataSeparatedArray(ArrayList<String> mapKeyString) {
+                            Log.d(TAG, "onDataSeparatedArray: "+ mapKeyString);
+                            for (String x: mapKeyString){
+                                Log.d(TAG, "onDataSeparatedArray: "+ x);
                             }
                         }
                     });
@@ -77,5 +99,6 @@ public class MessageFragment extends Fragment {
             });
 
         }
+
     }
 }

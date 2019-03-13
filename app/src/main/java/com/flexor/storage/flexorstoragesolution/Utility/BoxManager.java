@@ -1,6 +1,7 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
 import android.support.annotation.NonNull;
+import android.util.AttributeSet;
 import android.util.Log;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
@@ -24,7 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BoxManager {
     private static final String TAG = "BoxManager";
@@ -41,6 +46,7 @@ public class BoxManager {
     private ArrayList<SingleBox> userSingleBoxArray = new ArrayList<>();
     private ArrayList<SingleBox> vendorSingleBoxArray = new ArrayList<>();
     private ArrayList<Box> boxArray = new ArrayList<>();
+    private ArrayList<String> arrayList = new ArrayList<>();
 
     public BoxManager() {
         mFirestore = FirebaseFirestore.getInstance();
@@ -105,7 +111,25 @@ public class BoxManager {
             });
         }
     }
-    public void boxDataSeparator (ArrayList<Box> boxes){
+    public void boxDataSeparator (ArrayList<SingleBox> boxes, BoxDataSeparatorListener boxDataSeparatorListener){
+        Log.d(TAG, "boxDataSeparator: separating this box: "+boxes);
+        arrayList.clear();
+        Map<String, Set<SingleBox>> map = new HashMap<String, Set<SingleBox>>();
+        for (SingleBox x: boxes){
+            if (!map.containsKey(x.getBoxVendor())){
+                map.put(x.getBoxVendor(), new HashSet<SingleBox>());
+            }
+            map.get(x.getBoxVendor()).add(x);
+            Log.d(TAG, "boxDataSeparator: "+ map);
+            boxDataSeparatorListener.onDataSeparated(map);
+            for (String y: map.keySet()){
+                if (!arrayList.contains(y)){
+                    arrayList.add(y);
+                    boxDataSeparatorListener.onDataSeparatedArray(arrayList);
+                }
+
+            }
+        }
 
     }
 }

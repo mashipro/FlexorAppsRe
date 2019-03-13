@@ -173,6 +173,7 @@
     <string name="alert_payment_error_elligible">Insufficient Balance</string>
     <string name="alert_payment_error_elligible_message">Insufficient balance, please recharge!</string>
     <string name="recharge">Recharge</string>
+    <string name="box_name">Box Name</string>
 
 
 </resources>

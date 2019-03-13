@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class SingleBox implements Parcelable {
     private String boxID;
@@ -70,5 +71,18 @@ public class SingleBox implements Parcelable {
 
     public void setBoxVendor(String boxVendor) {
         this.boxVendor = boxVendor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SingleBox)) return false;
+        SingleBox singleBox = (SingleBox) o;
+        return Objects.equals(boxVendor, singleBox.boxVendor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(boxID, boxVendor);
     }
 }
