@@ -1,30 +1,23 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
 import android.support.annotation.NonNull;
-import android.util.AttributeSet;
 import android.util.Log;
 
 import com.flexor.storage.flexorstoragesolution.Models.Box;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.User;
-import com.google.android.gms.dynamic.IFragmentWrapper;
+import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,10 +31,11 @@ public class BoxManager {
     private FirebaseDatabase mDatabase;
     private FirebaseStorage mStorage;
 
-    private CollectionReference boxColRef,userBoxColRef;
+    private CollectionReference boxColRef,userBoxColRef, userVendorRef;
 
     private UserManager userManager;
     private User user;
+    private UserVendor userVendor;
 
     private ArrayList<SingleBox> userSingleBoxArray = new ArrayList<>();
     private ArrayList<SingleBox> vendorSingleBoxArray = new ArrayList<>();
@@ -58,9 +52,10 @@ public class BoxManager {
         user = userManager.getUser();
 
         boxColRef = mFirestore.collection("Boxes");
+        userVendorRef = mFirestore.collection("Vendor");
     }
 
-    public void getUserBox(final UserBoxListener userBoxListener){
+    public void getUserBox(final SingleBoxListener singleBoxListener){
         userSingleBoxArray.clear();
         Log.d(TAG, "getUserBox: getting user boxes (SingleBox)");
         userBoxColRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
@@ -70,13 +65,13 @@ public class BoxManager {
                 if (task.isSuccessful()){
                     List<SingleBox> userBoxList = task.getResult().toObjects(SingleBox.class);
                     userSingleBoxArray.addAll(userBoxList);
-                    userBoxListener.onBoxReceived(userSingleBoxArray);
+                    singleBoxListener.onBoxReceived(userSingleBoxArray);
                 }
             }
         });
     }
 
-    public void getVendorBox (String userID, final UserBoxListener userBoxListener){
+    public void getVendorBox (String userID, final SingleBoxListener singleBoxListener){
         vendorSingleBoxArray.clear();
         CollectionReference documentReference = mFirestore.collection("Vendor").document(userID).collection("MyBox");
         documentReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -85,7 +80,7 @@ public class BoxManager {
                 if (task.isSuccessful()){
                     List<SingleBox> boxList = task.getResult().toObjects(SingleBox.class);
                     vendorSingleBoxArray.addAll(boxList);
-                    userBoxListener.onBoxReceived(vendorSingleBoxArray);
+                    singleBoxListener.onBoxReceived(vendorSingleBoxArray);
                 }
             }
         });
@@ -131,5 +126,27 @@ public class BoxManager {
             }
         }
 
+    }
+
+    public void getVendorData (String vendorID, final VendorDataListener vendorDataListener){
+        userVendorRef.document(vendorID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    userVendor = task.getResult().toObject(UserVendor.class);
+                    vendorDataListener.onVendorDataReceived(userVendor);
+                }
+            }
+        });
+    }
+
+    public void getBoxWithVendorID (String vendorID, ArrayList<SingleBox> boxes, SingleBoxListener singleBoxListener){
+        ArrayList<SingleBox> boxWithQual = new ArrayList<>();
+        for (SingleBox thisBox: boxes){
+            if (thisBox.getBoxVendor().equals(vendorID)){
+                boxWithQual.add(thisBox);
+                singleBoxListener.onBoxReceived(boxWithQual);
+            }
+        }
     }
 }

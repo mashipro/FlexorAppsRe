@@ -14,7 +14,7 @@ import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.BoxDataListener;
 import com.flexor.storage.flexorstoragesolution.Utility.BoxDataSeparatorListener;
 import com.flexor.storage.flexorstoragesolution.Utility.BoxManager;
-import com.flexor.storage.flexorstoragesolution.Utility.UserBoxListener;
+import com.flexor.storage.flexorstoragesolution.Utility.SingleBoxListener;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class MessageFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         boxManager = new BoxManager();
-        boxManager.getUserBox(new UserBoxListener() {
+        boxManager.getUserBox(new SingleBoxListener() {
             @Override
             public void onBoxReceived(ArrayList<SingleBox> userBoxes) {
                 Log.d(TAG, "onBoxReceived: user box");
@@ -60,7 +60,7 @@ public class MessageFragment extends Fragment {
         });
         userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
         if (userVendor != null){
-            boxManager.getVendorBox(userVendor.getVendorID(), new UserBoxListener() {
+            boxManager.getVendorBox(userVendor.getVendorID(), new SingleBoxListener() {
                 @Override
                 public void onBoxReceived(ArrayList<SingleBox> userBoxes) {
                     Log.d(TAG, "onBoxReceived: vendor Box");
