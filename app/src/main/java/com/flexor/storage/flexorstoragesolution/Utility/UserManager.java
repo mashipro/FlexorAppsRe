@@ -18,6 +18,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -69,6 +71,7 @@ public class UserManager {
                     }
                 }
             });
+
         }else {
             userFromUserClient = ((UserClient)(getApplicationContext())).getUser();
             Log.d(TAG, "getInstance: user data found!!! user ID: "+userFromUserClient.getUserID());
@@ -79,7 +82,29 @@ public class UserManager {
         getInstance();
         return true;
     }
-    
+    public void getAndStoreToken(){
+        Log.d(TAG, "getUserToken: getting user token with uid: "+ mUser.getUid());
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String idToken = instanceIdResult.getToken();
+                Log.d(TAG, "getUserToken: user token: "+ idToken);
+                storeToken(idToken);
+            }
+        });
+    }
+
+    public void storeToken(String idToken) {
+        Log.d(TAG, "storeToken: storing token");
+        DatabaseReference tokenRef = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("UNToken");
+        tokenRef.setValue(idToken).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "storeToken: stored!");
+            }
+        });
+    }
+
     public User getUser(){
         getInstance();
         Log.d(TAG, "getUser: ID: "+((UserClient)(getApplicationContext())).getUser().getUserID());

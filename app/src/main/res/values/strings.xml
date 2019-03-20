@@ -176,6 +176,8 @@
     <string name="box_name">Box Name</string>
     <string name="vendor_name">Vendor Name</string>
     <string name="vendor_address">adress</string>
+    <string name="notif_test_title">TEST TITLE</string>
+    <string name="notif_test_message">notification test is underway. click to open apps.</string>
 
 
 </resources>

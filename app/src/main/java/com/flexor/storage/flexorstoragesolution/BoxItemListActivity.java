@@ -175,20 +175,12 @@ public class BoxItemListActivity extends AppCompatActivity {
     private void saveToRealtimeDB() {
         Log.d(TAG, "Save NotificationSend: Saving.......");
         if (transitionalStatCodeSaved.getDerivedPaging()==Constants.STATSCODE_USER_USER){
-            NotificationSend newNotif = new NotificationSend();
-            newNotif.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUEST);
-            newNotif.setNotificationReference(boxSaved.getBoxID());
-            newNotif.setNotificationIsActive(true);
             CustomNotificationManager customNotificationManager = new CustomNotificationManager();
-            customNotificationManager.setNotification(boxSaved.getUserVendorOwner(),newNotif);
+            customNotificationManager.setNotification(boxSaved.getUserVendorOwner(),boxSaved.getBoxID(),Constants.NOTIFICATION_STATS_USERBOXACCESSREQUEST);
             savingNewStats();
         }else if (transitionalStatCodeSaved.getDerivedPaging() == Constants.STATSCODE_USER_VENDOR){
-            NotificationSend newNotif = new NotificationSend();
-            newNotif.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTACCEPTED);
-            newNotif.setNotificationReference(boxSaved.getBoxID());
-            newNotif.setNotificationIsActive(true);
             CustomNotificationManager customNotificationManager = new CustomNotificationManager();
-            customNotificationManager.setNotification(boxSaved.getBoxTenant(),newNotif);
+            customNotificationManager.setNotification(boxSaved.getBoxTenant(),boxSaved.getBoxID(),Constants.NOTIFICATION_STATS_USERBOXACCESSREQUESTACCEPTED);
             savingNewStats();
         }
 

@@ -290,10 +290,7 @@ public class BoxesViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 });
 
                 CustomNotificationManager notifMan = new CustomNotificationManager();
-                NotificationSend notificationSend = new NotificationSend();
-                notificationSend.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERRENTBOX);
-                notificationSend.setNotificationReference(box.getBoxID());
-                notifMan.setNotification(box.getUserVendorOwner(),notificationSend);
+                notifMan.setNotification(box.getUserVendorOwner(),box.getBoxID(),Constants.NOTIFICATION_STATS_USERRENTBOX);
 
                 popupWindow.dismiss();
                 updateView();

@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "flexorappsre"
+    "default": "flexorappsre",
+    "flexorapps": "flexorappsre"
   }
 }

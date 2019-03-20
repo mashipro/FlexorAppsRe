@@ -345,10 +345,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "onComplete: saving box success..!!!");
-                NotificationSend notification = new NotificationSend();
-                notification.setNotificationStatsCode(Constants.NOTIFICATION_STATS_USERRENTBOX);
-                notification.setNotificationReference(thisBoxBinding.getBoxID());
-                notificationManager.setNotification(userVendor.getVendorID(),notification);
+                notificationManager.setNotification(userVendor.getVendorID(),thisBoxBinding.getBoxID(), Constants.NOTIFICATION_STATS_USERRENTBOX);
             }
         });
     }

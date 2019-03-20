@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         userManager = new UserManager();
         userManager.getInstance();
+        userManager.getAndStoreToken();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -369,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_main_customerService:
-
+                customNotificationManager.testFCMRUN();
                 afterclick();
                 break;
             case R.id.nav_main_settings:

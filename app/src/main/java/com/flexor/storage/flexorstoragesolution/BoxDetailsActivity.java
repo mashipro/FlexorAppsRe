@@ -486,10 +486,7 @@ public class BoxDetailsActivity extends AppCompatActivity {
     //////END OF BUTTON RESOLVER///////
     private void postNewNotification(int notifStat, String notifTarget){
         NotificationSend newNotif = new NotificationSend();
-        newNotif.setNotificationStatsCode(notifStat);
-        newNotif.setNotificationReference(box.getBoxID());
-        newNotif.setNotificationIsActive(true);
-        customNotificationManager.setNotification(notifTarget,newNotif);
+        customNotificationManager.setNotification(notifTarget,box.getBoxID(),notifStat);
     }
 
     private void changeDBstat(Boolean inProgressState, int boxStatsCode) {

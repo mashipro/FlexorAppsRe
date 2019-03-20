@@ -40,6 +40,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.5'
     implementation 'com.google.firebase:firebase-storage:16.0.5'
     implementation 'com.google.firebase:firebase-firestore:17.1.5'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    implementation 'com.google.firebase:firebase-functions:16.3.0'
 
     implementation 'com.firebaseui:firebase-ui-firestore:4.2.1'
     implementation 'com.firebaseui:firebase-ui-database:4.2.1'
@@ -69,7 +71,7 @@ dependencies {
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
 
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
     testImplementation 'junit:junit:4.12'

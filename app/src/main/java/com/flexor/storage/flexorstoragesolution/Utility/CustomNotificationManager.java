@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.flexor.storage.flexorstoragesolution.Models.Notification;
 import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,10 +24,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomNotificationManager {
     private static final String TAG = "CustomNotifManager";
@@ -34,6 +43,7 @@ public class CustomNotificationManager {
     private FirebaseAuth mAuth;
     private FirebaseDatabase mDatabase;
     private FirebaseUser mUser;
+    private FirebaseFunctions functions;
     private DatabaseReference databaseReference;
     private Notification incomingNotification;
 
@@ -43,34 +53,27 @@ public class CustomNotificationManager {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
+        functions = FirebaseFunctions.getInstance();
         databaseReference = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("Notification");
     }
 
-    public void setNotification (String targetUserID, NotificationSend notificationSend) {
+    public void setNotification (String targetUserID, String reference, int statCode) {
         Log.d(TAG, "setNotification: new notification request with target id: ");
         DatabaseReference notifRefTarget = mDatabase.getReference().child("UsersData").child(targetUserID).child("Notification").push();
+
+        NotificationSend notificationSend = new NotificationSend();
+        notificationSend.setNotificationReference(reference);
+        notificationSend.setNotificationStatsCode(statCode);
         notificationSend.setNotificationID(notifRefTarget.getKey());
-        notificationSend.setNotificationIsActive(checkNotifActive(notificationSend));
+        notificationSend.setNotificationIsActive(true);
         notificationSend.setNotificationTime(ServerValue.TIMESTAMP);
+
         notifRefTarget.setValue(notificationSend).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "onSuccess: notificationSend is Set");
-                setFCM();
             }
         });
-    }
-
-    private void setFCM() {
-        //todo: set fcm
-    }
-
-    private boolean checkNotifActive(NotificationSend notificationSend) {
-        if (notificationSend.getNotificationIsActive()==null){
-            return false;
-        } else {
-            return notificationSend.getNotificationIsActive();
-        }
     }
 
 
@@ -128,4 +131,14 @@ public class CustomNotificationManager {
             }
         });
     }
+
+    public void testFCMRUN (){
+        Log.d(TAG, "testFCMRUN: init");
+        NotificationSend newNot = new NotificationSend();
+        newNot.setNotificationReference("notifRef");
+        newNot.setNotificationStatsCode(111);
+
+        setNotification(mUser.getUid(),"TESTREF",1111);
+    }
+
 }
