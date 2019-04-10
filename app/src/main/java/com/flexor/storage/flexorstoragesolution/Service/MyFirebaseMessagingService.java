@@ -74,9 +74,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String notifTitle = getString(R.string.notif_test_title);
             String notifMessage = getString(R.string.notif_test_message);
             sendNotification(notifID, notifTitle, notifMessage);
+        }else {
+            String notifTitle = getString(R.string.notif_simple_new_notification);
+            String notifMessage = getString(R.string.notif_simple_new_notification_message);
+            sendNotification(notifID, notifTitle, notifMessage);
         }
-
-
     }
 
     private void sendNotification(String id, String title, String message) {
@@ -87,7 +89,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 9999 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = getString(R.string.default_notification_channel_id);
@@ -107,8 +109,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    getString(R.string.default_notification_channel_id),
+                    NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
 

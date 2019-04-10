@@ -73,10 +73,7 @@ public class NotificationViewHolder extends RecyclerView.ViewHolder {
         context = view.getContext();
 
         mFirestore = FirebaseFirestore.getInstance();
-
-
         user = ((UserClient)(getApplicationContext())).getUser();
-        userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
 
         notifImg = view.findViewById(R.id.notif_card_img);
         notifLinearBoxAccessReq = view.findViewById(R.id.notif_card_linear_boxAccess);

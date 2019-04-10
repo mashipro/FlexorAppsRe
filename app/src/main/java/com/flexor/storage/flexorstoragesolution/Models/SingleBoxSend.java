@@ -3,24 +3,23 @@ package com.flexor.storage.flexorstoragesolution.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Comparator;
 import java.util.Objects;
 
-public class SingleBox implements Parcelable {
+public class SingleBoxSend implements Parcelable {
     private String boxID;
     private String boxVendor;
 
 
-    public SingleBox() {
+    public SingleBoxSend() {
     }
 
-    public SingleBox(String boxID, String boxVendor) {
+    public SingleBoxSend(String boxID, String boxVendor) {
         this.boxID = boxID;
         this.boxVendor = boxVendor;
     }
 
 
-    protected SingleBox(Parcel in) {
+    protected SingleBoxSend(Parcel in) {
         boxID = in.readString();
         boxVendor = in.readString();
     }
@@ -36,15 +35,15 @@ public class SingleBox implements Parcelable {
         return 0;
     }
 
-    public static final Creator<SingleBox> CREATOR = new Creator<SingleBox>() {
+    public static final Creator<SingleBoxSend> CREATOR = new Creator<SingleBoxSend>() {
         @Override
-        public SingleBox createFromParcel(Parcel in) {
-            return new SingleBox(in);
+        public SingleBoxSend createFromParcel(Parcel in) {
+            return new SingleBoxSend(in);
         }
 
         @Override
-        public SingleBox[] newArray(int size) {
-            return new SingleBox[size];
+        public SingleBoxSend[] newArray(int size) {
+            return new SingleBoxSend[size];
         }
     };
 
@@ -77,8 +76,8 @@ public class SingleBox implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SingleBox)) return false;
-        SingleBox singleBox = (SingleBox) o;
+        if (!(o instanceof SingleBoxSend)) return false;
+        SingleBoxSend singleBox = (SingleBoxSend) o;
         return Objects.equals(boxVendor, singleBox.boxVendor);
     }
 

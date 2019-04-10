@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,7 @@ public class NotificationFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
-        databaseReference = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("NotificationSend");
+        databaseReference = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("Notification");
         FirebaseRecyclerOptions<Notification> options=
                 new FirebaseRecyclerOptions.Builder<Notification>()
                 .setQuery(databaseReference, Notification.class)
@@ -80,6 +81,7 @@ public class NotificationFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull NotificationViewHolder holder, int position, @NonNull Notification model) {
                 holder.bindItem(model);
+
             }
         };
 

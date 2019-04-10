@@ -29,6 +29,7 @@ public class Constants {
     public static final int NOTIFICATION_STATS_USERBOXACCESSREQUESTCANCEL = 491;
     public static final int NOTIFICATION_STATS_USERBOXACCESSREQUESTACCEPTED = 402;
     public static final int NOTIFICATION_STATS_USERBOXACCESSREQUESTDENIED = 492;
+    public static final int NOTIFICATION_STATS_USERBOXEXPIRED = 499;
     public static final int NOTIFICATION_STATS_USERRENTBOX = 411;
     public static final int NOTIFICATION_STATS_TEST = 1111;
     public static final String CURRENCY = "Rp. ";
@@ -51,5 +52,6 @@ public class Constants {
     public static final int TRANSACTION__REFSTAT_CANCLED = 599;
     public static final String SUPERADMINID_FOR_TRANSACTIONPURPOSE = "rjtKwb3194WvKW6JXj0r1WtysWH2";
     public static final int VENDOR_REGIST_FEE = 50000;
+
 
 }

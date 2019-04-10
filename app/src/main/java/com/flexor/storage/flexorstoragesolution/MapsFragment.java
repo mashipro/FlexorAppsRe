@@ -169,7 +169,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         user = userManager.getUser();
         boxManager = new BoxManager();
 
-        userBoxRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
+//        userBoxRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
         vendorRef = mFirestore.collection("Vendor");
         vendorDBRef = firebaseDatabase.getReference().child("Accepted Vendor");
 

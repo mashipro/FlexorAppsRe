@@ -27,9 +27,13 @@ import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
 import com.flexor.storage.flexorstoragesolution.Models.TransitionalStatCode;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Utility.BoxManager;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.Utility.NotificationListener;
+import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
+import com.flexor.storage.flexorstoragesolution.Utility.VendorDataListener;
+import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -85,6 +89,7 @@ public class BoxDetailsActivity extends AppCompatActivity {
     private TransitionalStatCode transitionalStatCode;
     private LatLng userLocGeo, vendorLocGeo;
     private CustomNotificationManager customNotificationManager;
+    private BoxManager boxManager;
 
 
     @Override
@@ -95,14 +100,43 @@ public class BoxDetailsActivity extends AppCompatActivity {
         ////Init Firebase////
         mFirestore = FirebaseFirestore.getInstance();
 
+        ////Setting View////
+
+        boxBG = findViewById(R.id.box_Head_BG);
+        boxDetails = findViewById(R.id.box_details);
+        storageName = findViewById(R.id.storage_name);
+        boxName = findViewById(R.id.box_name);
+        boxStatus = findViewById(R.id.box_status);
+        vendorLoc = findViewById(R.id.vendor_registration_location);
+        tenantName = findViewById(R.id.tenant_name);
+        duration = findViewById(R.id.tenant_box_duration);
+        rentDue = findViewById(R.id.tenant_box_due);
+        rentRate = findViewById(R.id.tenant_box_rate);
+        tenantAvatar = findViewById(R.id.box_avatar);
+        btnBoxAccess = findViewById(R.id.btn_vendor_box_access);
+        btnEnable = findViewById(R.id.btn_vendor_box_enable);
+        btnDisable = findViewById(R.id.btn_vendor_box_disable);
+        btnContact = findViewById(R.id.btn_vendor_box_contacts_tenant);
+
         ////Getting Bundle////
         box = ((UserClient) (getApplicationContext())).getBox();
+        boxManager = new BoxManager();
         transitionalStatCode = ((UserClient)(getApplicationContext())).getTransitionalStatCode();
-        userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
+        if (((UserClient)(getApplicationContext())).getUserVendor()==null){
+            boxManager.getVendorData(box.getUserVendorOwner(), new VendorDataListener() {
+                @Override
+                public void onVendorDataReceived(UserVendor vendorData) {
+                    userVendor = vendorData;
+                    populateView();
+                }
+            });
+        }else {
+            userVendor = ((UserClient)(getApplicationContext())).getUserVendor();
+            populateView();
+        }
         Log.d(TAG, "onCreate: transitionCode"+ transitionalStatCode.getDerivedPaging());
         Log.d(TAG, "onCreate: userVendor: "+ userVendor);
         Log.d(TAG, "onCreate: box: "+ box);
-
 
 
         Log.d(TAG, "onCreate: checking User ....");
@@ -127,46 +161,25 @@ public class BoxDetailsActivity extends AppCompatActivity {
 //            }
 //        });
 
+        //Todo Access box Method Local / Remote
+        //Todo Enable disable method
+        //Todo Enable disable Rules
+        //Todo Contacts Tenants @chats / @VOip
 
-        ////Setting View////
+    }
 
-        boxBG = findViewById(R.id.box_Head_BG);
-        boxDetails = findViewById(R.id.box_details);
-        storageName = findViewById(R.id.storage_name);
-        boxName = findViewById(R.id.box_name);
-        boxStatus = findViewById(R.id.box_status);
-        vendorLoc = findViewById(R.id.vendor_registration_location);
-        tenantName = findViewById(R.id.tenant_name);
-        duration = findViewById(R.id.tenant_box_duration);
-        rentDue = findViewById(R.id.tenant_box_due);
-        rentRate = findViewById(R.id.tenant_box_rate);
-        tenantAvatar = findViewById(R.id.box_avatar);
-        btnBoxAccess = findViewById(R.id.btn_vendor_box_access);
-        btnEnable = findViewById(R.id.btn_vendor_box_enable);
-        btnDisable = findViewById(R.id.btn_vendor_box_disable);
-        btnContact = findViewById(R.id.btn_vendor_box_contacts_tenant);
-
-        ////////////////////////////iki/////////////////////
-        viewChecker();
-        getDistance();
-
+    private void populateView() {
         /**Populate View*/
         //Todo get vendor image
-        boxName.setText(box.getBoxName());
+
         storageName.setText(userVendor.getVendorStorageName());
         tenantName.setText(box.getBoxTenant());
         vendorLoc.setText(userVendor.getVendorStorageLocation());
         String price = Constants.CURRENCY + userVendor.getVendorBoxPrice();
         rentRate.setText(price);
 
-        //Todo get tenant avatar and details
-        //Todo get rent duration and due date
-        //Todo set price rate method
-        //Todo Access box Method Local / Remote
-        //Todo Enable disable method
-        //Todo Enable disable Rules
-        //Todo Contacts Tenants @chats / @VOip
-
+        viewChecker();
+        getDistance();
     }
 
     private void getDistance() {

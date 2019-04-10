@@ -4,6 +4,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+//Notification Functions
 exports.sendNotification = functions.database.ref('UsersData/{userID}/Notification/{messageID}').onCreate((snapshot, context) =>{
 	console.log('sendNotification Triggered')
 
@@ -47,3 +48,18 @@ exports.sendNotification = functions.database.ref('UsersData/{userID}/Notificati
 
 	
 });
+
+// //Firestore Trigger box changes
+
+// exports.saveUserEvent = functions.firestore
+// 	.document('Boxes/{boXid}')
+// 	.onUpdate((change, context) =>{
+// 		const boxHeaderID = context.params.boXid;
+// 		console.log('Box Changes detected on box ID: '+boxHeaderID);
+		
+// 		const newValue = change.after.data();
+// 		const oldValue = change.before.data();
+// 		console.log('Box Changes = '+ oldValue +' ///into >>> '+newValue);
+// });
+
+// //GoogleCalendar

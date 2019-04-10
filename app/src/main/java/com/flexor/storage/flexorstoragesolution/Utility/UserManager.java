@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserLogs;
+import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.UserClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -106,8 +107,10 @@ public class UserManager {
     }
 
     public User getUser(){
-        getInstance();
-        Log.d(TAG, "getUser: ID: "+((UserClient)(getApplicationContext())).getUser().getUserID());
+        User user =((UserClient)(getApplicationContext())).getUser();
+        if (user == null){
+            getInstance();
+        }
         return ((UserClient)(getApplicationContext())).getUser();
     }
     
@@ -199,6 +202,5 @@ public class UserManager {
             }
         });
     }
-
 
 }

@@ -1,5 +1,6 @@
 package com.flexor.storage.flexorstoragesolution.Utility;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -17,7 +18,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -148,5 +151,17 @@ public class BoxManager {
                 singleBoxListener.onBoxReceived(boxWithQual);
             }
         }
+    }
+
+    public void checkBoxValidity (Context context, Box box, BoxValidityChecker boxValidityChecker){
+        Calendar boxDate = Calendar.getInstance();
+        boxDate.setTime(box.getBoxRentTimestamp());
+        boxValidityChecker.onBoxValidityChecked(boxDate.getTimeInMillis()<=System.currentTimeMillis());
+        if (boxDate.getTimeInMillis()<= System.currentTimeMillis()){
+            boxValidityChecker.onBoxValidityChecked(false);
+        }else {
+            boxValidityChecker.onBoxValidityChecked(true);
+        }
+        boxValidityChecker.boxExpirationDate(boxDate.getTime());
     }
 }

@@ -32,6 +32,7 @@ import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
+import com.flexor.storage.flexorstoragesolution.Utility.SchedulerManager;
 import com.flexor.storage.flexorstoragesolution.Utility.TransactionManager;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.flexor.storage.flexorstoragesolution.ViewHolder.BoxesViewHolder;
@@ -88,6 +89,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
     private UserManager userManager;
     private User user;
     private CustomNotificationManager notificationManager;
+    private SchedulerManager schedulerManager;
 
     private int duration=3;
 
@@ -132,6 +134,8 @@ public class StorageDetailsActivity extends AppCompatActivity {
         vendorBoxRef = mFirestore.collection("Vendor").document(userVendor.getVendorID()).collection("MyBox");
         boxesRef = mFirestore.collection("Boxes");
         userBoxRef = mFirestore.collection("Users").document(mUser.getUid()).collection("MyRentedBox");
+
+        schedulerManager = new SchedulerManager(this);
 
         getBoxData();
 
@@ -313,9 +317,9 @@ public class StorageDetailsActivity extends AppCompatActivity {
     }
 
     private void updateBox(Box thisBoxBinding, int i) {
-        Box newBox = thisBoxBinding;
+        final Box newBox = thisBoxBinding;
         newBox.setBoxLastChange(null);
-        newBox.setBoxRentDuration(duration);
+        newBox.setBoxRentDuration(i);
         newBox.setBoxRentTimestamp(null);
         newBox.setBoxTenant(mUser.getUid());
         newBox.setBoxStatCode(Constants.STATSCODE_BOX_EMPTY);
@@ -331,6 +335,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
                 if (task.isSuccessful()){
                     getBoxData();
                     Log.d(TAG, "onComplete: update box success..!!!");
+                    schedulerManager.setBoxAlarm(newBox);
                 }
             }
         });

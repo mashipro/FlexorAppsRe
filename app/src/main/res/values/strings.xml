@@ -117,7 +117,7 @@
     <string name="saving_items_please_wait">Saving your items.... Please Wait :D</string>
     <string name="box_stat_wait_empty">Empty - Processed</string>
     <string name="box_stat_wait_full">Full - Processed</string>
-    <string name="default_notification_channel_id">DEFAULT</string>
+    <string name="default_notification_channel_id">User Default Notification</string>
     <string name="notification_access_box_req_title">User Request for Box Access!</string>
     <string name="notification_access_box_req_body">One of your tenants need your approval to access box. Click for details.</string>
     <string name="decline">Decline</string>
@@ -178,6 +178,11 @@
     <string name="vendor_address">adress</string>
     <string name="notif_test_title">TEST TITLE</string>
     <string name="notif_test_message">notification test is underway. click to open apps.</string>
+    <string name="boxExpired_notification_channel_id">Box Notification</string>
+    <string name="box_expired_notification">Box Expiration Alert!</string>
+    <string name="box_expired_notification_text">One of your box is expired please check \"My Storage List\" for more information</string>
+    <string name="notif_simple_new_notification">New Notification!</string>
+    <string name="notif_simple_new_notification_message">You have new notification. Please click to open apps.</string>
 
 
 </resources>
