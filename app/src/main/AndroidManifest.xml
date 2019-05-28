@@ -18,15 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <receiver
-            android:name=".Service.BoxScheduledAlert"
-            android:enabled="true"
-            android:exported="false" />
-
-        <activity
-            android:name=".LoginCheckerActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name=".LoginCheckerActivity"
+            android:theme = "@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".AdminVendorPhotoActivity" />
         <activity android:name=".BoxItemListActivity" />
@@ -38,8 +31,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".Login"
+        <activity android:name=".Login"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -80,16 +72,14 @@
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />
 
-        <service android:name=".Service.MyFirebaseMessagingService">
+        <service android:name=".Utility.FirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorNativeLightBlue" />
-
         <activity android:name=".ProfileActivity" />
         <activity android:name=".BiodataActivity" />
     </application>

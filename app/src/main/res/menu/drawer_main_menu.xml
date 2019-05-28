@@ -31,7 +31,7 @@
             android:icon="@mipmap/ic_vendor_register_white"
             android:title="@string/nav_vendor_register" />
         <item
-            android:id="@+id/nav_vendor_signin"
+            android:id="@+id/nav_vendor_dashboard"
             android:icon="@mipmap/ic_vendor_signin_white"
             android:title="@string/nav_vendor_signin"
             android:visible="true" />
