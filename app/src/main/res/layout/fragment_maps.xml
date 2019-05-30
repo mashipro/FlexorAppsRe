@@ -83,9 +83,13 @@
             android:id="@+id/search_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/ic_search_storage_white_bgblue" />
+            android:src="@mipmap/ic_search_storage_white_bgblue"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:clickable="true"
+            android:focusable="true"
             android:id="@+id/center_button"
             android:layout_width="75dp"
             android:layout_height="75dp"
@@ -93,6 +97,8 @@
             android:src="@mipmap/ic_my_location_white_bgblue" />
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:clickable="true"
+            android:focusable="true"
             android:id="@+id/mystorage_button"
             android:layout_width="50dp"
             android:layout_height="50dp"

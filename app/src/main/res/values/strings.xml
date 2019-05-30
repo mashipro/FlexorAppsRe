@@ -183,6 +183,9 @@
     <string name="box_expired_notification_text">One of your box is expired please check \"My Storage List\" for more information</string>
     <string name="notif_simple_new_notification">New Notification!</string>
     <string name="notif_simple_new_notification_message">You have new notification. Please click to open apps.</string>
+    <string name="cobak">cobak</string>
+    <string name="asdasdasdasd">asdasdasdasd</string>
+    <string name="error_nameRequired">Name Required</string>
 
 
 </resources>

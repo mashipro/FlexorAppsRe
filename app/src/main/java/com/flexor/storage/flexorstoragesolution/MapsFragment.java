@@ -270,6 +270,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             left.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.d(TAG, "onClick: search clicked");
                     searchNearestBox(v);
                 }
             });
@@ -491,7 +492,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         vendorAccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                vendorAccess.setText(R.string.access_vendor);
+                vendorAccess.setText(R.string.cobak);
                 goToVendorPage(popupWindow, mUserVendor);
                 //Todo: Set Vendor Access method
                 Log.d(TAG, "onClick: vendor Access Request on: "+mUserVendor.getVendorStorageName()+" With ID: "+ mUserVendor.getVendorID());

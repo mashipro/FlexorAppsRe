@@ -8,4 +8,20 @@
     <color name="colorNativeDarkBlue">#336699</color>
     <color name="colorNativeOrange">#ffcc00</color>
     <color name="colorNativeWhite">#ffffff</color>
+
+    <color name="colorSetupBlue1">#3ACCE1</color>
+    <color name="colorSetupBlue2">#3497FD</color>
+    <color name="colorSetupBlue3">#5773FF</color>
+    <color name="colorSetupBlue4">#665EFF</color>
+
+    <color name="colorSetupGold1">#FFB900</color>
+    <color name="colorSetupGold2">#FF9057</color>
+    <color name="colorSetupGold3">#FF4F9A</color>
+    <color name="colorSetupGold4">#C840E9</color>
+
+    <color name="colorSetupGrey1">#FFFFFF</color>
+    <color name="colorSetupGrey2">#78849E</color>
+    <color name="colorSetupGrey3">#454F63</color>
+    <color name="colorSetupGrey4">#2A2E43</color>
+
 </resources>

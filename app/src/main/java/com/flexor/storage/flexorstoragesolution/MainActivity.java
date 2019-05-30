@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.nav_main_customerService:
 //                customNotificationManager.testFCMRUN();
-
+                startActivity(new Intent(getApplicationContext(),BetaLoginActivity.class));
                 afterclick();
                 break;
             case R.id.nav_main_settings:

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorSetupGrey4"
+    tools:context=".BetaLoginActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_bg_cpad_lblue"
+            android:fontFamily="@font/opensans_bold"
+            android:text="@string/login"
+            android:textColor="@color/colorSetupGrey1"
+            android:textSize="12sp"
+            android:minHeight="35dp"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorSetupBlue3"
+            android:contentDescription="@string/asdasdasdasd"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/button_signUp"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_bg_cpad_empty"
+            android:fontFamily="@font/opensans_bold"
+            android:text="@string/register"
+            android:textColor="@color/colorSetupGrey1"
+            android:textSize="12sp"
+            android:minHeight="35dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout12"
+        app:layout_constraintVertical_bias="0.0">
+
+        <EditText
+            android:id="@+id/edit_signUp_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_bg_cpad_lgrey"
+            android:fontFamily="@font/opensans_regular"
+            android:hint="@string/name"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:textColor="@color/colorSetupGrey1"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edit_login_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_bg_cpad_lgrey"
+            android:fontFamily="@font/opensans_regular"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textColor="@color/colorSetupGrey1"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/edit_login_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/button_bg_cpad_lgrey"
+            android:fontFamily="@font/opensans_regular"
+            android:hint="@string/passwordhint"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textColor="@color/colorSetupGrey1"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/link_forgotPW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/forgot_password"
+            android:textColor="@color/colorSetupGrey2"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/button_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_bg_cpad_lblue"
+            android:fontFamily="@font/opensans_bold"
+            android:text="@string/accept"
+            android:textColor="@color/colorSetupGrey1"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
