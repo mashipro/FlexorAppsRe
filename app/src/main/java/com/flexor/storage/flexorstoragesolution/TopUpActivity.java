@@ -26,9 +26,9 @@ import com.google.firebase.storage.StorageReference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SuperAdminActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class TopUpActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "TopUpActivity";
 
-    private static final String TAG = "SuperAdminActivity";
     private DrawerLayout drawerlayout;
 
     private FirebaseAuth mAuth;
@@ -37,7 +37,6 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
     private FirebaseStorage mStorage;
 
     CircleImageView circleImageView, showUserProfilePicture;
-
 
     @Override
     protected void onStart() {
@@ -48,7 +47,8 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_super_admin);
+        setContentView(R.layout.activity_top_up);
+
         mAuth = FirebaseAuth.getInstance();
         mStorage = FirebaseStorage.getInstance();
         storageReference = mStorage.getReference();
@@ -60,19 +60,18 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser authUser = mAuth.getCurrentUser();
                 if (firebaseAuth.getCurrentUser() == null) {
-                    startActivity(new Intent(SuperAdminActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    startActivity(new Intent(TopUpActivity.this, Login.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }else{
                     getUserDetails(authUser);
                 }
             }
         };
 
-        drawerlayout = findViewById(R.id.super_admin);
-
-        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_superAdmin);
+        drawerlayout = findViewById(R.id.topUp_page);
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar_topUp);
         setSupportActionBar(toolbar);
 
-        NavigationView navigationView = findViewById(R.id.nav_view_superAdmin);
+        NavigationView navigationView = findViewById(R.id.nav_view_topUp);
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerlayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
@@ -80,6 +79,7 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
         toggle.syncState();
 
         showUserProfilePicture  = navigationView.getHeaderView(0).findViewById(R.id.showUserProfilePicture);
+
     }
 
     private void getUserDetails(FirebaseUser user) {
@@ -119,23 +119,15 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void getVendorAppFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new VendorApplistFragment()).commit();
+    private void getTopUpFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TopUpFragment()).commit();
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.nav_vendorAppList:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VendorApplistFragment()).commit();
-                afterclick();
-                break;
-            case R.id.nav_vendorList:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VendorListFragment()).commit();
-                afterclick();
-                break;
-            case R.id.nav_vendorSettings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new MessageFragment()).commit();
+            case R.id.nav_topUpInit:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new TopUpFragment()).commit();
                 afterclick();
                 break;
         }
@@ -160,6 +152,7 @@ public class SuperAdminActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        getVendorAppFragment();
+        getTopUpFragment();
     }
+
 }

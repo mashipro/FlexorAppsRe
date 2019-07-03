@@ -42,6 +42,10 @@
     </group>
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_topUpPage"
+            android:icon="@mipmap/ic_cross"
+            android:title="@string/nav_topup"/>
+        <item
             android:id="@+id/nav_main_customerService"
             android:icon="@mipmap/ic_call_white"
             android:title="@string/nav_customerService" />

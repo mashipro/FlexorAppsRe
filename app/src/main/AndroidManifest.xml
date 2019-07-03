@@ -76,6 +76,7 @@
         <activity android:name=".VendorRegistrationActivity" />
         <activity android:name=".BoxDetailsActivity" />
         <activity android:name=".SuperAdminActivity" />
+        <activity android:name=".TopUpActivity"/>
         <activity android:name=".MapsAdminActivity" />
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />

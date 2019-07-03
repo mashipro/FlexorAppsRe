@@ -382,6 +382,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(getApplicationContext(), SuperAdminActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 afterclick();
                 break;
+            case R.id.nav_topUpPage:
+                startActivity(new Intent(getApplicationContext(), TopUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                afterclick();
+                break;
             case R.id.nav_logout:
                 logout();
                 afterclick();

@@ -161,6 +161,13 @@
         <item>Surabaya</item>
     </string-array>
 
+    <string-array name="nominal_topup">
+        <item>IDR25000</item>
+        <item>IDR50000</item>
+        <item>IDR100000</item>
+        <item>IDR250000</item>
+    </string-array>
+
     <!--Biodata-->
     <string name="gender">Gender</string>
     <string name="city">City</string>
@@ -183,6 +190,10 @@
     <string name="box_expired_notification_text">One of your box is expired please check \"My Storage List\" for more information</string>
     <string name="notif_simple_new_notification">New Notification!</string>
     <string name="notif_simple_new_notification_message">You have new notification. Please click to open apps.</string>
+    <string name="nav_topup">Top Up</string>
+    <string name="nav_topup_konfirmasi">Top Up Confirmation</string>
+    <string name="nav_topup_history">Top Up History</string>
+    <string name="jumlah_topup">Jumlah TopUp</string>
 
 
 </resources>

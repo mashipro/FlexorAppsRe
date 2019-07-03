@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view"
+    android:id="@+id/drawer_layout_vendorAppList">
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_topUpInit"
+            android:icon="@mipmap/ic_cross"
+            android:title="@string/nav_topup" />
+        <item
+            android:id="@+id/nav_topUpKonfirmasi"
+            android:icon="@mipmap/ic_check_circle_green"
+            android:title="@string/nav_topup_konfirmasi" />
+        <item
+            android:id="@+id/nav_topUpHistory"
+            android:icon="@mipmap/ic_boxreq_white_circle"
+            android:title="@string/nav_topup_history" />
+
+
+    </group>
+</menu>
