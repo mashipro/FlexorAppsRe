@@ -28,29 +28,87 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/jumlah_topup"
                 android:textColor="#000"
-                android:textSize="15sp" />
+                android:textSize="20sp" />
             <TextView
                 android:id="@+id/titikdua"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" :"
                 android:textColor="#000"
-                android:textSize="15sp" />
+                android:textSize="20sp" />
+
             <Spinner
                 android:id="@+id/spinner_topup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></Spinner>
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pembayaran"
+                    android:textColor="#000"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/titikdua2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="     :"
+                    android:textColor="#000"
+                    android:textSize="20sp" />
+                <Spinner
+                    android:id="@+id/spinner_pembayaran"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:prompt="@string/accept">
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp">
+
+                <TextView
+                    android:id="@+id/rekening_pembayaran"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="17dp"
+            android:layout_marginEnd="17dp"
+            android:layout_marginTop="300dp"
+            android:text="@string/prosestopup"/>
 
     </RelativeLayout>
+
 
 </FrameLayout>

@@ -168,6 +168,12 @@
         <item>IDR250000</item>
     </string-array>
 
+    <string-array name="pembayaran_topup">
+        <item>BCA</item>
+        <item>BRI</item>
+        <item>MANDIRI</item>
+    </string-array>
+
     <!--Biodata-->
     <string name="gender">Gender</string>
     <string name="city">City</string>
@@ -194,6 +200,8 @@
     <string name="nav_topup_konfirmasi">Top Up Confirmation</string>
     <string name="nav_topup_history">Top Up History</string>
     <string name="jumlah_topup">Jumlah TopUp</string>
+    <string name="pembayaran">Pembayaran</string>
+    <string name="prosestopup">Proses Transaksi</string>
 
 
 </resources>

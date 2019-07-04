@@ -6,17 +6,23 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.HashMap;
 
 public class TopUpFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private View view;
+    private TextView rekening;
 
     @Nullable
     @Override
@@ -28,6 +34,35 @@ public class TopUpFragment extends Fragment implements AdapterView.OnItemSelecte
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+
+        Spinner spinner2 = view.findViewById(R.id.spinner_pembayaran);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(getActivity(), R.array.pembayaran_topup, android.R.layout.simple_spinner_item);
+        spinner2.setAdapter(adapter2);
+        spinner2.setOnItemSelectedListener(this);
+
+
+
+        rekening = view.findViewById(R.id.rekening_pembayaran);
+
+        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String value = (String) adapterView.getItemAtPosition(i);
+                if (i == 0){
+                    rekening.setText("Rekening BCA a.n njun - 8123663072");
+                }else if (i == 1) {
+                    rekening.setText("Rekening BRI a.n njun - 111019119233");
+                }else if (i == 2) {
+                    rekening.setText("Rekening Mandiri a.n njun - 00031239213");
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         return view;
     }

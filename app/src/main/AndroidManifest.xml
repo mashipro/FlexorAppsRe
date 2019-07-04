@@ -18,6 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".KonfirmTransaksiActivity"></activity>
 
         <receiver
             android:name=".Service.BoxScheduledAlert"
@@ -76,7 +77,7 @@
         <activity android:name=".VendorRegistrationActivity" />
         <activity android:name=".BoxDetailsActivity" />
         <activity android:name=".SuperAdminActivity" />
-        <activity android:name=".TopUpActivity"/>
+        <activity android:name=".TopUpActivity" />
         <activity android:name=".MapsAdminActivity" />
         <activity android:name=".StorageDetailsActivity" />
         <activity android:name=".VendorFacadeActivity" />
