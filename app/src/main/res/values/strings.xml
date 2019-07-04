@@ -202,6 +202,10 @@
     <string name="jumlah_topup">Jumlah TopUp</string>
     <string name="pembayaran">Pembayaran</string>
     <string name="prosestopup">Proses Transaksi</string>
+    <string name="konfirmasi_transaksi">Silahkan Foto dan Upload Bukti Transfer Melalui Tombol di Bawah Ini</string>
+    <string name="konfirmasi_transaksi2">Proses TopUp Memerlukan 5 - 10 Menit</string>
+    <string name="foto_bukti">Foto Bukti</string>
+    <string name="upload_bukti">Upload Bukti Pembayaran</string>
 
 
 </resources>

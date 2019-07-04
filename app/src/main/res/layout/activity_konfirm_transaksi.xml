@@ -6,4 +6,66 @@
     android:layout_height="match_parent"
     tools:context=".KonfirmTransaksiActivity">
 
+    <TextView
+        android:id="@+id/konfirmtrans1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="18dp"
+        android:text="@string/konfirmasi_transaksi"
+        android:textAlignment="center"
+        android:textSize="26sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/konfirmtrans2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/konfirmtrans1"
+        android:text="@string/konfirmasi_transaksi2"
+        android:textSize="26sp"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/foto_bukti"
+        android:layout_width="159dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/foto_bukti"
+        app:layout_constraintEnd_toStartOf="@+id/tampilan_bukti"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/konfirmtrans2" />
+
+    <ImageView
+        android:id="@+id/tampilan_bukti"
+        android:layout_width="182dp"
+        android:layout_height="151dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/konfirmtrans2"
+        app:srcCompat="@drawable/com_facebook_close" />
+
+    <Button
+        android:id="@+id/upload_bukti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/upload_bukti"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/konfirmtrans2" />
+
 </android.support.constraint.ConstraintLayout>
