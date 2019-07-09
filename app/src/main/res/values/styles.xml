@@ -16,4 +16,9 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 
+    <style name="beta_navbar">
+        <item name="android:background">@color/colorSetupGrey3</item>
+        <item name="android:textColor">@color/colorSetupGrey1</item>
+    </style>
+
 </resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="navigation_view"
+    >
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_Maps"
+            android:icon="@mipmap/ic_maps_white"
+            android:title="@string/nav_main_map" />
+        <item
+            android:id="@+id/nav_myStorageList"
+            android:icon="@mipmap/ic_storage_list_white"
+            android:title="@string/nav_main_myStorageList" />
+        <item
+            android:id="@+id/nav_main_notification"
+            android:icon="@mipmap/ic_notification_inactive_white"
+            android:title="@string/nav_main_notification"
+            app:actionLayout="@layout/menu_counter" />
+        <item
+            android:id="@+id/nav_main_message"
+            android:icon="@mipmap/ic_mail_white"
+            android:title="@string/nav_main_message" />
+
+    </group>
+    <group android:id="@+id/nav_vendor">
+        <item
+            android:id="@+id/nav_vendor_register"
+            android:icon="@mipmap/ic_vendor_register_white"
+            android:title="@string/nav_vendor_register" />
+        <item
+            android:id="@+id/nav_vendor_signin"
+            android:icon="@mipmap/ic_vendor_signin_white"
+            android:title="@string/nav_vendor_signin"
+            android:visible="true" />
+        <item
+            android:id="@+id/admin_page"
+            android:icon="@drawable/com_facebook_send_button_icon"
+            android:title="@string/admin_page" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_main_customerService"
+            android:icon="@mipmap/ic_call_white"
+            android:title="@string/nav_customerService" />
+        <item
+            android:id="@+id/nav_main_settings"
+            android:icon="@mipmap/ic_settings_white"
+            android:title="@string/nav_main_settings" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="@string/nav_logout" />
+    </group>
+
+</menu>

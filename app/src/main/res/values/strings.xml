@@ -186,6 +186,7 @@
     <string name="cobak">cobak</string>
     <string name="asdasdasdasd">asdasdasdasd</string>
     <string name="error_nameRequired">Name Required</string>
+    <string name="nav_main_home">Home</string>
 
 
 </resources>

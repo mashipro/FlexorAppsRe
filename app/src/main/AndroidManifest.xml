@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BetaLoginActivity"></activity>
+        <activity android:name=".BetaMainActivity"></activity>
+        <activity android:name=".BetaLoginActivity" />
 
         <receiver
             android:name=".Service.BoxScheduledAlert"
