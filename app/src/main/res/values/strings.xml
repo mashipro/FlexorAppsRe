@@ -187,6 +187,13 @@
     <string name="asdasdasdasd">asdasdasdasd</string>
     <string name="error_nameRequired">Name Required</string>
     <string name="nav_main_home">Home</string>
+    <string name="error_emailEmpty">Plese input your email</string>
+    <string name="error_emailInvalid">Please enter valid email</string>
+    <string name="error_passwordEmpty">Password is required</string>
+    <string name="error_passwordTShort">Minimum password length is 6 characters</string>
+    <string name="login_email_failed">Email or Password is incorrect</string>
+    <string name="error_emailNotVerified">Please Verify your Email Address before login again</string>
+    <string name="success_emailVerificationSent">Please check your email to verify your account</string>
 
 
 </resources>
