@@ -52,7 +52,7 @@ public class BetaLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beta_login);
 
-//        /*Firebase Init*/
+        /*Firebase Init*/
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestoreSettings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
@@ -82,15 +82,10 @@ public class BetaLoginActivity extends AppCompatActivity {
         edit_psw = findViewById(R.id.edit_login_password);
         text_forgotpw = findViewById(R.id.link_forgotPW);
 
-        /*Utilities Init*/
-//        userManager = new UserManager();
-        checkUser();
 
         initView();
     }
 
-    private void checkUser() {
-    }
 
     private void initView() {
         text_forgotpw.setOnClickListener(new View.OnClickListener() {
