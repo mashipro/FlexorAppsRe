@@ -32,6 +32,7 @@ import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.BoxManager;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
+import com.flexor.storage.flexorstoragesolution.Utility.GetUserData;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.flexor.storage.flexorstoragesolution.Utility.VendorDataListener;
 import com.google.android.gms.common.ConnectionResult;
@@ -113,7 +114,8 @@ public class BetaMainActivity extends AppCompatActivity {
 
         /*Components Init*/
         userManager = new UserManager();
-        userManager.getInstance();
+//        user = userManager.getUser();
+//        Log.d(TAG, "onCreate: checker user data: "+ user);
         userManager.getAndStoreToken();
         boxManager = new BoxManager();
 
@@ -140,6 +142,10 @@ public class BetaMainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseUser != null){
+                    user = userManager.getUser();
+                    if (user == null){
+//                        user = userManager.getInstance();
+                    }
                     getUserDetails();
                 }else {
                     startActivity(new Intent(BetaMainActivity.this, BetaLoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
@@ -295,7 +301,6 @@ public class BetaMainActivity extends AppCompatActivity {
     private void getUserDetails() {
         Log.d(TAG, "getUserDetails: init");
         Log.d(TAG, "getUserDetails: loading user data ....");
-        user = userManager.getUser();
         Log.d(TAG, "getUserDetails: UID: "+ user.getUserID());
         Log.d(TAG, "getUserDetails: Name: "+user.getUserName());
 

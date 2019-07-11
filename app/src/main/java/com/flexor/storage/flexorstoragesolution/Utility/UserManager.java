@@ -60,18 +60,36 @@ public class UserManager {
     public void getInstance(){
         Log.d(TAG, "getInstance: getting user data for the first time....");
         if (((UserClient)(getApplicationContext())).getUser() == null ){
-            Log.d(TAG, "getInstance: user data not found, download from firestore");
-            userRef.document(mUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            Log.d(TAG, "getInstance: user data not found, download from firestore with user UID: "+ mUser.getUid());
+            userRef.document(mUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()){
-                        User newUser = task.getResult().toObject(User.class);
-                        ((UserClient)(getApplicationContext())).setUser(newUser);
-                        getInstance();
-                        Log.d(TAG, "onComplete: user data on firestore found!! UID: "+ newUser.getUserID());
-                    }
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    User userData = documentSnapshot.toObject(User.class);
+                    Log.d(TAG, "onSuccess: user data found!");
+                    Log.d(TAG, "onSuccess: name: "+ userData.getUserName());
+                    Log.d(TAG, "onSuccess: stat: "+ userData.getUserAuthCode());
+                    ((UserClient)(getApplicationContext())).setUser(userData);
+                    getInstance();
                 }
             });
+
+            /*Disabled due to error*/
+//            userRef.document(mUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                    if (task.isSuccessful()){
+//                        DocumentSnapshot documentSnapshot = task.getResult();
+//                        Log.d(TAG, "onComplete: docsnap"+ documentSnapshot);
+//                        User newUser = task.getResult().toObject(User.class);
+//                        ((UserClient)(getApplicationContext())).setUser(newUser);
+//                        getInstance();
+//                        Log.d(TAG, "onComplete: dataset: "+ task.getResult());
+//                        Log.d(TAG, "onComplete: user data on firestore found!! UID: "+ newUser.getUserID());
+//                    }else if (task.isCanceled()){
+//                        Log.e(TAG, "onComplete: error load from firestore. cause: ", task.getException() );
+//                    }
+//                }
+//            });
 
         }else {
             userFromUserClient = ((UserClient)(getApplicationContext())).getUser();
@@ -109,9 +127,12 @@ public class UserManager {
     public User getUser(){
         User user =((UserClient)(getApplicationContext())).getUser();
         if (user == null){
+            Log.d(TAG, "getUser: nulls");
             getInstance();
+            return getUser();
         }
-        return ((UserClient)(getApplicationContext())).getUser();
+        Log.d(TAG, "getUser: "+user);
+        return user;
     }
     
     public void updateUserData(final User newUserData, final Integer statCode, final String referenceID){

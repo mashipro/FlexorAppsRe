@@ -51,7 +51,6 @@ public class BoxManager {
         mStorage = FirebaseStorage.getInstance();
         userManager = new UserManager();
         userManager.getInstance();
-
         user = userManager.getUser();
 
         boxColRef = mFirestore.collection("Boxes");
