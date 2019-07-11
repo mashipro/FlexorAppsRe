@@ -31,14 +31,6 @@
           }
         },
         {
-          "client_id": "16916467111-2a6devlmojisbh9krcat65gm8k7n43qs.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.flexor.storage.flexorstoragesolution",
-            "certificate_hash": "ce61b3924d6732ac5a5e10d427bfab460b5e4cd6"
-          }
-        },
-        {
           "client_id": "16916467111-26q4ebveqdakr5d86j2mtudnlb6i9hti.apps.googleusercontent.com",
           "client_type": 3
         }
