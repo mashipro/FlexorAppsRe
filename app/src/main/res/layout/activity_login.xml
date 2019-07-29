@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorNativeDarkBlue"
+    android:background="@color/colorNativeGrayDeep"
     tools:context=".Login">
 
     <LinearLayout
@@ -34,12 +34,10 @@
         android:id="@+id/login_filler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -51,26 +49,20 @@
             android:id="@+id/login_filler_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="4dp"
-            android:background="@color/colorNativeBlue"
+            android:layout_margin="8dp"
+            android:background="@drawable/roundedged_l_grey"
             android:orientation="horizontal"
             android:paddingHorizontal="8dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_mail_white" />
 
             <EditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:backgroundTint="@color/colorNativeWhite"
+                android:backgroundTint="@color/colorNativeGrayLight"
                 android:hint="@string/mailhint"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/colorNativeWhite"
-                android:textColorHint="@drawable/selector" />
+                android:textColorHint="@color/colorNativeGrayLight" />
 
         </LinearLayout>
 
@@ -78,26 +70,20 @@
             android:id="@+id/login_filler_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="4dp"
-            android:background="@color/colorNativeDarkBlue"
+            android:layout_margin="8dp"
+            android:background="@drawable/roundedged_l_grey"
             android:orientation="horizontal"
             android:paddingHorizontal="8dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_lock_white" />
 
             <EditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:backgroundTint="@color/colorNativeWhite"
+                android:backgroundTint="@color/colorNativeGrayLight"
                 android:hint="@string/passwordhint"
                 android:inputType="textPassword"
                 android:textColor="@color/colorNativeWhite"
-                android:textColorHint="@drawable/selector" />
+                android:textColorHint="@color/colorNativeGrayLight" />
 
         </LinearLayout>
 
@@ -107,8 +93,7 @@
         android:id="@+id/login_gnf_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
@@ -146,16 +131,15 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="30dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
         android:background="@color/colorNativeOrange"
         android:fontFamily="@font/roboto_black"
         android:text="Login"
@@ -169,7 +153,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorNativeBlue"
+        android:background="@color/colorNativeGray"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -185,7 +169,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/roboto_black"
             android:text="@string/forgot_password"
-            android:textColor="@color/colorNativeDarkBlue"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
