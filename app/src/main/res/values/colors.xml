@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorNativeBlue">#6699cc</color>
-    <color name="colorNativeLightBlue">#66ccff</color>
-    <color name="colorNativeDarkBlue">#336699</color>
-    <color name="colorNativeOrange">#ffcc00</color>
+    <color name="colorPrimary">#5773FF</color>
+    <color name="colorPrimaryDark">#665EFF</color>
+    <color name="colorAccent">#FF4F9A</color>
+    <color name="colorNativeBlue">#3497FD</color>
+    <color name="colorNativeLightBlue">#3ACCE1</color>
+    <color name="colorNativeDarkBlue">#665EFF</color>
+    <color name="colorNativeOrange">#FFB900</color>
+    <color name="colorNativePurple">#C840E9</color>
     <color name="colorNativeWhite">#ffffff</color>
+    <color name="colorNativeGrayDeep">#2A2E43</color>
+    <color name="colorNativeGray">#454F63</color>
+    <color name="colorNativeGrayLight">#78849E</color>
 </resources>
