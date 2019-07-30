@@ -56,7 +56,6 @@ public class ManPaymentManager {
                                 final int bill,
                                 final int transactionStat,
                                 final String transactionRef,
-                                final int transactionRefStat,
                                 final TransactionManager transactionManager){
         transactionID = getTransactionID(transactionStat);
         if (transactionEligible(bill)){
@@ -70,9 +69,24 @@ public class ManPaymentManager {
                     User targetUser = thisUser;
                     int targetUserFinalBalance = targetUser.getUserBalance()+bill;
                     targetUser.setUserBalance(targetUserFinalBalance);
-                    userManager.updateUserDataByID(targetUser, thisUser,Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION,user.getUserID());
-                    postTransactionLog(transactionID,user.getUserID(),targetUserID,transactionStat,transactionRef, transactionRefStat, bill);
-                    transactionManager.onTransactionSuccess(true, transactionID);
+                    userManager.updateUserDataByID(targetUser, thisUser, Constants.STATSCODE_USERDATA_UPDATE_TRANSACTION, user.getUserID(), new UserDataUpdateState() {
+                        @Override
+                        public void onUserDataUpdated(Boolean updateState, Exception e) {
+                            if (updateState){
+                                Log.d(TAG, "onUserDataUpdated: "+updateState);
+                                postTransactionLog(transactionID,user.getUserID(),targetUserID,transactionStat,transactionRef, Constants.TRANSACTION__REFSTAT_FINISHED, bill);
+                                transactionManager.onTransactionSuccess(true, transactionID);
+                            }else {
+                                Log.d(TAG, "onUserDataUpdated: "+updateState+" //Exception: "+e);
+                                postTransactionLog(transactionID,user.getUserID(),targetUserID,transactionStat,transactionRef, Constants.TRANSACTION__REFSTAT_ERROR, bill);
+                                transactionManager.onTransactionSuccess(false,transactionID);
+                            }
+                        }
+                    });
+
+
+//                    postTransactionLog(transactionID,user.getUserID(),targetUserID,transactionStat,transactionRef, transactionRefStat, bill);
+//                    transactionManager.onTransactionSuccess(true, transactionID);
 
                 }
             });

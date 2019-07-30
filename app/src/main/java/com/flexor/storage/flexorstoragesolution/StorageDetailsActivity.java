@@ -129,7 +129,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
         Glide.with(getApplicationContext())
                 .load(storageReference)
                 .into(headerVendorImage);
-        //Todo: Updating Vendor Image
 
         vendorBoxRef = mFirestore.collection("Vendor").document(userVendor.getVendorID()).collection("MyBox");
         boxesRef = mFirestore.collection("Boxes");
@@ -142,7 +141,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
     }
 
     private void getBoxData() {
-        // TODO: 19/02/2019 sort array data
         vendorBoxAL.clear();
         vendorNonDisabledBox.clear();
         Log.d(TAG, "getBoxData: getting data....");
@@ -278,7 +276,6 @@ public class StorageDetailsActivity extends AppCompatActivity {
                                 getTotal(duration),
                                 Constants.TRANSACTION__BOX_RENT,
                                 thisBoxBinding.getBoxID(),
-                                Constants.TRANSACTION__REFSTAT_FINISHED,
                                 new TransactionManager() {
                                     @Override
                                     public void onTransactionSuccess(Boolean success, String transactionID) {

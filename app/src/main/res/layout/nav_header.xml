@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:background="@color/colorNativeLightBlue"
+    android:background="@color/colorNativeGrayLight"
     android:gravity="bottom"
     android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -20,11 +20,21 @@
         android:text="Username"
         android:textSize="24sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-    <TextView
-        android:id="@+id/userCredits"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="99999Credits" />
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/userCredits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="99999" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Credits" />
+    </LinearLayout>
+
 
 
 </LinearLayout>

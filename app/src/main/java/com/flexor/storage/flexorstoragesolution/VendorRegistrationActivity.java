@@ -212,7 +212,6 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
                         Constants.VENDOR_REGIST_FEE,
                         Constants.TRANSACTION__VENDOR_REGIST,
                         user.getUserID(),
-                        Constants.TRANSACTION__REFSTAT_FINISHED,
                         new TransactionManager() {
                             @Override
                             public void onTransactionSuccess(Boolean success, String transactionID) {

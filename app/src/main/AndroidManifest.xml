@@ -30,6 +30,8 @@
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".AdminVendorPhotoActivity" />
         <activity android:name=".BoxItemListActivity" />
+        <activity android:name=".TopUpActivity" />
+        <activity android:name=".KonfirmTransaksiActivity"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

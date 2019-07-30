@@ -51,14 +51,9 @@ public class VendorApplistFragment extends Fragment {
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_vendor_applist,container,false);
-
         mAuth = FirebaseAuth.getInstance();
         authUser = mAuth.getCurrentUser();
-
         emptyView = (TextView) view.findViewById(R.id.text_empty);
-
-
-
 
         return view;
 

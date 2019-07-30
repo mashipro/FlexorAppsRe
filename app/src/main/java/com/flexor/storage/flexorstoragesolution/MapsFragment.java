@@ -363,6 +363,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         for (UserVendor vendorList: vendorArrayList){
             Log.d(TAG, "searchNearestBox: "+ vendorList.getVendorID()+ "Location: " +vendorList.getVendorGeoLocation());
         }
+        Log.d(TAG, "searchNearestBox: "+ mMap.getCameraPosition());
     }
 
     private void getDeviceLocation() {

@@ -96,14 +96,19 @@ public class UserManager {
     }
 
     public void storeToken(String idToken) {
-        Log.d(TAG, "storeToken: storing token");
-        DatabaseReference tokenRef = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("UNToken");
-        tokenRef.setValue(idToken).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "storeToken: stored!");
-            }
-        });
+        if (mAuth.getCurrentUser() != null){
+            Log.d(TAG, "storeToken: storing token");
+            DatabaseReference tokenRef = mDatabase.getReference().child("UsersData").child(mUser.getUid()).child("UNToken");
+            tokenRef.setValue(idToken).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "storeToken: stored!");
+                }
+            });
+        } else {
+            Log.d(TAG, "storeToken: user is null!");
+        }
+        
     }
 
     public User getUser(){
@@ -141,16 +146,32 @@ public class UserManager {
             }
         });
     }
-    public void updateUserDataByID(User current, final User history, final int statCode, final String referenceID){
+    public void updateUserDataByID(User current, final User history, final int statCode, final String referenceID, final UserDataUpdateState userDataUpdateState){
         Log.d(TAG, "updateUserDataByID: updating data!!!");
         checkDifferences(current.getUserID(), history, current);
-        userRef.document(current.getUserID()).set(current).addOnSuccessListener(new OnSuccessListener<Void>() {
+        userRef.document(current.getUserID()).set(current).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "updateUserDataByID: operation success!!!");
-                generateUserLogs(history, statCode, referenceID);
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "updateUserDataByID: operation success!!!");
+                    generateUserLogs(history, statCode, referenceID);
+                    userDataUpdateState.onUserDataUpdated(true,task.getException());
+                }else {
+                    Log.d(TAG, "updateUserDataByID: operation error!!!");
+                    Log.d(TAG, "updateUserDataByID: exception: "+ task.getException());
+                    userDataUpdateState.onUserDataUpdated(false,task.getException());
+                }
             }
         });
+        /*Reserved Code*/
+        /*Code Below straight update without wait for async task*/
+//        userRef.document(current.getUserID()).set(current).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                Log.d(TAG, "updateUserDataByID: operation success!!!");
+//                generateUserLogs(history, statCode, referenceID);
+//            }
+//        });
     }
 
     private void checkDifferences(String userID, User userHistories, User newUserData) {
