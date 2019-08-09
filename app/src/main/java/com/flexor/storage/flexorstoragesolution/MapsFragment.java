@@ -25,6 +25,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
@@ -426,7 +427,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 public boolean onMarkerClick(Marker marker) {
                     Log.d(TAG, "onMarkerClick: "+ marker.getTitle() + " is clicked");
                     marker.showInfoWindow();
-                    moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,-250);
+                    moveCamera(marker.getPosition(),DEFAULT_ZOOM,0,0);
                     Log.d(TAG, "onMarkerClick: marker tag: "+ marker.getTag());
                     return true;
                 }
@@ -473,8 +474,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         vendorName.setText(mUserVendor.getVendorStorageName());
         vendorLocation.setText(mUserVendor.getVendorStorageLocation());
         storageReference = mStorage.getReference().child(mUserVendor.getVendorIDImgPath());
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transform(new CenterCrop(), new RoundedCorners(16));
         Glide.with(getApplicationContext())
                 .load(storageReference)
+                .apply(requestOptions)
                 .into(vendorImage);
 
         cancelAction.setOnClickListener(new View.OnClickListener() {

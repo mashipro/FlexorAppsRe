@@ -51,7 +51,7 @@ public class Constants {
     public static final int TRANSACTION__REFSTAT_FINISHED = 591;
     public static final int TRANSACTION__REFSTAT_CANCLED = 599;
     public static final int TRANSACTION__REFSTAT_ERROR = 598;
-    public static final String SUPERADMINID_FOR_TRANSACTIONPURPOSE = "rjtKwb3194WvKW6JXj0r1WtysWH2";
+    public static final String SUPERADMINID_FOR_TRANSACTIONPURPOSE = "oPHqEKu2KWMTiZkWaZyEVswGRVS2";
     public static final int VENDOR_REGIST_FEE = 50000;
 
 

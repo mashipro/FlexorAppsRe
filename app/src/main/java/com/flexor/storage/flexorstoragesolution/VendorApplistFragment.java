@@ -18,8 +18,10 @@ import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -147,6 +149,8 @@ public class VendorApplistFragment extends Fragment {
                 public void onDeleteClick(DocumentSnapshot documentSnapshot, int position) {
                     final UserVendor userVendor = documentSnapshot.toObject(UserVendor.class);
                     final DocumentReference db = FirebaseFirestore.getInstance().collection("Vendor").document(userVendor.getVendorID());
+                    /*ditambahi nyambek iki gawe update stat e user*/
+                    final DocumentReference dbUser = FirebaseFirestore.getInstance().collection("Users").document(userVendor.getVendorID());
 
 
                     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -168,6 +172,12 @@ public class VendorApplistFragment extends Fragment {
                                                     Log.w(TAG, "onFailure: sad", e);
                                                 }
                                             });
+                                    dbUser.update("userIsVendor",(Boolean) true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.d(TAG, "onComplete: vendor applicant stat changed!");
+                                        }
+                                    });
 
                                     //success
 

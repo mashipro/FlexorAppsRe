@@ -29,6 +29,7 @@ import com.flexor.storage.flexorstoragesolution.Models.NotificationSend;
 import com.flexor.storage.flexorstoragesolution.Models.SingleBox;
 import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
+import com.flexor.storage.flexorstoragesolution.Utility.CAS;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
 import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
@@ -191,6 +192,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
             @Override
             public void onBindViewHolder(@NonNull BoxGlobalViewHolder holder, int position) {
                 final Box thisBoxBinding = vendorNonDisabledBox.get(position);
+                Collections.sort(vendorNonDisabledBox, CAS.boxNameBoxSort);
                 holder.bindData(thisBoxBinding);
                 Log.d(TAG, "onBindViewHolder: bind box id: "+ thisBoxBinding.getBoxID());
                 ImageView boxExtra = holder.itemView.findViewById(R.id.box_extra);
