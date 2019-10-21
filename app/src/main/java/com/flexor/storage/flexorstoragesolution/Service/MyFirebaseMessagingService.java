@@ -35,7 +35,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //        Log.d(TAG, "onMessageReceived: title: "+title);
 //        Log.d(TAG, "onMessageReceived: message:"+message);
         String notifID = remoteMessage.getData().get("id");
-        Log.d(TAG, "onMessageReceived: data notifID: "+notifID);
+        Log.d(TAG, "onMessageReceived: data notificationID: "+notifID);
 
         String notifRef = remoteMessage.getData().get("reference");
         Log.d(TAG, "onMessageReceived: data ref: "+ notifRef);

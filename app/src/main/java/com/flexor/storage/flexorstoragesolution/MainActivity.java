@@ -40,10 +40,12 @@ import com.flexor.storage.flexorstoragesolution.Models.User;
 import com.flexor.storage.flexorstoragesolution.Models.UserVendor;
 import com.flexor.storage.flexorstoragesolution.Utility.Constants;
 import com.flexor.storage.flexorstoragesolution.Utility.CustomNotificationManager;
+import com.flexor.storage.flexorstoragesolution.Utility.ManPaymentManager;
 import com.flexor.storage.flexorstoragesolution.Utility.NotificationListener;
 import com.flexor.storage.flexorstoragesolution.Utility.UserManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +56,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -62,7 +65,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.flexor.storage.flexorstoragesolution.Utility.Constants.ERROR_DIALOG_REQUEST;
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MenuItem item1;
     private UserManager userManager;
     private FragmentManager fragmentManager;
+    private ManPaymentManager paymentManager;
 
     private boolean mLocationPermissionGranted = false;
     private CustomNotificationManager customNotificationManager;
@@ -121,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userManager = new UserManager();
         userManager.getInstance();
         userManager.getAndStoreToken();
+        paymentManager = new ManPaymentManager();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -383,7 +390,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_topUpPage:
-                startActivity(new Intent(MainActivity.this, TopUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//                startActivity(new Intent(MainActivity.this, TopUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                String testID = "90G7OklbYJbrdfRg2HwNnbkedOs1";
+//                makeTransactionFunctions("nyhPjjSxnIhoXI9WzpuxrpGt2SB2");
+                Log.d(TAG, "onNavigationItemSelected: topup button selected");
+//                paymentManager.testTransaction();
                 afterclick();
                 break;
             case R.id.nav_logout:

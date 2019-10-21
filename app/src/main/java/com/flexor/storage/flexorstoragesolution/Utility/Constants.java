@@ -54,5 +54,8 @@ public class Constants {
     public static final String SUPERADMINID_FOR_TRANSACTIONPURPOSE = "oPHqEKu2KWMTiZkWaZyEVswGRVS2";
     public static final int VENDOR_REGIST_FEE = 50000;
 
+    public static final String MESSAGINGTOPIC_ADMIN_PAYMENT ="topicAdminPayment";
+    public static final String MESSAGINGTOPIC_VENDOR_GENERAL ="topicVendorGeneral";
+
 
 }

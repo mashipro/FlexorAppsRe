@@ -322,6 +322,7 @@ public class StorageDetailsActivity extends AppCompatActivity {
         newBox.setBoxRentTimestamp(null);
         newBox.setBoxTenant(mUser.getUid());
         newBox.setBoxStatCode(Constants.STATSCODE_BOX_EMPTY);
+
 //        Calendar calendar = Calendar.getInstance();
 //        calendar.setTime(newBox.getBoxCreatedDate());
 //        calendar.add(Calendar.DATE,i);

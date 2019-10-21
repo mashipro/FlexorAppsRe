@@ -132,6 +132,27 @@ public class CustomNotificationManager {
         });
     }
 
+    public void subscribeAdminPayment(){
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.MESSAGINGTOPIC_ADMIN_PAYMENT).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: subscribe to topic success");
+                }
+            }
+        });
+    }
+    public void subscribeVendor(){
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.MESSAGINGTOPIC_VENDOR_GENERAL).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: subscribe to topic success");
+                }
+            }
+        });
+    }
+
     public void testFCMRUN (){
         Log.d(TAG, "testFCMRUN: init");
         NotificationSend newNot = new NotificationSend();
@@ -140,5 +161,7 @@ public class CustomNotificationManager {
 
         setNotification(mUser.getUid(),"TESTREF",1111);
     }
+
+
 
 }
