@@ -207,11 +207,16 @@ public class VendorRegistrationActivity extends AppCompatActivity implements Vie
             }else {
                 Log.d(TAG, "checkFormCompletion: complete, make transaction before save data");
                 manPaymentManager.makeTransaction(
-                        VendorRegistrationActivity.this,
-                        Constants.SUPERADMINID_FOR_TRANSACTIONPURPOSE,
-                        Constants.VENDOR_REGIST_FEE,
                         Constants.TRANSACTION__VENDOR_REGIST,
                         user.getUserID(),
+                        Constants.SUPERADMINID_FOR_TRANSACTIONPURPOSE,
+                        Constants.VENDOR_REGIST_FEE,
+                        user.getUserID(),
+//                        VendorRegistrationActivity.this,
+//                        Constants.SUPERADMINID_FOR_TRANSACTIONPURPOSE,
+//                        Constants.VENDOR_REGIST_FEE,
+//                        Constants.TRANSACTION__VENDOR_REGIST,
+//                        user.getUserID(),
                         new TransactionManager() {
                             @Override
                             public void onTransactionSuccess(Boolean success, String transactionID) {

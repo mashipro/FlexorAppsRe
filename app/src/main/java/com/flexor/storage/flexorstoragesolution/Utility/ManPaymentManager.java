@@ -164,8 +164,8 @@ public class ManPaymentManager {
     }
      public void makeTransaction(
              int    transStat,
-             String targetID,
              String sourceID,
+             String targetID,
              int    bill,
              String transRef,
              final TransactionManager transactionManager){

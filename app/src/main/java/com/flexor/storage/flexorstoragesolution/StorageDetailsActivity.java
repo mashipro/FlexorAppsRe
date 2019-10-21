@@ -273,11 +273,16 @@ public class StorageDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         manPaymentManager.makeTransaction(
-                                StorageDetailsActivity.this,
+                                Constants.TRANSACTION__BOX_RENT,
+                                user.getUserID(),
                                 userVendor.getVendorID(),
                                 getTotal(duration),
-                                Constants.TRANSACTION__BOX_RENT,
                                 thisBoxBinding.getBoxID(),
+//                                StorageDetailsActivity.this,
+//                                userVendor.getVendorID(),
+//                                getTotal(duration),
+//                                Constants.TRANSACTION__BOX_RENT,
+//                                thisBoxBinding.getBoxID(),
                                 new TransactionManager() {
                                     @Override
                                     public void onTransactionSuccess(Boolean success, String transactionID) {
