@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 afterclick();
                 break;
             case R.id.nav_topUpPage:
-//                startActivity(new Intent(MainActivity.this, TopUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                startActivity(new Intent(MainActivity.this, TopUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 String testID = "90G7OklbYJbrdfRg2HwNnbkedOs1";
 //                makeTransactionFunctions("nyhPjjSxnIhoXI9WzpuxrpGt2SB2");
                 Log.d(TAG, "onNavigationItemSelected: topup button selected");

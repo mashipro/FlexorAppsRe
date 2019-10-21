@@ -57,5 +57,10 @@ public class Constants {
     public static final String MESSAGINGTOPIC_ADMIN_PAYMENT ="topicAdminPayment";
     public static final String MESSAGINGTOPIC_VENDOR_GENERAL ="topicVendorGeneral";
 
+    public static final int BANK_BCA = 231;
+    public static final int BANK_MANDIRI = 1349;
+    public static final int BANK_BRI = 2189;
+
+
 
 }
