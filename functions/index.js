@@ -6,26 +6,15 @@ admin.initializeApp();
 
 //Notification Functions
 exports.sendNotification = functions.database.ref('UsersData/{userID}/Notification/{messageID}').onCreate((snapshot, context) =>{
-	console.log('sendNotification Triggered');
-
 	const receiverID = context.params.userID;
-	console.log('receiverID: ',receiverID);
-
 	const messageID = context.params.messageID;
-	console.log('messageID: ', messageID);
-
 	const notificationData = snapshot.val();
-	console.log('notificationData: ', notificationData);
-
 	const notificationStatsCode = notificationData.notificationStatsCode;
-	console.log('notificationStatsCode: '+notificationStatsCode);
-
 	const notificationReference = notificationData.notificationReference;
-	console.log('notificationReference: ', notificationReference);
+	console.log('sendNotification Triggered for userID: '+receiverID+' with notification id: '+messageID);
 
 	return admin.database().ref('UsersData/'+receiverID+'/UNToken').once('value').then(token =>{
 		const userToken = token.val();
-		console.log('userToken: ', userToken);
 
 		const payload = {
 			data:{
@@ -34,14 +23,11 @@ exports.sendNotification = functions.database.ref('UsersData/{userID}/Notificati
 				reference: notificationReference
 			}
 		};
-		console.log('payload: ',payload);
 
 		const options = {
 			priority: "high",
 			TimeToLive: 60*60*24
 		}
-		console.log('options: '+ options);
-
 		return admin.messaging().sendToDevice(userToken, payload, options);
 	});	
 });
@@ -81,10 +67,12 @@ async function getTransactionDetails(transactionID){
 }
 
 //post notification to notification firebase database
-async function postNotification(userData, notificationData){
+async function postNotification(userID, notificationData){
 	console.log('post notification!');
-	var notificationFireRef 	= admin.database().ref('UsersData/'+userData+'/Notification/').push();
-	var notificationID 			= notificationFireRef.key();
+	var notificationFireRef 	= admin.database().ref('UsersData/'+userID+'/Notification/').push();
+	var notificationID 			= notificationFireRef.key;
+	console.log('post notification to user: '+userID+" with notificationID: "+notificationID);
+	
 	let notificationDataPost 	= {
 		notificationID			: notificationID,
 		notificationReference	: notificationData.notificationReference,
@@ -92,47 +80,34 @@ async function postNotification(userData, notificationData){
 		notificationIsActive	: true,
 		notificationTime		: admin.database.ServerValue.TIMESTAMP
 	};
-	let postNotificationtoDatab	= notificationFireRef.set(notificationDataPost).then(res=>{
+	let postNotificationtoDatab	= notificationFireRef.set(notificationDataPost).then((res =>{
+		console.log('notification posted with id: '+notificationID);
+		
 		return res;
-	})
-	return postNotificationtoDatab;
+	}));
+	return await postNotificationtoDatab;
 }
 
 //post transaction log to user
-async function postUserTransactionLog(transactionLogData){
+async function postUserTransactionLog(userID, transactionLogData){
 	console.log('post transaction log to users!');
 
 	let transactionID 			= transactionLogData.transactionID;
-	let sourceID				= transactionLogData.sourceID;
-	let targetID				= transactionLogData.targetID;
 	let transactionStats		= transactionLogData.transactionStats;
 	let transactionRefStats		= transactionLogData.transactionRefStats;
 	let transactionChangeTime	= transactionLogData.transactionChangeTime;
-	let transactionLog 		= {	transactionID 		: transactionID,
-								transactionChangeTime 	: transactionChangeTime,
-								transactionStats		: transactionStats,
-								transactionRefStats		: transactionRefStats								
+	let transactionLog 			= {	
+		transactionID 		: transactionID,
+		transactionChangeTime 	: transactionChangeTime,
+		transactionStats		: transactionStats,
+		transactionRefStats		: transactionRefStats								
 								};
 
-	let transactionLogFireRefSource = admin.firestore().collection('Users').doc(sourceID).collection('MyTransaction').doc(transactionID);
-	let transactionLogFireRefTarget = admin.firestore().collection('Users').doc(targetID).collection('MyTransaction').doc(transactionID);
-	let postUserTransactionLogSource= transactionLogFireRefSource.set(transactionLog).then(res=>{
-		console.log('post transaction log to id: '+sourceID);
-		
+	let transactionFireRefSource		= admin.firestore().collection('Users').doc(userID).collection('MyTransaction').doc(transactionID);
+	return transactionFireRefSource.set(transactionLog).then(res =>{
+		console.log('transactionLOG for id: '+userID+" with transactionID: "+transactionID+ " saved!!!");
 		return res;
 	});
-	let postUserTransactionLogTarget= transactionLogFireRefTarget.set(transactionLog).then(res=>{
-		console.log('post transaction log to id: '+sourceID);
-		
-		return res;
-	});
-
-	if (transactionStats === 511) {
-		return postUserTransactionLogSource;
-	}else{
-		return {postUserTransactionLogSource,postUserTransactionLogTarget};
-	}
-
 }
 
 //Direct trigger to request transaction (no transaction found yet! and straight complete)
@@ -167,6 +142,7 @@ exports.transactionRequest = functions.https.onCall(async (data, context)=>{
 		// return;
 	}
 	let userData = await getUserData(sourceID);	
+	let userData2= await getUserData(targetID);
 	console.log('userData: ',userData);
 	console.log('transaction value: ',transactionValue);	
 	
@@ -175,13 +151,36 @@ exports.transactionRequest = functions.https.onCall(async (data, context)=>{
 		let transactionFireRef = admin.firestore().collection('Transactions').doc(transactionID);
 		let saveTransactionData = transactionFireRef.set(transactionData).then(res=>{
 			console.log('saving transaction data: ',res);
-			let postTransactionLog = postUserTransactionLog(transactionDetails);
 			let notificationData = {
 				notificationStatsCode		: 411,
 				notificationReference		: transactionRef
 			};
-			let postNotificationData = postNotification(targetID, notificationData);
-			return {res,postTransactionLog,postNotificationData,transactionID: transactionID};
+			let totalBalanceSource 	= userData.userBalance-transactionValue;
+			console.log('totBalSource: '+totalBalanceSource);
+			let totalBalanceTarget 	= userData2.userBalance+transactionValue;
+			console.log('totBalTarget: '+totalBalanceTarget);
+			let postTransactionLog 	= postUserTransactionLog(sourceID, transactionData);
+			let postTransactionLog2 = postUserTransactionLog(targetID, transactionData);
+			// let postNotificationToSource = postNotification(sourceID, notificationData);
+			let postNotificationToTarget = postNotification(targetID, notificationData);
+
+			let transactionFireRefSource	= admin.firestore().collection('Users').doc(sourceID).update({userBalance: totalBalanceSource}).then(res=>{
+				console.log('source balance updated!');
+				return res;
+			});
+			let transactionFireRefTarget 	= admin.firestore().collection('Users').doc(targetID).update({userBalance: totalBalanceTarget}).then(res=>{
+				console.log('target balance updated');
+				return res;
+			});
+			
+			return Promise.all([
+				transactionFireRefSource,
+				transactionFireRefTarget,
+				postTransactionLog,postTransactionLog2,
+				postNotificationToTarget
+			]).then(result=>{
+				return result;
+			});	
 		});
 		return saveTransactionData;
 		
@@ -198,7 +197,7 @@ exports.newTopUpRequest = functions.https.onCall(async(data, context)=>{
 		throw new functions.https.HttpsError("unauthenticated",'user not authenticated', 'check user');
 	}
 	let transactionID 		= data.transactionID;
-	let sourceID 	= data.sourceID;
+	let sourceID 			= data.sourceID;
  	let transactionRef		= data.transactionRef;
 	let transactionValue	= data.transactionValue;
 
@@ -216,9 +215,9 @@ exports.newTopUpRequest = functions.https.onCall(async(data, context)=>{
 	console.log('Top-up Request from user ID: '+sourceID+' //with transaction ID: '+transactionID);
 	let transactionFireRef = admin.firestore().collection('Transactions').doc(transactionID);
 	let saveTransactionData = transactionFireRef.set(transactionData).then(res=>{
-		console.log('saving transaction data! '+res.data());
-		let postTransactionLog = postUserTransactionLog(transactionData);
-		return {res,postTransactionLog};
+		console.log('saving transaction data! '+res);
+		let postTransactionLog = postUserTransactionLog(sourceID, transactionData);
+		return postTransactionLog;
 	});
 	return saveTransactionData;
 })
@@ -246,7 +245,7 @@ exports.acceptTopUpRequest = functions.https.onCall(async(data, context)=>{
 			let postNotificationToUser 	= postNotification(userDetails.userID, notificationData);
 			return {res,postTransactionLog,postNotificationToUser};
 		})
-		console.log('saving transaction data! '+res.data());
+		console.log('saving transaction data! '+res);
 		return updateUser;
 	});
 	return saveTransactionData;

@@ -33,7 +33,7 @@ public class Constants {
     public static final int NOTIFICATION_STATS_USERRENTBOX = 411;
     public static final int NOTIFICATION_STATS_TEST = 1111;
     public static final String CURRENCY = "Rp. ";
-    public static final int BOXMAXLIMITTIER_A = 5;
+    public static final int BOXMAXLIMITTIER_A = 50;
     public static final int BOXMAXLIMITTIER_B = 8;
     public static final int BOXMAXLIMITTIER_C = 10;
     public static final int BOXMAXLIMITTIER_D = 15;

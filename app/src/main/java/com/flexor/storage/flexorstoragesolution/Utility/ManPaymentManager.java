@@ -216,12 +216,12 @@ public class ManPaymentManager {
      }
 
     public void acceptTopUp(
-            String sourceID,
+            String transactionID,
             final TransactionManager transactionManager
     ){
         Transaction transaction = new Transaction();
         transaction.setTransactionID(getTransactionID(511));
-        transaction.setSourceID(sourceID);
+        transaction.setTransactionID(transactionID);
         topUpRequest(transaction).addOnCompleteListener(new OnCompleteListener<Object>() {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
