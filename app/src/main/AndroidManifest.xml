@@ -18,7 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <activity android:name=".TransactionHistoryActivity"></activity>
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <receiver
             android:name=".Service.BoxScheduledAlert"
             android:enabled="true"
@@ -31,7 +36,7 @@
         <activity android:name=".AdminVendorPhotoActivity" />
         <activity android:name=".BoxItemListActivity" />
         <activity android:name=".TopUpActivity" />
-        <activity android:name=".KonfirmTransaksiActivity"/>
+        <activity android:name=".KonfirmTransaksiActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

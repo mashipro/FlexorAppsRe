@@ -104,31 +104,7 @@ public class VendorApplistFragment extends Fragment {
                                     String vendorID = userVendor1.getVendorID();
                                     userVendor1.setVendorID(vendorID);
                                     startActivity(new Intent(getActivity(), MapsAdminActivity.class));
-//                                    userVendor.setVendorStatsCode((double) 201);
-////                                db.update("vendorStatsCode", (double)201)  //not used
-//                                    db.set(userVendor)
-//                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                                @Override
-//                                                public void onSuccess(Void aVoid) {
-//                                                    Log.d(TAG, "onSuccess: yo!");
-//                                                    Log.d(TAG, "onSuccess: " + userVendor.getVendorStatsCode());
-//                                                    ((UserClient) (getApplicationContext())).setUserVendor(userVendor);
-//                                                    startActivity(new Intent(getActivity(), MapsAdminActivity.class));
-//
-//                                                }
-//                                            })
-//                                            .addOnFailureListener(new OnFailureListener() {
-//                                                @Override
-//                                                public void onFailure(@NonNull Exception e) {
-//                                                    Log.w(TAG, "onFailure: sad", e);
-//                                                }
-//                                            });
 
-                                    //success
-
-//                Map<String, Object> data = new HashMap<>();
-//                data.put("vendorStatsCode", 299);
-//                db.set(data, SetOptions.merge());
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:

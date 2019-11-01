@@ -150,7 +150,7 @@ public class ManPaymentManager {
         Log.d(TAG, "postTransactionLogtoUser: posting log to userID: "+userID+ " with transactionID: "+transactionID);
         TransactionMiniUsers transactionMiniUsers = new TransactionMiniUsers();
         transactionMiniUsers.setTransactionID(transactionID);
-        transactionMiniUsers.setTransactionDate(null);
+        transactionMiniUsers.setTransactionChangeTime(null);
         userRef.document(userID).collection("MyTransaction").document(transactionID).set(transactionMiniUsers).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

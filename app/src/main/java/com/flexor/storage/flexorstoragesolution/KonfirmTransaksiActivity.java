@@ -49,9 +49,6 @@ public class KonfirmTransaksiActivity extends AppCompatActivity {
     File pic;
     protected static final int CAMERA_PIC_REQUEST = 0;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

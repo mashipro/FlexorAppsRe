@@ -202,10 +202,13 @@
     <string name="jumlah_topup">Jumlah TopUp</string>
     <string name="pembayaran">Pembayaran</string>
     <string name="prosestopup">Proses Transaksi</string>
-    <string name="konfirmasi_transaksi">Silahkan Foto dan Upload Bukti Transfer Menggunakan Aplikasi Whatsapp ke Nomor +6282225955525</string>
-    <string name="konfirmasi_transaksi2">Proses TopUp Memerlukan 5 - 10 Menit</string>
+    <string name="konfirmasi_transaksi">Silahkan Foto dan Upload Bukti Transfer Pada Halaman Konfirmasi</string>
+    <string name="konfirmasi_transaksi2">Terima Kasih Telah Melakukan Top Up</string>
     <string name="foto_bukti">Foto Bukti</string>
     <string name="upload_bukti">Kembali ke Halaman Utama</string>
+    <string name="transID">Transaction ID</string>
+    <string name="date">Date</string>
+    <string name="details">Details</string>
 
 
 </resources>

@@ -1,19 +1,17 @@
 package com.flexor.storage.flexorstoragesolution.Models;
 
-import com.google.firebase.firestore.ServerTimestamp;
-
 import java.util.Date;
 
-public class TransactionMiniUsers {
+public class TransactionDownload {
     private String transactionID;
-    private @ServerTimestamp Date transactionChangeTime;
+    private Date transactionChangeTime;
     private Integer transactionRefStats;
     private Integer transactionStats;
 
-    public TransactionMiniUsers() {
+    public TransactionDownload() {
     }
 
-    public TransactionMiniUsers(String transactionID, Date transactionChangeTime, Integer transactionRefStats, Integer transactionStats) {
+    public TransactionDownload(String transactionID, Date transactionChangeTime, Integer transactionRefStats, Integer transactionStats) {
         this.transactionID = transactionID;
         this.transactionChangeTime = transactionChangeTime;
         this.transactionRefStats = transactionRefStats;
@@ -54,7 +52,7 @@ public class TransactionMiniUsers {
 
     @Override
     public String toString() {
-        return "TransactionMiniUsers{" +
+        return "TransactionDownload{" +
                 "transactionID='" + transactionID + '\'' +
                 ", transactionChangeTime=" + transactionChangeTime +
                 ", transactionRefStats=" + transactionRefStats +

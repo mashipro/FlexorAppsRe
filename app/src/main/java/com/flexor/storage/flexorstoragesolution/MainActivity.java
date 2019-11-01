@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.nav_main_customerService:
 //                customNotificationManager.testFCMRUN();
-
+                startActivity(new Intent(getApplicationContext(), TransactionHistoryActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 afterclick();
                 break;
             case R.id.nav_main_settings:
