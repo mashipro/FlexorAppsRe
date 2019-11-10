@@ -182,6 +182,7 @@ public class ManPaymentManager {
                  if (task.isSuccessful()){
                      Log.d(TAG, "onComplete: task success with result: "+task.getResult());
                      transactionManager.onTransactionSuccess(true, task.getResult().toString());
+                     userManager.refreshUserData();
                  }else {
                      Log.d(TAG, "onComplete: error: "+task.getException().toString());
                      transactionManager.onTransactionSuccess(false,task.getException().toString());

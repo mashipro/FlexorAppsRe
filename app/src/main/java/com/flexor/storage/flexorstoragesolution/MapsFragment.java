@@ -1,6 +1,7 @@
 package com.flexor.storage.flexorstoragesolution;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -135,14 +136,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         right.isClickable();
 
         initGoogleMap(savedInstanceState);
+        initMap(context,getActivity(), mMapView, savedInstanceState);
 
         return view;
     }
 
+    private void initMap(Context context, Activity activity, MapView mMapView, Bundle savedInstanceState) {
+    }
+
     private void initGoogleMap(Bundle savedInstanceState) {
-        // *** IMPORTANT ***
-        // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
-        // objects or sub-Bundles.
 
         Log.d(TAG, "initGoogleMap: Maps Initializing");
         Bundle mapViewBundle = null;
@@ -162,15 +164,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mFirestore = FirebaseFirestore.getInstance();
         mStorage = FirebaseStorage.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        /**
-         * Getting User from userClient
-         */
+
         userManager = new UserManager();
         userManager.getInstance();
         user = userManager.getUser();
         boxManager = new BoxManager();
 
-//        userBoxRef = mFirestore.collection("Users").document(user.getUserID()).collection("MyRentedBox");
         vendorRef = mFirestore.collection("Vendor");
         vendorDBRef = firebaseDatabase.getReference().child("Accepted Vendor");
 
@@ -186,24 +185,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 });
             }
         });
-
-//        userBoxRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()){
-//                    List<SingleBox> userRentedBoxList = task.getResult().toObjects(SingleBox.class);
-//                    userBoxArrayList.addAll(userRentedBoxList);
-//                    Log.d(TAG, "onComplete: user rented box: "+userBoxArrayList);
-//                    getVendorList(new VendorDBUtilities() {
-//                        @Override
-//                        public void onDataReceived(ArrayList<VendorDatabase> vendorDBArray) {
-////                addMapMarkers(vendorDBArray);
-//                        }
-//                    });
-//                }
-//            }
-//        });
-
     }
 
     private void getVendorList(final VendorDBUtilities vendorDBUtilities) {

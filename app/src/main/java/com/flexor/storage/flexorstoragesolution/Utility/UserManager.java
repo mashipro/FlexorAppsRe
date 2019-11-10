@@ -18,11 +18,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import javax.annotation.Nullable;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -77,6 +81,28 @@ public class UserManager {
             userFromUserClient = ((UserClient)(getApplicationContext())).getUser();
             Log.d(TAG, "getInstance: user data found!!! user ID: "+userFromUserClient.getUserID());
         }
+    }
+
+    private void getRTUserData(final UserDataListener userDataListener){
+        Log.d(TAG, "real time user data : called");
+        userRef.document(mUser.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null){
+                    Log.w(TAG, "onEvent: listener failed", e);
+                }
+                if (documentSnapshot != null && documentSnapshot.exists()){
+                    Log.d(TAG, "onEvent: data: "+ documentSnapshot.getData());
+                    User userRTD = (User) documentSnapshot.getData();
+                    ((UserClient)(getApplicationContext())).setUser(userRTD);
+                    Log.d(TAG, "onComplete: user data on firestore found!! UID: "+ userRTD.getUserID());
+                    userDataListener.onUserDataReceived(((UserClient)(getApplicationContext())).getUser());
+                }else{
+                    userDataListener.onException(e);
+                    Log.d(TAG, "onEvent: data null");
+                }
+            }
+        });
     }
     public Boolean refreshUserData(){
         ((UserClient)(getApplicationContext())).setUser(null);

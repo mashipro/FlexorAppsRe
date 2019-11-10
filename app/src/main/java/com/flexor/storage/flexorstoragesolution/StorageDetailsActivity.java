@@ -286,10 +286,15 @@ public class StorageDetailsActivity extends AppCompatActivity {
                                 new TransactionManager() {
                                     @Override
                                     public void onTransactionSuccess(Boolean success, String transactionID) {
-                                        Log.d(TAG, "onTransactionSuccess: "+success+" transactionID: "+ transactionID);
-                                        updateBox(thisBoxBinding, duration);
-                                        saveUserBox(thisBoxBinding);
-                                        popupWindow.dismiss();
+                                        if (success){
+                                            Log.d(TAG, "onTransactionSuccess: "+success+" transactionID: "+ transactionID);
+                                            updateBox(thisBoxBinding, duration);
+                                            saveUserBox(thisBoxBinding);
+                                            popupWindow.dismiss();
+                                        }else {
+                                            // TODO: 10/23/2019 IF TRANSACTION FAILED!!!!! 
+                                        }
+                                        
                                     }
                                 }
                         );
